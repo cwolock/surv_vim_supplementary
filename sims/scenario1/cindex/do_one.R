@@ -62,17 +62,17 @@ do_one <- function(n_train,
 
     CV_reduced_preds <- V0_preds$CV_reduced_preds
 
-    output <- surVIM:::vim_cindex(time = train$y,
-                                  event = train$delta,
-                                  approx_times = approx_times,
-                                  f_hat = CV_full_preds,
-                                  fs_hat = CV_reduced_preds,
-                                  S_hat = CV_S_preds,
-                                  G_hat = CV_G_preds,
-                                  folds = folds,
-                                  sample_split = sample_split,
-                                  ss_folds = ss_folds,
-                                  tau = tau)
+    output <- survML::vim_cindex(time = train$y,
+                                 event = train$delta,
+                                 approx_times = approx_times,
+                                 f_hat = CV_full_preds,
+                                 fs_hat = CV_reduced_preds,
+                                 S_hat = CV_S_preds,
+                                 G_hat = CV_G_preds,
+                                 folds = folds,
+                                 sample_split = sample_split,
+                                 ss_folds = ss_folds,
+                                 tau = tau)
 
     output$indx <- rep(char_indx, nrow(output))
 

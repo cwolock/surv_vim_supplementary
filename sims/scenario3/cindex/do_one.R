@@ -67,7 +67,7 @@ do_one <- function(cens_rate,
 
     CV_reduced_preds <- V0_preds$CV_reduced_preds
 
-    output <- surVIM:::vim_cindex(time = train$y,
+    output <- survML::vim_cindex(time = train$y,
                                   event = train$delta,
                                   approx_times = approx_times,
                                   f_hat = CV_full_preds,

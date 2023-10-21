@@ -4,7 +4,6 @@
   .libPaths()
 ))
 suppressMessages(library(dplyr))
-suppressMessages(library(surVIM))
 suppressMessages(library(survML))
 suppressMessages(library(SuperLearner))
 suppressMessages(library(survival))

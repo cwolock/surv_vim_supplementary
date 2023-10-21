@@ -68,7 +68,7 @@ do_one <- function(n_train,
     for (k in 1:length(vims)){
       vim <- vims[k]
       if (vim == "brier"){
-        output <- surVIM:::vim_brier(time = train$y,
+        output <- survML::vim_brier(time = train$y,
                                      event = train$delta,
                                      approx_times = approx_times,
                                      landmark_times = landmark_times,
@@ -80,7 +80,7 @@ do_one <- function(n_train,
                                      ss_folds = ss_folds,
                                      sample_split = sample_split)
       } else if (vim == "AUC"){
-        output <- surVIM:::vim_AUC(time = train$y,
+        output <- survML::vim_AUC(time = train$y,
                                    event = train$delta,
                                    approx_times = approx_times,
                                    landmark_times = landmark_times,
