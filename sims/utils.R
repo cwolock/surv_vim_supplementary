@@ -22,7 +22,7 @@ generate_full_predictions <- function(time,
                                               new.times = approx_times,
                                               event.SL.library = event.SL.library,
                                               cens.SL.library = cens.SL.library,
-                                              verbose = TRUE,
+                                              verbose = FALSE,
                                               obsWeights = NULL,
                                               control = list(initWeightAlg = "survSL.rfsrc",
                                                              initWeight = "censoring",
@@ -377,8 +377,8 @@ CV_generate_reduced_predictions_landmark <- function(time,
       # in this situation full_preds_train[[1]] and [[2]] are identical (no crossfitting)
       outcomes <- full_preds_train[[1]][,which(landmark_times == t)]
       reduced_preds <- generate_reduced_predictions(f_hat = outcomes,
-                                                            X_reduced = X_reduced_train,
-                                                            X_reduced_holdout = X_reduced_holdout)
+                                                    X_reduced = X_reduced_train,
+                                                    X_reduced_holdout = X_reduced_holdout)
 
       preds_j[,which(landmark_times == t)] <- reduced_preds$fs_hat
     }
@@ -399,8 +399,8 @@ CV_generate_reduced_predictions_landmark <- function(time,
       for (t in landmark_times){
         outcomes <- full_preds_train[[j]][,which(landmark_times == t)]
         reduced_preds <- generate_reduced_predictions(f_hat = outcomes,
-                                                              X_reduced = X_reduced_train,
-                                                              X_reduced_holdout = X_reduced_holdout)
+                                                      X_reduced = X_reduced_train,
+                                                      X_reduced_holdout = X_reduced_holdout)
         preds_j[,which(landmark_times == t)] <- reduced_preds$fs_hat
       }
       CV_reduced_preds[[j]] <- preds_j
@@ -410,12 +410,13 @@ CV_generate_reduced_predictions_landmark <- function(time,
 }
 
 CV_generate_full_predictions_cindex <- function(time,
-                                         event,
-                                         X,
-                                         approx_times,
-                                         nuisance,
-                                         folds,
-                                         sample_split){
+                                                event,
+                                                X,
+                                                approx_times,
+                                                nuisance,
+                                                folds,
+                                                sample_split,
+                                                params){
   .V <- length(unique(folds))
   CV_full_preds <- list()
   CV_S_preds <- list()
@@ -474,6 +475,7 @@ CV_generate_full_predictions_cindex <- function(time,
   }
 
   all_CV_S_preds <- do.call(rbind,CV_S_preds)
+  print("Tuning full model")
   boost_results <- boost_c_index(time = all_time_split,
                                  event = all_event_split,
                                  X = all_X_split,
@@ -482,11 +484,14 @@ CV_generate_full_predictions_cindex <- function(time,
                                  indx = NULL,
                                  tuning = "CV",
                                  produce_fit = FALSE,
-                                 params =  list(mstop = c(100, 200, 300, 400, 500),
-                                                nu = c(0.1),
-                                                sigma = c(0.01, 0.05),
-                                                learner = c("glm")))
+                                 params =  params)
+                                 #list(#mstop = c(100, 200, 300, 400, 500),
+                                                # mstop = c(100, 250, 500, 1000),
+                                  # C              nu = c(0.01),
+                                   # C             sigma = c(0.01, 0.05),
+                                    # C            learner = c("glm")))
   print(boost_results)
+  print(boost_results$opt_index)
   mstop_opt <- boost_results$param_grid[boost_results$opt_index,1]
   nu_opt <- boost_results$param_grid[boost_results$opt_index,2]
   sigma_opt <- boost_results$param_grid[boost_results$opt_index,3]
@@ -528,6 +533,7 @@ CV_generate_full_predictions_cindex <- function(time,
       }
       X_holdout <- X[folds == j,]
 
+      print(paste0("Fitting optimal full model on cross-fitting fold", j))
       boost_results <- boost_c_index(time = time_train,
                                      event = event_train,
                                      X = X_train,
@@ -552,14 +558,15 @@ CV_generate_full_predictions_cindex <- function(time,
 }
 
 CV_generate_reduced_predictions_cindex <- function(time,
-                                            event,
-                                            X,
-                                            approx_times,
-                                            folds,
-                                            sample_split,
-                                            indx,
-                                            CV_S_preds_train,
-                                            CV_S_preds){
+                                                   event,
+                                                   X,
+                                                   approx_times,
+                                                   folds,
+                                                   sample_split,
+                                                   indx,
+                                                   CV_S_preds_train,
+                                                   CV_S_preds,
+                                                   params){
   .V <- length(unique(folds))
   CV_reduced_preds <- list()
 
@@ -572,6 +579,7 @@ CV_generate_reduced_predictions_cindex <- function(time,
   all_folds_split <- folds[order(folds)]
 
   all_CV_S_preds <- do.call(rbind, CV_S_preds)
+  print(paste0("Tuning reduced model for index", indx))
   boost_results <- boost_c_index(time = all_time_split,
                                  event = all_event_split,
                                  X = all_X_split,
@@ -580,10 +588,12 @@ CV_generate_reduced_predictions_cindex <- function(time,
                                  indx = indx,
                                  tuning = "CV",
                                  produce_fit = FALSE,
-                                 params = list(mstop = c(100, 200, 300, 400, 500),
-                                               nu = c(0.1),
-                                               sigma = c(0.01, 0.05),
-                                               learner = c("glm")))
+                                 params = params)#list(#mstop = c(100, 200, 300, 400, 500),
+                                               # mstop = c(100, 250, 500, 1000),
+                                               # nu = c(0.01),
+                                               # sigma = c(0.01, 0.05),
+                                               # learner = c("glm")))
+  print(boost_results)
   mstop_opt <- boost_results$param_grid[boost_results$opt_index,1]
   nu_opt <- boost_results$param_grid[boost_results$opt_index,2]
   sigma_opt <- boost_results$param_grid[boost_results$opt_index,3]
@@ -623,7 +633,7 @@ CV_generate_reduced_predictions_cindex <- function(time,
       }
 
       X_reduced_holdout <- X[folds == j,-indx,drop=FALSE]
-
+      print(paste0("Fitting optimal reduced model for index", indx))
       boost_results <- boost_c_index(time = time_train,
                                      event = event_train,
                                      X = X_reduced_train,
@@ -732,7 +742,7 @@ boost_c_index <- function(time, # follow up times
         M1 <- approxLoss(etaMat) * weights_out
         return(- sum(M1))
       }
-      Family( ## build the family object
+      mboost::Family( ## build the family object
         ngradient = ngradient,
         risk = risk,
         weights = "zeroone",
@@ -750,6 +760,7 @@ boost_c_index <- function(time, # follow up times
     if (tuning == "CV"){
       CV_risks <- matrix(NA, nrow = V, ncol = K)
       for (j in 1:V){
+        print(paste0("CV fold ", j))
 
         time_train <- time[folds != j]
         event_train <- event[folds != j]
@@ -761,10 +772,10 @@ boost_c_index <- function(time, # follow up times
         event_test <- event[folds == j]
 
         w <- rep(1, length(time_train))
-        index_grid <- combinations(n = length(time_train),
-                                   r = 2,
-                                   v = 1:length(time_train),
-                                   repeats.allowed = TRUE)
+        index_grid <- gtools::combinations(n = length(time_train),
+                                           r = 2,
+                                           v = 1:length(time_train),
+                                           repeats.allowed = TRUE)
         weight_vec <- mapply(FUN = Sweights_train, index_grid[,1], index_grid[,2])
         wweights <- matrix(NA, length(time_train), length(time_train))
         wweights[lower.tri(wweights, diag=TRUE)] <- weight_vec
@@ -788,26 +799,28 @@ boost_c_index <- function(time, # follow up times
         feature_form <- paste(feature_names, collapse = "+")
         formula_text <- paste0("Surv(time, event) ~ ", feature_form)
         if (learner_curr == "tree"){
-          mod <- blackboost(as.formula(formula_text),
+          mod <- mboost::blackboost(as.formula(formula_text),
                             family = my_Cindex(sigma = sigma_curr),
-                            control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                            control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
                             tree_controls = partykit::ctree_control(maxdepth = 1),
                             data = dtrain)
         } else if (learner_curr == "glm"){
-          mod <- glmboost(as.formula(formula_text),
+          mod <- mboost::glmboost(as.formula(formula_text),
                           family = my_Cindex(sigma = sigma_curr),
-                          control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                          control = mboost::boost_control(mstop = mstop_curr,
+                                                          trace = TRUE,
+                                                          nu = nu_curr),
                           data = dtrain)
         } else if (learner_curr == "gam"){
-          mod <- gamboost(as.formula(formula_text),
+          mod <- mboost::gamboost(as.formula(formula_text),
                           family = my_Cindex(sigma = sigma_curr),
-                          control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                          control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
                           data = dtrain)
         }
 
         for (l in 1:K){
           sub_mstop = reverse_sorted_mstop[l]
-          mstop(mod) <- sub_mstop
+          mboost::mstop(mod) <- sub_mstop
           preds <- -predict(mod, newdata = dtest)[,1]
 
           risk_j <- -surVIM:::estimate_cindex(time = time_test,
@@ -835,7 +848,7 @@ boost_c_index <- function(time, # follow up times
 
       #Survival function version
       w <- rep(1, length(time_train))
-      index_grid <- combinations(n = length(time_train),
+      index_grid <- gtools::combinations(n = length(time_train),
                                  r = 2,
                                  v = 1:length(time_train),
                                  repeats.allowed = TRUE)
@@ -857,20 +870,20 @@ boost_c_index <- function(time, # follow up times
       formula_text <- paste0("Surv(time, event) ~ ", feature_form)
 
       if (learner_curr == "tree"){
-        mod <- blackboost(Surv(time, event) ~ .,
+        mod <- mboost::blackboost(Surv(time, event) ~ .,
                           family = my_Cindex(sigma = sigma_curr),
-                          control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                          control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
                           tree_controls = partykit::ctree_control(maxdepth = 1),
                           data = dtrain)
       } else if (learner_curr == "glm"){
-        mod <- glmboost(Surv(time, event) ~ .,
+        mod <- mboost::glmboost(Surv(time, event) ~ .,
                         family = my_Cindex(sigma = sigma_curr),
-                        control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                        control = mboost::boost_control(mstop = mstop_curr, trace = TRUE, nu = nu_curr),
                         data = dtrain)
       } else if (learner_curr == "gam"){
-        mod <- gamboost(Surv(time, event) ~ .,
+        mod <- mboost::gamboost(Surv(time, event) ~ .,
                         family = my_Cindex(sigma = sigma_curr),
-                        control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                        control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
                         data = dtrain)
       }
 
@@ -882,7 +895,9 @@ boost_c_index <- function(time, # follow up times
   if (tuning == "none"){
     param_grid_full <- param_grid
   }
-  opt_index <- which.min(param_grid_full$CV_risk)
+
+  param_grid_full <- param_grid_full[order(param_grid_full$mstop), ]
+  opt_index <- which.min(round(param_grid_full$CV_risk, digits = 3))
 
   if (tuning == "CV" & produce_fit){
     mstop_curr = param_grid_full[opt_index,1]
@@ -899,7 +914,7 @@ boost_c_index <- function(time, # follow up times
 
     #Survival function version
     w <- rep(1, length(time_train))
-    index_grid <- combinations(n = length(time_train),
+    index_grid <- gtools::combinations(n = length(time_train),
                                r = 2,
                                v = 1:length(time_train),
                                repeats.allowed = TRUE)
@@ -921,20 +936,20 @@ boost_c_index <- function(time, # follow up times
     formula_text <- paste0("Surv(time, event) ~ ", feature_form)
 
     if (learner_curr == "tree"){
-      mod <- blackboost(Surv(time, event) ~ .,
+      mod <- mboost::blackboost(Surv(time, event) ~ .,
                         family = my_Cindex(sigma = sigma_curr),
-                        control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                        control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
                         tree_controls = partykit::ctree_control(maxdepth = 1),
                         data = dtrain)
     } else if (learner_curr == "glm"){
-      mod <- glmboost(Surv(time, event) ~ .,
+      mod <- mboost::glmboost(Surv(time, event) ~ .,
                       family = my_Cindex(sigma = sigma_curr),
-                      control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                      control = mboost::boost_control(mstop = mstop_curr, trace = TRUE, nu = nu_curr),
                       data = dtrain)
     } else if (learner_curr == "gam"){
-      mod <- gamboost(Surv(time, event) ~ .,
+      mod <- mboost::gamboost(Surv(time, event) ~ .,
                       family = my_Cindex(sigma = sigma_curr),
-                      control = boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
+                      control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
                       data = dtrain)
     }
     opt_model <- mod
