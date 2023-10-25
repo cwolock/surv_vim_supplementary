@@ -220,8 +220,7 @@ generate_DR_predictions <- function(time,
 
 generate_reduced_predictions <- function(f_hat,
                                          X_reduced,
-                                         X_reduced_holdout,
-                                         setting){
+                                         X_reduced_holdout){
 
   tune <- list(ntrees = c(250, 500, 1000),
                max_depth = c(1, 2),
@@ -377,11 +376,9 @@ CV_generate_reduced_predictions_landmark <- function(time,
     for (t in landmark_times){
       # in this situation full_preds_train[[1]] and [[2]] are identical (no crossfitting)
       outcomes <- full_preds_train[[1]][,which(landmark_times == t)]
-      reduced_preds <- generate_reduced_predictions_regress(f_hat = outcomes,
+      reduced_preds <- generate_reduced_predictions(f_hat = outcomes,
                                                             X_reduced = X_reduced_train,
-                                                            X_reduced_holdout = X_reduced_holdout,
-                                                            landmark_times = t,
-                                                            setting = "landmark")
+                                                            X_reduced_holdout = X_reduced_holdout)
 
       preds_j[,which(landmark_times == t)] <- reduced_preds$fs_hat
     }
@@ -401,11 +398,9 @@ CV_generate_reduced_predictions_landmark <- function(time,
       preds_j <- matrix(NA, nrow = nrow(X_reduced_holdout), ncol = length(landmark_times))
       for (t in landmark_times){
         outcomes <- full_preds_train[[j]][,which(landmark_times == t)]
-        reduced_preds <- generate_reduced_predictions_regress(f_hat = outcomes,
+        reduced_preds <- generate_reduced_predictions(f_hat = outcomes,
                                                               X_reduced = X_reduced_train,
-                                                              X_reduced_holdout = X_reduced_holdout,
-                                                              landmark_times = t,
-                                                              setting = "landmark")
+                                                              X_reduced_holdout = X_reduced_holdout)
         preds_j[,which(landmark_times == t)] <- reduced_preds$fs_hat
       }
       CV_reduced_preds[[j]] <- preds_j
@@ -487,10 +482,11 @@ CV_generate_full_predictions_cindex <- function(time,
                                  indx = NULL,
                                  tuning = "CV",
                                  produce_fit = FALSE,
-                                 params =  list(mstop = c(100, 250, 500, 1000),
-                                                nu = c(0.05),
+                                 params =  list(mstop = c(100, 200, 300, 400, 500),
+                                                nu = c(0.1),
                                                 sigma = c(0.01, 0.05),
                                                 learner = c("glm")))
+  print(boost_results)
   mstop_opt <- boost_results$param_grid[boost_results$opt_index,1]
   nu_opt <- boost_results$param_grid[boost_results$opt_index,2]
   sigma_opt <- boost_results$param_grid[boost_results$opt_index,3]
@@ -584,8 +580,8 @@ CV_generate_reduced_predictions_cindex <- function(time,
                                  indx = indx,
                                  tuning = "CV",
                                  produce_fit = FALSE,
-                                 params = list(mstop = c(100, 250, 500, 1000),
-                                               nu = c(0.05),
+                                 params = list(mstop = c(100, 200, 300, 400, 500),
+                                               nu = c(0.1),
                                                sigma = c(0.01, 0.05),
                                                learner = c("glm")))
   mstop_opt <- boost_results$param_grid[boost_results$opt_index,1]
@@ -879,7 +875,7 @@ boost_c_index <- function(time, # follow up times
       }
 
       mod_list[[i]] <- mod
-      param_grid$CV_risk[i] <- NA
+      param_grid$CV_risk[i] <- 999
     }
   }
 
@@ -942,7 +938,7 @@ boost_c_index <- function(time, # follow up times
                       data = dtrain)
     }
     opt_model <- mod
-  } else if ((tuning == "none" & produce_fit)){
+  } else if (tuning == "none" & produce_fit){
     opt_model <- mod_list[[opt_index]]
   } else{
     opt_model <- NULL

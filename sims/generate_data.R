@@ -58,7 +58,7 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
   x <- MASS::mvrnorm(n = n, mu = mu_x, Sigma = Sigma)
   eps <- rnorm(n = n, mean = 0, sd = sdy)
   epsc <- rnorm(n = n, mean = 0, sd = sdy)
-  logt <- interceptt + x %*% beta_t + eps
+  logt <- x %*% beta_t + eps
   t <- exp(logt)
 
   logc <- interceptc + x %*% beta_c + epsc
