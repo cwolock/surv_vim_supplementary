@@ -276,7 +276,7 @@ do_one <- function(n_train, correlation){
   }
 
   output <- data.frame(vim = rep(c("brier", "AUC"), each = length(landmark_times)),
-                       t = c(landmark_times, landmark_times),
+                       tau = c(landmark_times, landmark_times),
                        vim_1 = c(brier_01, auc_01),
                        vim_2 = c(brier_02, auc_02),
                        vim_1_split = c(brier_01_split, auc_01_split),
@@ -285,7 +285,7 @@ do_one <- function(n_train, correlation){
                        correlation = correlation)
 
   output_2 <- data.frame(vim = "cindex",
-                         t = c_landmark_times,
+                         tau = c_landmark_times,
                          vim_1 = c_01,
                          vim_2 = c_02,
                          vim_1_split = c_01_split,

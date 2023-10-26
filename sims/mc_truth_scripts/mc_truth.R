@@ -40,7 +40,7 @@ for (t in landmark_times){
 }
 
 output1_landmark <- data.frame(vim = rep(c("brier", "AUC"), each = length(landmark_times)),
-                               t = c(landmark_times, landmark_times),
+                               tau = c(landmark_times, landmark_times),
                                V_full = c(full_brier, full_auc),
                                V_01 = c(brier_01, auc_01),
                                V_02 = c(brier_02, auc_02),
@@ -91,7 +91,7 @@ for (tau in taus){
 }
 
 output1_global <- data.frame(vim = "cindex",
-                             t = taus,
+                             tau = taus,
                              V_full = full_c,
                              V_01 = c_01,
                              V_02 = c_02,
@@ -163,7 +163,7 @@ for (t in landmark_times){
 }
 
 output2_landmark <- data.frame(vim = rep(c("brier", "AUC"), each = length(landmark_times)),
-                               t = c(landmark_times, landmark_times),
+                               tau = c(landmark_times, landmark_times),
                                V_full = c(full_brier, full_auc),
                                V_01 = c(brier_01, auc_01),
                                V_02 = c(brier_02, auc_02),
@@ -211,7 +211,7 @@ for (tau in taus){
 }
 
 output2_global <- data.frame(vim = "cindex",
-                             t = taus,
+                             tau = taus,
                              V_full = full_c,
                              V_01 = c_01,
                              V_02 = c_02,
