@@ -16,7 +16,7 @@ do_one <- function(n_train,
   X <- train[,1:dimension]
 
   tau <- 0.9
-  approx_times <- sort(unique(c(0, time[time <= tau])))
+  approx_times <- sort(unique(c(0, time[time <= tau & event == 1])))
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num
@@ -39,7 +39,12 @@ do_one <- function(n_train,
                                                   approx_times = approx_times,
                                                   nuisance = nuisance,
                                                   folds = folds,
-                                                  sample_split = sample_split)
+                                                  sample_split = sample_split,
+                                                  params =  list(#mstop = c(100, 200, 300, 400, 500),
+                                                    mstop = c(100, 250, 500),#, 1000),
+                                                    nu = c(0.1),
+                                                    sigma = c(0.01, 0.05),
+                                                    learner = c("glm")))
 
   CV_full_preds <- V0_preds$CV_full_preds
   CV_S_preds <- V0_preds$CV_S_preds
@@ -58,7 +63,12 @@ do_one <- function(n_train,
                                                        sample_split = sample_split,
                                                        indx = indx,
                                                        CV_S_preds_train =  CV_S_preds_train,
-                                                       CV_S_preds = CV_S_preds)
+                                                       CV_S_preds = CV_S_preds,
+                                                       params =  list(#mstop = c(100, 200, 300, 400, 500),
+                                                         mstop = c(100, 250, 500),#, 1000),
+                                                         nu = c(0.1),
+                                                         sigma = c(0.01, 0.05),
+                                                         learner = c("glm")))
 
     CV_reduced_preds <- V0_preds$CV_reduced_preds
 
