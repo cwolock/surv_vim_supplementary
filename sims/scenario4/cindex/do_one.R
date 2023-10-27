@@ -16,7 +16,7 @@ do_one <- function(n_train,
   X <- train[,1:dimension]
 
   tau <- 0.9
-  approx_times <- sort(unique(c(0, time[time <= tau])))
+  approx_times <- sort(unique(c(0, time[time <= tau & event == 1])))
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num

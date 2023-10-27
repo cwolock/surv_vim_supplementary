@@ -22,7 +22,7 @@ do_one <- function(cens_rate,
   time <- train$y
   event <- train$delta
   X <- train[,1:dimension]
-  approx_times <- sort(unique(c(0, time, landmark_times)))
+  approx_times <- sort(unique(c(0, time[event == 1], landmark_times)))
   approx_times <- approx_times[approx_times <= max(landmark_times)]
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)

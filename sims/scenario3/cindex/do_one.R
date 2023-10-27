@@ -12,16 +12,16 @@ do_one <- function(cens_rate,
                                cens_rate == "70%" ~ "3_70")
   train <- generate_data(n = 1000, scenario = scenario, sdy = 1)
 
-  sample_split <- TRUE
-  dimension <- 5
-  indxs <- c("1", "4", "1,4")
+  sample_split <- FALSE
+  dimension <- 2
+  indxs <- c("1", "2")
 
   time <- train$y
   event <- train$delta
   X <- train[,1:dimension]
 
   tau <- 0.9
-  approx_times <- sort(unique(c(0, time[time <= tau])))
+  approx_times <- sort(unique(c(0, time[time <= tau & event == 1])))
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num

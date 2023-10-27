@@ -1,7 +1,7 @@
 options(expressions= 20000) # this is necessary for the `combinations` function to work with large n
 do_one <- function(n_train,
                    nuisance,
-                   crossfit,){
+                   crossfit){
   start <- Sys.time()
 
   # training data
