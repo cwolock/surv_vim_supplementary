@@ -1,7 +1,7 @@
 options(expressions= 20000) # this is necessary for the `combinations` function to work with large n
 do_one <- function(cens_rate,
                    nuisance,
-                   crossfit,){
+                   crossfit){
   start <- Sys.time()
 
   # training data
@@ -44,7 +44,12 @@ do_one <- function(cens_rate,
                                                   approx_times = approx_times,
                                                   nuisance = nuisance,
                                                   folds = folds,
-                                                  sample_split = sample_split)
+                                                  sample_split = sample_split,
+                                                  params =  list(#mstop = c(100, 200, 300, 400, 500),
+                                                    mstop = c(100, 250, 500),#, 1000),
+                                                    nu = c(0.1),
+                                                    sigma = c(0.01, 0.05),
+                                                    learner = c("glm")))
 
   CV_full_preds <- V0_preds$CV_full_preds
   CV_S_preds <- V0_preds$CV_S_preds
@@ -63,7 +68,12 @@ do_one <- function(cens_rate,
                                                        sample_split = sample_split,
                                                        indx = indx,
                                                        CV_S_preds_train =  CV_S_preds_train,
-                                                       CV_S_preds = CV_S_preds)
+                                                       CV_S_preds = CV_S_preds,
+                                                       params =  list(#mstop = c(100, 200, 300, 400, 500),
+                                                         mstop = c(100, 250, 500),#, 1000),
+                                                         nu = c(0.1),
+                                                         sigma = c(0.01, 0.05),
+                                                         learner = c("glm")))
 
     CV_reduced_preds <- V0_preds$CV_reduced_preds
 
