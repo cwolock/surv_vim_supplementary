@@ -8,16 +8,16 @@ suppressMessages(library(survML))
 suppressMessages(library(survival))
 suppressMessages(library(survSuperLearner))
 
-source("/home/cwolock/surv_vim_supplementary/sims/scenario5/do_one.R")
+source("/home/cwolock/surv_vim_supplementary/sims/scenario6/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 
-sim_name <- "scenario5"
+sim_name <- "scenario6"
 nreps_total <- 1000
 nreps_per_job <- 1
 
-n_trains <- c(500, 750, 1000, 1250, 1500)
-misspec_types <- c("none", "censoring", "event")
+n_trains <- c(500, 1000, 1500, 2000, 2500)
+misspec_types <- c("none", "censoring", "event_plusf0")
 robusts <- c(FALSE, TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
