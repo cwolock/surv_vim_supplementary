@@ -963,3 +963,124 @@ boost_c_index <- function(time, # follow up times
               opt_model = opt_model))
 }
 
+CV_generate_full_predictions_landmark_misspec <- function(time,
+                                                          event,
+                                                          X,
+                                                          landmark_times,
+                                                          approx_times,
+                                                          nuisance,
+                                                          folds,
+                                                          sample_split,
+                                                          misspec_type,
+                                                          DR_f0 = FALSE){
+  .V <- length(unique(folds))
+  CV_full_preds_train <- list()
+  CV_full_preds <- list()
+  CV_S_preds <- list()
+  CV_S_preds_train <- list()
+  CV_G_preds <- list()
+
+  if (.V == 2 & sample_split){
+    time_train <- time
+    event_train <- event
+    X_train <- X
+    X_holdout <- X
+    full_preds <- generate_full_predictions(time = time_train,
+                                            event = event_train,
+                                            X = X_train,
+                                            X_holdout = X_holdout,
+                                            landmark_times = landmark_times,
+                                            approx_times = approx_times,
+                                            nuisance = nuisance)
+    for (j in 1:.V){
+      CV_full_preds_train[[j]] <- full_preds$f_hat_train
+      CV_full_preds[[j]] <- full_preds$f_hat[folds == j,]
+      CV_S_preds[[j]] <- full_preds$S_hat[folds == j,]
+      CV_G_preds[[j]] <- full_preds$G_hat[folds == j,]
+    }
+
+  } else{
+    for (j in 1:.V){
+
+      if (.V == 1){ # if not actually cross fitting
+        time_train <- time[folds == j]
+        event_train <- event[folds == j]
+        X_train <- X[folds == j,]
+      }else{ # if actually cross fitting
+        time_train <- time[folds != j]
+        event_train <- event[folds != j]
+        X_train <- X[folds != j,]
+      }
+      X_holdout <- X[folds == j,]
+      full_preds <- generate_full_predictions(time = time_train,
+                                              event = event_train,
+                                              X = X_train,
+                                              X_holdout = X_holdout,
+                                              landmark_times = landmark_times,
+                                              approx_times = approx_times,
+                                              nuisance = nuisance)
+      # fix this hacky stuff, things break with only a single time because of dimension stuff
+      # if (length(landmark_times) == 1){
+      #   full_preds$f_hat <- t(full_preds$f_hat)
+      #   full_preds$f_hat_train <- t(full_preds$f_hat_train)
+      # }
+      if (misspec_type == "censoring"){
+        # deliberately mess up G preds
+        full_preds$G_hat_train <- matrix(seq(1, 0.1, length.out = ncol(full_preds$G_hat_train)),
+                                         nrow = nrow(full_preds$G_hat_train),
+                                         ncol = ncol(full_preds$G_hat_train),
+                                         byrow = TRUE)
+        full_preds$G_hat <- matrix(seq(1, 0.1, length.out = ncol(full_preds$G_hat)),
+                                   nrow = nrow(full_preds$G_hat),
+                                   ncol = ncol(full_preds$G_hat),
+                                   byrow = TRUE)
+      } else if (misspec_type == "event_plusf0"){
+        full_preds$S_hat_train <- matrix(seq(1, 0.1, length.out = ncol(full_preds$S_hat_train)),
+                                         nrow = nrow(full_preds$S_hat_train),
+                                         ncol = ncol(full_preds$S_hat_train),
+                                         byrow = TRUE)
+        full_preds$S_hat <- matrix(seq(1, 0.1, length.out = ncol(full_preds$S_hat)),
+                                   nrow = nrow(full_preds$S_hat),
+                                   ncol = ncol(full_preds$S_hat),
+                                   byrow = TRUE)
+        full_preds$f_hat_train <- full_preds$S_hat_train[,which(approx_times %in% landmark_times),drop=FALSE]
+        full_preds$f_hat <- full_preds$S_hat[,which(approx_times %in% landmark_times),drop=FALSE]
+      } else if (misspec_type == "event"){
+        full_preds$S_hat_train <- matrix(seq(1, 0.1, length.out = ncol(full_preds$S_hat_train)),
+                                         nrow = nrow(full_preds$S_hat_train),
+                                         ncol = ncol(full_preds$S_hat_train),
+                                         byrow = TRUE)
+        full_preds$S_hat <- matrix(seq(1, 0.1, length.out = ncol(full_preds$S_hat)),
+                                   nrow = nrow(full_preds$S_hat),
+                                   ncol = ncol(full_preds$S_hat),
+                                   byrow = TRUE)
+      }
+      if (!DR_f0){
+        CV_full_preds_train[[j]] <- full_preds$f_hat_train
+        CV_full_preds[[j]] <- full_preds$f_hat
+      } else{
+        DR_preds <- generate_DR_predictions(
+          time = time_train,
+          event = event_train,
+          X = X_train,
+          X_holdout = X_holdout,
+          landmark_times = landmark_times,
+          approx_times = approx_times,
+          S_hat = full_preds$S_hat_train,
+          G_hat = full_preds$G_hat_train
+        )
+        CV_full_preds_train[[j]] <- DR_preds$f_hat_train
+        CV_full_preds[[j]] <- DR_preds$f_hat
+      }
+
+      CV_S_preds[[j]] <- full_preds$S_hat
+      CV_G_preds[[j]] <- full_preds$G_hat
+    }
+  }
+
+  return(list(CV_full_preds_train = CV_full_preds_train,
+              CV_full_preds = CV_full_preds,
+              CV_S_preds = CV_S_preds,
+              CV_G_preds = CV_G_preds))
+}
+

@@ -1,21 +1,21 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario1"
+sim_name <- "scenario5"
 nreps_total <- 500
 nreps_per_job <- 1
 
 output_dir <- "output/"
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL", "stackG", "rfsrc")
-crossfits <- c(FALSE, TRUE)
+misspec_types <- c("none", "censoring", "event")
+robusts <- c(FALSE, TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 
 param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
-                          crossfit = crossfits,
                           n_train = n_trains,
-                          nuisance = nuisances)
+                          misspec_type = misspec_types,
+                          robust = robusts)
 
 output_nms <- paste0(sim_name, "_", 1:dim(param_grid)[1], ".rds")
 avail_nms <- list.files(output_dir, pattern = paste0(sim_name, "_*"))
