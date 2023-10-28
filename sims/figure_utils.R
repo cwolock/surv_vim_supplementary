@@ -57,8 +57,15 @@ compile_truth <- function(true_param_file, true_avar_file){
 
 summarize_results <- function(dat, scenario, truth, var_truth){
 
-  dat <- dat %>% mutate(scenario = scenario) %>%
-    pivot_longer(cols = c("one_step"),
+  dat <- dat %>% mutate(scenario = scenario)
+
+  if (scenario != "3"){
+    dat <- dat %>% mutate(cens_rate = "50%")
+  } else {
+    dat <- dat %>% mutate(scenario = "3", n_train = 1000)
+  }
+
+  dat <- dat %>% pivot_longer(cols = c("one_step"),
                               names_to = "estimator",
                               values_to = "estimate") %>%
     mutate(nuisance = factor(dat$nuisance,
@@ -84,12 +91,12 @@ summarize_results <- function(dat, scenario, truth, var_truth){
   # summarize results
   dat <- dat %>% mutate(err = (estimate - param),
                         cov = ifelse(cil <= param & ciu >= param, 1, 0),
-                        reject = ifelse(cil_1sided > 0, 1, 0),
+                        reject = ifelse(p < 0.05, 1, 0),
                         width = (estimate - cil)*2)
 
   messed_up_landmark <- dat %>% filter(abs(err) > 1 | is.na(err))
 
-  summ <- dat %>% group_by(tau, n_train, n_eff, estimator, nuisance, vim, indx, crossfit, scenario) %>%
+  summ <- dat %>% group_by(tau, n_train, n_eff, estimator, nuisance, vim, indx, crossfit, scenario, cens_rate) %>%
     summarize(runtime = mean(runtime),
               bias = mean(err),
               nreps = n(),
@@ -103,17 +110,21 @@ summarize_results <- function(dat, scenario, truth, var_truth){
               width_mc_se = sqrt( mean((width - ci_width) ^ 2) / (nreps-1)), # note that this is not really a "MC standard error" just the standard deviation
               # since the CI width isn't really estimating a parameter.
               var_mc_se = sqrt(2/(nreps-1)),#variance/sqrt(2*(nreps-1)),# # this may be wrong
-              .groups = "drop") %>%
-    mutate(bias = sqrt(n_eff)*bias,
-           variance = n_eff * variance,
-           bias_mc_se = sqrt(n_eff)*bias_mc_se)
-
-  summ <- left_join(summ, var_truth, by = c("tau", "vim", "indx", "scenario"))
-  summ <- summ %>% mutate(scaled_var = variance / true_avar)
+              .groups = "drop")
+  if (scenario == "3"){
+    summ <- summ %>% mutate(scaled_var = 100*variance,
+                            var_mc_se = 1000*variance/sqrt(2*(nreps -1)))
+  } else{
+    summ <- summ %>% mutate(bias = sqrt(n_eff)*bias,
+                            variance = n_eff * variance,
+                            bias_mc_se = sqrt(n_eff)*bias_mc_se)
+    summ <- left_join(summ, var_truth, by = c("tau", "vim", "indx", "scenario"))
+    summ <- summ %>% mutate(scaled_var = variance / true_avar)
+  }
   return(summ)
 }
 
-make_sim_plot <- function(summ, big = TRUE, wd, fname){
+make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
   plot_tib <- summ %>%
     mutate(n = factor(n_train),
            Method = factor(crossfit,
@@ -128,60 +139,66 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
                                    "Brier score at 0.5", "Brier score at 0.9",
                                    "c-index")))
 
-  indx_vim_scenario_combos <- unique(plot_tib[c("indx","scenario")])
+  indxs <- unique(plot_tib$indx)
 
-  for (i in 1:nrow(indx_vim_scenario_combos)){
-    this_scenario <- indx_vim_scenario_combos$scenario[i]
-    this_indx <- indx_vim_scenario_combos$indx[i]
+  Switch <- scenario == "3"
+  xvar <- ifelse(Switch, "cens_rate", "n")
+  xlab <- ifelse(Switch, "Censoring rate", "Sample size")
+  scales <- ifelse(Switch, "free_y", "fixed")
 
-    this_bias_lim <- plot_tib %>% filter(scenario == this_scenario,
-                                         indx == this_indx) %>%
+  for (i in 1:length(indxs)){
+    this_indx <- indxs[i]
+
+    # if (sum(grepl("Brier", plot_tib$vim)) > 0){
+    #   this_bias_lim_brier <- plot_tib %>% filter(indx == this_indx & grepl("Brier", vim)) %>%
+    #     mutate(scaled_bias_low = bias - 2*bias_mc_se,
+    #            scaled_bias_hi = bias + 2*bias_mc_se) %>%
+    #     summarize(bias_l = min(scaled_bias_low), bias_h = max(scaled_bias_hi))
+    #   this_bias_lim_lower_brier <- this_bias_lim$bias_l
+    #   this_bias_lim_upper_brier <- this_bias_lim$bias_h
+    # }
+    this_bias_lim <- plot_tib %>% filter(indx == this_indx) %>%
       mutate(scaled_bias_low = bias - 2*bias_mc_se,
              scaled_bias_hi = bias + 2*bias_mc_se) %>%
       summarize(bias_l = min(scaled_bias_low), bias_h = max(scaled_bias_hi))
     this_bias_lim_lower <- this_bias_lim$bias_l
     this_bias_lim_upper <- this_bias_lim$bias_h
 
-    this_width_lim <- plot_tib %>% filter(scenario == this_scenario,
-                                          indx == this_indx) %>%
+    this_width_lim <- plot_tib %>% filter(indx == this_indx) %>%
       mutate(width_low = ci_width - 2*width_mc_se,
              width_hi = ci_width + 2*width_mc_se) %>%
       summarize(width_l = min(width_low), width_h = max(width_hi))
     this_width_lim_lower <- this_width_lim$width_l
     this_width_lim_upper <- this_width_lim$width_h
 
-    this_cov_lim <- plot_tib %>% filter(scenario == this_scenario,
-                                        indx == this_indx) %>%
+    this_cov_lim <- plot_tib %>% filter(indx == this_indx) %>%
       mutate(cov_low = coverage - 2 * cov_mc_se,
              cov_hi = coverage + 2*cov_mc_se) %>%
       summarize(cov_l = min(cov_low), cov_h = max(cov_hi))
     this_cov_lim_lower <- this_cov_lim$cov_l
     this_cov_lim_upper <- this_cov_lim$cov_h
 
-    this_var_lim <- plot_tib %>% filter(scenario == this_scenario,
-                                        indx == this_indx) %>%
+    this_var_lim <- plot_tib %>% filter(indx == this_indx) %>%
       mutate(var_low = scaled_var - 2*var_mc_se,
              var_hi = scaled_var + 2*var_mc_se) %>%
       summarize(var_l = min(var_low), var_h = max(var_hi))
     this_var_lim_lower <- this_var_lim$var_l
     this_var_lim_upper <- this_var_lim$var_h
 
-    this_power_lim <- plot_tib %>% filter(scenario == this_scenario,
-                                          indx == this_indx) %>%
+    this_power_lim <- plot_tib %>% filter(indx == this_indx) %>%
       mutate(power_low = power - 2*power_mc_se,
              power_hi = power + 2*power_mc_se) %>%
       summarize(power_l = min(power_low), power_h = max(power_hi))
     this_power_lim_lower <- this_power_lim$power_l
     this_power_lim_upper <- this_power_lim$power_h
 
-    num_rows <- plot_tib %>% filter(scenario == this_scenario,
-                                    indx == this_indx) %>%
+    num_rows <- plot_tib %>% filter(indx == this_indx) %>%
       pull(vim)
     num_rows <- length(unique(num_rows))
 
-    bias_plot_j <- plot_tib %>% filter(scenario == this_scenario,
-                                       indx == this_indx) %>%
-      ggplot(aes(x = n, y = bias, color = nuisance)) +
+    ylab_bias <- ifelse(Switch, "Empirical bias", expression(paste(sqrt(n), " x empirical bias")))
+    bias_plot_j <- plot_tib %>% filter(indx == this_indx) %>%
+      ggplot(aes(x = eval(str2lang(xvar)), y = bias, color = nuisance)) +
       geom_hline(yintercept = 0, linetype = "solid", color = "black") +
       geom_point(size = point_size) +
       geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
@@ -189,8 +206,8 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
       scale_color_manual(values = nuisance_cols) +
       scale_linetype_manual(values = xfit_linetypes) +
       ylim(c(this_bias_lim_lower, this_bias_lim_upper)) +
-      ylab(expression(paste(sqrt(n), " x empirical bias"))) +
-      xlab("Sample size") +
+      ylab(ylab_bias) +
+      xlab(xlab) +
       labs(linetype = "Method", color = "Nuisance") +
       ggtitle("A. BIAS") +
       facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
@@ -204,9 +221,8 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
             panel.grid.major.x = element_blank(),
             panel.grid.major.y = element_line(color = "grey85"))
 
-    cover_plot_j <- plot_tib %>% filter(scenario == this_scenario,
-                                        indx == this_indx) %>%
-      ggplot(aes(x = n, y = coverage, color = nuisance)) +
+    cover_plot_j <- plot_tib %>% filter(indx == this_indx) %>%
+      ggplot(aes(x = eval(str2lang(xvar)), y = coverage, color = nuisance)) +
       geom_hline(yintercept = 0.95, linetype = "solid", color = "black") +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
@@ -217,7 +233,7 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
       scale_linetype_manual(values = xfit_linetypes) +
       ylim(c(0, 1)) +
       ylab("Empirical coverage") +
-      xlab("Sample size") +
+      xlab(xlab) +
       labs(linetype = "Method", color = "Nuisance") +
       ggtitle("C. COVERAGE") +
       facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
@@ -231,9 +247,8 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
             panel.grid.major.x = element_blank(),
             panel.grid.major.y = element_line(color = "grey85"))
 
-    power_plot_j <- plot_tib %>% filter(scenario == this_scenario,
-                                        indx == this_indx) %>%
-      ggplot(aes(x = n, y = power, color = nuisance)) +
+    power_plot_j <- plot_tib %>% filter(indx == this_indx) %>%
+      ggplot(aes(x = eval(str2lang(xvar)), y = power, color = nuisance)) +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
       geom_errorbar(aes(ymin=ifelse(power-1.96*power_mc_se <0, 0, power-1.96*power_mc_se),
@@ -244,7 +259,7 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
       scale_linetype_manual(values = xfit_linetypes) +
       ylim(c(this_power_lim_lower, this_power_lim_upper)) +
       ylab("Empirical type I error") +
-      xlab("Sample size") +
+      xlab(xlab) +
       labs(linetype = "Method", color = "Nuisance") +
       ggtitle("D. TYPE I ERROR") +
       facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
@@ -258,24 +273,25 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
             panel.grid.major.x = element_blank(),
             panel.grid.major.y = element_line(color = "grey85"))
 
-    var_plot_j <- plot_tib  %>%
-      filter(scenario == this_scenario,
-             indx == this_indx) %>%
-      ggplot(aes(x = n, y = scaled_var, color = nuisance)) +
+    ylab_var <- ifelse(Switch, "1000 x empirical variance", expression(paste(n, " x empirical variance/(true asymp. var.)")))
+    var_plot_j <- plot_tib  %>% filter(indx == this_indx) %>%
+      ggplot(aes(x = eval(str2lang(xvar)), y = scaled_var, color = nuisance)) +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
       geom_errorbar(aes(ymin=scaled_var - 1.96*var_mc_se,
                         ymax=scaled_var + 1.96*var_mc_se),
                     width=.1) +
-      geom_hline(yintercept = 1, linetype = "solid", color = "black") +
+      {if(!Switch) geom_hline(yintercept = 1, linetype = "solid", color = "black")} +
+      # geom_hline(yintercept = 1, linetype = "solid", color = "black") +
       scale_color_manual(values = nuisance_cols)+
       scale_linetype_manual(values = xfit_linetypes) +
-      ylim(c(this_var_lim_lower, this_var_lim_upper)) +
-      ylab(expression(paste(n, " x empirical variance/(true asymp. var.)"))) +
-      xlab("Sample size") +
+      # ylim(c(this_var_lim_lower, this_var_lim_upper)) +
+      ylim(c(this_var_lim_lower, ifelse(Switch, NA, this_var_lim_upper))) +
+      ylab(ylab_var) +
+      xlab(xlab) +
       labs(linetype = "Method", color = "Nuisance") +
       ggtitle("B. VARIANCE") +
-      facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
+      facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right", scales = scales) +
       theme_bw() +
       theme(axis.ticks.length.x = unit(0, "cm"),
             panel.spacing.x = unit(0, "cm"),
@@ -286,10 +302,8 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
             panel.grid.major.x = element_blank(),
             panel.grid.major.y = element_line(color = "grey85"))
 
-    width_plot_j <-plot_tib %>%
-      filter(scenario == this_scenario,
-             indx == this_indx) %>%
-      ggplot(aes(x = n, y = ci_width, color = nuisance)) +
+    width_plot_j <-plot_tib %>% filter(indx == this_indx) %>%
+      ggplot(aes(x = eval(str2lang(xvar)), y = ci_width, color = nuisance)) +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
       geom_errorbar(aes(ymin = ci_width - 1.96*width_mc_se,
@@ -299,7 +313,7 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
       scale_linetype_manual(values = xfit_linetypes) +
       ylim(c(this_width_lim_lower, this_width_lim_upper)) +
       ylab("Confidence interval width") +
-      xlab("Sample size") +
+      xlab(xlab) +
       labs(linetype = "Method", color = "Nuisance") +
       ggtitle("D. WIDTH") +
       facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
@@ -383,7 +397,6 @@ make_sim_plot <- function(summ, big = TRUE, wd, fname){
     full_plot_j <- plot_grid(four_panel_plot_j, legend_j, ncol = 1, nrow = 2,
                              rel_heights = c(1, .1))
     ggsave(filename = paste0(wd, fname, "_",
-                             this_scenario, "_",
                              this_indx, ".png"),
            plot = full_plot_j, device = "png",
            width = ifelse(big, big_fig_width, small_fig_width),
