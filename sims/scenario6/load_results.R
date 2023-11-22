@@ -6,7 +6,7 @@ nreps_per_job <- 1
 
 output_dir <- "output/"
 
-n_trains <- c(500, 1000, 1500, 2000, 2500)
+n_trains <- c(1000, 2000, 3000, 4000)
 misspec_types <- c("none", "censoring", "event")
 robusts <- c(FALSE, TRUE)
 

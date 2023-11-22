@@ -6,8 +6,8 @@ do_one <- function(n_train,
 
   nuisance <- "survSL"
   crossfit <- TRUE
-  vims <- c("AUC")
-  landmark_times <- c(0.5)
+  vims <- c("AUC", "brier")
+  landmark_times <- c(0.5, 0.9)
 
   # training data
   train <- generate_data(n = n_train, scenario = "1", sdy = 1)

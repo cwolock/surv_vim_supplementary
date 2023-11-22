@@ -6,7 +6,7 @@ do_one <- function(n_train,
 
   nuisance <- "survSL"
   crossfit <- TRUE
-  landmark_times <- c(0.5)
+  landmark_times <- c(0.5, 0.9)
 
   # training data
   train <- generate_data(n = n_train, scenario = "1", sdy = 1)
