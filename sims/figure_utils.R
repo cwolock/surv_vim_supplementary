@@ -397,8 +397,8 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
     full_plot_j <- plot_grid(four_panel_plot_j, legend_j, ncol = 1, nrow = 2,
                              rel_heights = c(1, .1))
     ggsave(filename = paste0(wd, fname, "_",
-                             this_indx, ".png"),
-           plot = full_plot_j, device = "png",
+                             this_indx, ".pdf"),
+           plot = full_plot_j, device = "pdf",
            width = ifelse(big, big_fig_width, small_fig_width),
            height = ifelse(big, big_fig_height, small_fig_height),
            dpi = 300, units = "in")

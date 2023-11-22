@@ -189,6 +189,7 @@ generate_DR_predictions <- function(time,
                      FUN = function(x) G_hat[x,which.min(abs(approx_times - Y_t[x]))])
 
     term1 <- Delta_t*(Y_t >= tau) / G_hat_Y
+
     term2 <- (1 - Delta_t) * m_Y / G_hat_Y
 
     int.vals <- t(sapply(1:length(time), function(j) {

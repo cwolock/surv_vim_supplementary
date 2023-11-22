@@ -20,4 +20,4 @@ make_sim_plot(summ,
               scenario = "4",
               big = TRUE,
               wd = "C:/Users/cwolo/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/",
-              fname = "scenario2_big")
+              fname = "scenario4_big")
