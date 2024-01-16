@@ -16,6 +16,10 @@ big_fig_width <- 12
 big_fig_height <- 8
 small_fig_width <- 12
 small_fig_height <- 6
+# big_fig_width <- 6
+# big_fig_height <- 4
+# small_fig_width <- 6
+# small_fig_height <- 4
 nuisance_cols <- c("red", "blue", "green")
 xfit_linetypes <- c("solid", "longdash")
 strip_text_size <- 10
@@ -396,9 +400,9 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
     )
     full_plot_j <- plot_grid(four_panel_plot_j, legend_j, ncol = 1, nrow = 2,
                              rel_heights = c(1, .1))
-    ggsave(filename = paste0(wd, fname, "_",
-                             this_indx, ".pdf"),
-           plot = full_plot_j, device = "pdf",
+    ggsave(filename = paste0(wd, fname, "-",
+                             this_indx, ".eps"),
+           plot = full_plot_j, device = "eps",
            width = ifelse(big, big_fig_width, small_fig_width),
            height = ifelse(big, big_fig_height, small_fig_height),
            dpi = 300, units = "in")

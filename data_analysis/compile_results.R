@@ -263,10 +263,10 @@ combined_ss_marginal <- bind_rows(combined_ss_both_marginal,
 p <- make_plot_combined(combined_ss_marginal)
 
 
-wd <- "/home/cwolock/surv_vim_supplementary/data_analysis"
+wd <- "/home/cwolock/surv_vim_supplementary/scratch/biometrika/"
 fname <- "702_marginal_vax_112223_10split"
-ggsave(filename = paste0(wd, fname, ".pdf"),
-       plot = p, device = "pdf",
+ggsave(filename = paste0(wd, fname, ".eps"),
+       plot = p, device = "eps",
        width = big_fig_width, height = big_fig_height, dpi = 300, units = "in")
 
 combined_ss_conditional <- bind_rows(combined_ss_both_conditional, 

@@ -1,15 +1,13 @@
-do_one <- function(seed,
-                   global_seed,
-                   approach){
+do_one <- function(approach){
   
+  crossfit <- TRUE
   sample_split <- TRUE
   nfolds <- 5
-  crossfit <- TRUE
   nuisance <- "stackG"
   
-  dat <- readRDS("/home/cwolock/surv_vim_supplementary/data_analysis/cleaned_RS_data_combined36.rds")
+  dat <- readRDS("cleaned_RS_data_combined36.rds")
   landmark_times <- c(545, 730, 912)
-  dat <- dat %>% filter(female == 0) %>% select(-c(female))
+  
   cf_fold_num <- switch((crossfit) + 1, 1, nfolds)
   ss_fold_num <- 2*cf_fold_num
   V <- switch((sample_split) + 1, cf_fold_num, ss_fold_num)
@@ -21,13 +19,14 @@ do_one <- function(seed,
     ss_folds <- rep(1, V)
   }
   ss_folds <- as.numeric(folds %in% which(ss_folds == 2))
-  
+ 
   time <- dat$HIV36fu
   event <- dat$HIV36
   X <- dat %>% select(-c(HIV36fu, HIV36))
   
   X_names <- names(X)
   vacc_index <- which(X_names == "VACC")
+  sex_index <- which(X_names == "female")
   age_index <- which(X_names == "AGE")
   geo_index <- which(X_names == "REG" | X_names == "REG1" | X_names == "REG2")
   bmi_index <- which(X_names == "BMIGE25")
@@ -42,6 +41,7 @@ do_one <- function(seed,
                        X_names != "REG2")
   all_index <- 1:length(X_names)
   
+  sex_index <- c(sex_index, vacc_index)
   age_index <- c(age_index, vacc_index)
   geo_index <- c(geo_index, vacc_index)
   bmi_index <- c(bmi_index, vacc_index)
@@ -50,9 +50,10 @@ do_one <- function(seed,
   social_index <- c(social_index, vacc_index)
   brs_index <- c(brs_index, vacc_index)
   
-  all_but_geo_index <- unique(c(brs_index, age_index, bmi_index, vacc_index))
+  all_but_geo_index <- unique(c(brs_index, sex_index, age_index, bmi_index, vacc_index))
   
   vacc_index_text <- paste(vacc_index, collapse = ",")
+  sex_index_text <- paste(sex_index, collapse = ",")
   age_index_text <- paste(age_index, collapse = ",")
   geo_index_text <- paste(geo_index, collapse = ",")
   bmi_index_text <- paste(bmi_index, collapse = ",")
@@ -65,21 +66,24 @@ do_one <- function(seed,
   
   if (approach == "marginal"){
     
-    all_index_text <- c(age_index_text,
+    all_index_text <- c(sex_index_text,
+                        age_index_text,
                         bmi_index_text,
-                        sexhealth_index_text, sexbehave_index_text,
+                        sexhealth_index_text, 
+                        sexbehave_index_text,
                         social_index_text)
-    all_index_names <- c("age",
+    all_index_names <- c("sex", "age",
                          "bmi", "BRS_sexhealth",
                          "BRS_sexbehave", "BRS_social")
   } else if (approach == "conditional"){
     
-    all_index_text <- c(geo_index_text,
+    all_index_text <- c(geo_index_text, sex_index_text,
                         age_index_text,
                         bmi_index_text,
-                        sexhealth_index_text, sexbehave_index_text,
+                        sexhealth_index_text,
+                        sexbehave_index_text,
                         social_index_text)
-    all_index_names <- c("geo", "age",
+    all_index_names <- c("geo", "sex", "age",
                          "bmi", "BRS_sexhealth",
                          "BRS_sexbehave", "BRS_social")
   }
@@ -130,6 +134,7 @@ do_one <- function(seed,
     CV_full_preds <- V0_preds
   }
   
+  shared_settings <- expand.grid(indx = all_index_text, vim = vims)
   for (i in 1:length(all_index_text)){
     char_indx <- as.character(all_index_text[i])
     char_indx_name <- all_index_names[i]
@@ -163,20 +168,19 @@ do_one <- function(seed,
       CV_reduced_preds <- V0_preds
     }
     
-    output <- survML::vim_AUC(time = time,
-                              event = event,
-                              approx_times = approx_times,
-                              landmark_times = landmark_times,
-                              f_hat = lapply(CV_full_preds, function(x) 1-x),
-                              fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
-                              S_hat = CV_S_preds,
-                              G_hat = CV_G_preds,
-                              folds = folds,
-                              ss_folds = ss_folds,
-                              sample_split = sample_split,
-                              scale_est = TRUE)
+    output <- surVIM:::vim_AUC(time = time,
+                               event = event,
+                               approx_times = approx_times,
+                               landmark_times = landmark_times,
+                               f_hat = lapply(CV_full_preds, function(x) 1-x),
+                               fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
+                               S_hat = CV_S_preds,
+                               G_hat = CV_G_preds,
+                               folds = folds,
+                               ss_folds = ss_folds,
+                               sample_split = sample_split)
     
-    output$vim <- "AUC"
+    output$vim <- rep(vim, nrow(output))
     output$indx <- rep(char_indx, nrow(output))
     output$indx_name <- rep(char_indx_name, nrow(output))
     if (!(i == 1)){
@@ -188,8 +192,6 @@ do_one <- function(seed,
   
   dat <- pooled_output
   dat$approach <- approach
-  dat$seed <- seed
-  dat$global_seed <- global_seed
   return(dat)
 }
 
