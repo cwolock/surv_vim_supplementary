@@ -1,12 +1,12 @@
 do_one <- function(n_train,
                    misspec_type,
-                   robust){
+                   robust_V,
+		   robust_f){
 
   start <- Sys.time()
 
   nuisance <- "survSL"
   crossfit <- TRUE
-  vims <- c("AUC", "brier")
   landmark_times <- c(0.5, 0.9)
 
   # training data
@@ -45,7 +45,7 @@ do_one <- function(n_train,
                                                             folds = folds,
                                                             sample_split = sample_split,
                                                             misspec_type = misspec_type,
-                                                            DR_f0 = FALSE)
+                                                            DR_f0 = robust_f)
 
   CV_full_preds <- V0_preds$CV_full_preds
   CV_full_preds_train <- V0_preds$CV_full_preds_train
@@ -74,13 +74,14 @@ do_one <- function(n_train,
                             folds = folds,
                             ss_folds = ss_folds,
                             sample_split = sample_split,
-                            robust = robust)
+                            robust = robust_V)
 
   output$n_train <- n_train
   output$vim <- "AUC"
   output$indx <- "1"
   output$misspec_type <- misspec_type
-  output$robust <- robust
+  output$robust_V <- robust_V
+  output$robust_f <- robust_f
   end <- Sys.time()
   runtime <- difftime(end, start, units = "mins")
   output$runtime <- runtime
