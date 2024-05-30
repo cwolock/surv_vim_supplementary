@@ -1,17 +1,17 @@
 #!/usr/local/bin/Rscript
-.libPaths(c(
-  "/home/cwolock/R_lib",
-  .libPaths()
-))
-suppressMessages(library(tidyverse))
-suppressMessages(library(survival))
-suppressMessages(library(survML))
+.library(tidyverse, lib = "/home/cwolock/R_lib")
+library(survival, lib = "/home/cwolock/R_lib")
+library(survML, lib = "/home/cwolock/R_lib")
+library(SuperLearner, lib = "/home/cwolock/R_lib")
+library(earth, lib = "/home/cwolock/R_lib")
+library(ranger, lib = "/home/cwolock/R_lib")
+library(xgboost, lib = "/home/cwolock/R_lib")
 
 source("/home/cwolock/surv_vim_supplementary/data_analysis/702_utils.R")
 source("/home/cwolock/surv_vim_supplementary/data_analysis/female/702_data_analysis.R")
 
 name <- "female_analysis"
-nreps_total <- 10
+nreps_total <- 50
 nreps_per_job <- 1
 
 approach <- c("conditional", "marginal")
