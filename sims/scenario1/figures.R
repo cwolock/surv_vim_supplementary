@@ -1,4 +1,4 @@
-source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figure_utils.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figure_utils_new.R")
 
 # read in truth files
 truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim/scratch/sims/landmark/truth.rds"
@@ -22,9 +22,9 @@ make_sim_plot(summ,
               wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
               fname = "scenario1-big")
 
-summ <- summ %>% filter(vim == "AUC" & indx == 1)
-make_sim_plot(summ,
-              scenario = "1",
-              big = FALSE,
-              wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario1-small")
+# summ <- summ %>% filter(vim == "AUC" & indx == 1)
+# make_sim_plot(summ,
+#               scenario = "1",
+#               big = FALSE,
+#               wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
+#               fname = "scenario1-small")

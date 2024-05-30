@@ -1,12 +1,13 @@
 library(tidyverse)
-source("/home/cwolock/surv_vim_supplementary/sims/generate_data_AFT.R")
+source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
+# source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
 n_train <- 1e7
 set.seed(1234)
-
+sdy <- 1
 ##################
 ### no correlation
 ##################
-dat <- generate_data(n = n_train, scenario = "1", sdy = 1)
+dat <- generate_data(n = n_train, scenario = "1", sdy = sdy)
 x <- as.matrix(dat[,1:2])
 beta_t <- matrix(c(0.5, -0.3))
 interceptt <- 0
@@ -14,6 +15,9 @@ landmark_times <- c(0.5, 0.9)
 full_brier <- rep(NA, length(landmark_times))
 brier_01 <- rep(NA, length(landmark_times))
 brier_02 <- rep(NA, length(landmark_times))
+full_rsquared <- rep(NA, length(landmark_times))
+rsquared_01 <- rep(NA, length(landmark_times))
+rsquared_02 <- rep(NA, length(landmark_times))
 full_auc <- rep(NA, length(landmark_times))
 auc_01 <- rep(NA, length(landmark_times))
 auc_02 <- rep(NA, length(landmark_times))
@@ -34,20 +38,23 @@ for (t in landmark_times){
   full_brier[which(landmark_times == t)] <- -mse_t
   brier_01[which(landmark_times == t)] <- -mse_t1
   brier_02[which(landmark_times == t)] <- -mse_t2
+  full_rsquared[which(landmark_times == t)] <- 1-mse_t/var(y)
+  rsquared_01[which(landmark_times == t)] <- 1-mse_t1/var(y)
+  rsquared_02[which(landmark_times == t)] <- 1-mse_t2/var(y)
   full_auc[which(landmark_times == t)] <- auc_t
   auc_01[which(landmark_times == t)] <- auc_t1
   auc_02[which(landmark_times == t)] <- auc_t2
 }
 
-output1_landmark <- data.frame(vim = rep(c("brier", "AUC"), each = length(landmark_times)),
-                               tau = c(landmark_times, landmark_times),
-                               V_full = c(full_brier, full_auc),
-                               V_01 = c(brier_01, auc_01),
-                               V_02 = c(brier_02, auc_02),
-                               V_03 = rep(0, 2*length(landmark_times)),
-                               V_04 = rep(0, 2*length(landmark_times)),
-                               V_05 = rep(0, 2*length(landmark_times)),
-                               n_mc = rep(n_train, 2*length(landmark_times)))
+output1_landmark <- data.frame(vim = rep(c("brier", "AUC", "rsquared"), each = length(landmark_times)),
+                               tau = c(landmark_times, landmark_times, landmark_times),
+                               V_full = c(full_brier, full_auc, full_rsquared),
+                               V_01 = c(brier_01, auc_01, rsquared_01),
+                               V_02 = c(brier_02, auc_02, rsquared_02),
+                               V_03 = rep(0, 3*length(landmark_times)),
+                               V_04 = rep(0, 3*length(landmark_times)),
+                               V_05 = rep(0, 3*length(landmark_times)),
+                               n_mc = rep(n_train, 3*length(landmark_times)))
 output1_landmark <- output1_landmark %>% mutate(V_014 = V_01, V_023 = V_02, correlation = FALSE)
 
 taus <- c(0.9)
@@ -61,7 +68,7 @@ for (t in approx_times){
   S_02[,which(approx_times == t)] <- 1-pnorm(-(x[, 1] * beta_t[1]) - interceptt + log(t), sd = sqrt(beta_t[2]^2 + sdy^2))
 }
 # c index stuff
-dat_test <- generate_data(n = n_train, scenario = "A")
+dat_test <- generate_data(n = n_train, scenario = "1")
 outcome <- dat_test$t
 preds <- -beta_t[1]*dat_test[,1] - beta_t[2]*dat_test[,2]
 preds_01 <- -beta_t[2]*dat_test[,2]
@@ -84,10 +91,10 @@ for (tau in taus){
   c_02[which(taus == tau)] <- (mean(ifelse(preds_02 > preds2_02,1,0)*(outcome < outcome2 & outcome <= tau)) +
                                  mean(ifelse(preds2_02 > preds_02,1,0)*(outcome2 < outcome & outcome2 <= tau))) / denom
 
-  f_0 <- calc_rmst(S_0, tau, approx_times)
-  f_01 <- calc_rmst(S_01, tau, approx_times)
-  f_02 <- calc_rmst(S_02, tau, approx_times)
-  f_03 <- f_04 <- f_0
+  # f_0 <- calc_rmst(S_0, tau, approx_times)
+  # f_01 <- calc_rmst(S_01, tau, approx_times)
+  # f_02 <- calc_rmst(S_02, tau, approx_times)
+  # f_03 <- f_04 <- f_0
 }
 
 output1_global <- data.frame(vim = "cindex",
@@ -105,7 +112,7 @@ output1 <- bind_rows(output1_landmark, output1_global)
 ###############
 ### correlation
 ###############
-dat <- generate_data(n = n_train, scenario = "D")
+dat <- generate_data(n = n_train, scenario = "4")
 p <- 5
 x <- as.matrix(dat[,1:p])
 beta_t <- matrix(c(0.5, -0.3, rep(0, p- 2)))
@@ -116,12 +123,16 @@ interceptt <- 0
 full_brier <- rep(NA, length(landmark_times))
 brier_01 <- rep(NA, length(landmark_times))
 brier_02 <- rep(NA, length(landmark_times))
+full_rsquared <- rep(NA, length(landmark_times))
+rsquared_01 <- rep(NA, length(landmark_times))
+rsquared_02 <- rep(NA, length(landmark_times))
 full_auc <- rep(NA, length(landmark_times))
 auc_01 <- rep(NA, length(landmark_times))
 auc_02 <- rep(NA, length(landmark_times))
 brier_014 <- rep(NA, length(landmark_times))
 brier_023 <- rep(NA, length(landmark_times))
-full_auc <- rep(NA, length(landmark_times))
+rsquared_014 <- rep(NA, length(landmark_times))
+rsquared_023 <- rep(NA, length(landmark_times))
 auc_014 <- rep(NA, length(landmark_times))
 auc_023 <- rep(NA, length(landmark_times))
 
@@ -152,30 +163,35 @@ for (t in landmark_times){
   full_brier[which(landmark_times == t)] <- -mse_t
   brier_01[which(landmark_times == t)] <- -mse_t1
   brier_02[which(landmark_times == t)] <- -mse_t2
+  full_rsquared[which(landmark_times == t)] <- 1-mse_t/var(y)
+  rsquared_01[which(landmark_times == t)] <- 1-mse_t1/var(y)
+  rsquared_02[which(landmark_times == t)] <- 1-mse_t2/var(y)
   full_auc[which(landmark_times == t)] <- auc_t
   auc_01[which(landmark_times == t)] <- auc_t1
   auc_02[which(landmark_times == t)] <- auc_t2
 
   brier_014[which(landmark_times == t)] <- -mse_t14
   brier_023[which(landmark_times == t)] <- -mse_t23
+  rsquared_014[which(landmark_times == t)] <- 1-mse_t14/var(y)
+  rsquared_023[which(landmark_times == t)] <- 1-mse_t23/var(y)
   auc_014[which(landmark_times == t)] <- auc_t14
   auc_023[which(landmark_times == t)] <- auc_t23
 }
 
-output2_landmark <- data.frame(vim = rep(c("brier", "AUC"), each = length(landmark_times)),
-                               tau = c(landmark_times, landmark_times),
-                               V_full = c(full_brier, full_auc),
-                               V_01 = c(brier_01, auc_01),
-                               V_02 = c(brier_02, auc_02),
-                               V_014 = c(brier_014, auc_014),
-                               V_023 = c(brier_023, auc_023),
-                               V_03 = rep(0, 2*length(landmark_times)),
-                               V_04 = rep(0, 2*length(landmark_times)),
-                               V_05 = rep(0, 2*length(landmark_times)),
-                               n_mc = rep(n_train, 2*length(landmark_times)))
+output2_landmark <- data.frame(vim = rep(c("brier", "AUC", "rsquared"), each = length(landmark_times)),
+                               tau = c(landmark_times, landmark_times, landmark_times),
+                               V_full = c(full_brier, full_auc, full_rsquared),
+                               V_01 = c(brier_01, auc_01, rsquared_01),
+                               V_02 = c(brier_02, auc_02, rsquared_02),
+                               V_014 = c(brier_014, auc_014, rsquared_014),
+                               V_023 = c(brier_023, auc_023, rsquared_023),
+                               V_03 = rep(0, 3*length(landmark_times)),
+                               V_04 = rep(0, 3*length(landmark_times)),
+                               V_05 = rep(0, 3*length(landmark_times)),
+                               n_mc = rep(n_train, 3*length(landmark_times)))
 output2_landmark <- output2_landmark %>% mutate(correlation = TRUE)
 
-dat_test <- generate_data(n = n_train, scenario = "D")
+dat_test <- generate_data(n = n_train, scenario = "4")
 outcome <- dat_test$t
 preds <- -beta_t[1]*dat_test[,1] -beta_t[2]*dat_test[,2]
 preds_01 <- -beta_t[2]*dat_test[,2] - beta_t[1]*rho14*dat_test[,4]

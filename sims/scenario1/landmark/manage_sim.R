@@ -10,9 +10,12 @@ suppressMessages(library(survival))
 suppressMessages(library(randomForestSRC))
 suppressMessages(library(survSuperLearner))
 
-source("/home/cwolock/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
-source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
-source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
+# source("/home/cwolock/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
+# source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
+# source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
 
 sim_name <- "scenario1_landmark"
 nreps_total <- 500
