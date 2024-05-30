@@ -168,7 +168,7 @@ do_one <- function(seed,
       CV_reduced_preds <- V0_preds
     }
     
-    output <- survML::vim_AUC(time = time,
+    output_AUC <- survML::vim_AUC(time = time,
                               event = event,
                               approx_times = approx_times,
                               landmark_times = landmark_times,
@@ -181,7 +181,22 @@ do_one <- function(seed,
                               sample_split = sample_split,
                               scale_est = TRUE)
     
-    output$vim <- "AUC"
+    output_AUC$vim <- "AUC"
+    output_brier <- survML::vim_brier(time = time,
+                              event = event,
+                              approx_times = approx_times,
+                              landmark_times = landmark_times,
+                              f_hat = CV_full_preds,
+                              fs_hat = CV_reduced_preds,
+                              S_hat = CV_S_preds,
+                              G_hat = CV_G_preds,
+                              folds = folds,
+                              ss_folds = ss_folds,
+                              sample_split = sample_split,
+                              scale_est = TRUE)
+    
+    output_brier$vim <- "brier"
+    output <- rbind(output_AUC, output_brier)
     output$indx <- rep(char_indx, nrow(output))
     output$indx_name <- rep(char_indx_name, nrow(output))
     if (!(i == 1)){
