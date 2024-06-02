@@ -1,8 +1,8 @@
-generate_full_predictions <- function(time, 
-                                      event, 
-                                      X, 
-                                      X_holdout, 
-                                      landmark_times, 
+generate_full_predictions <- function(time,
+                                      event,
+                                      X,
+                                      X_holdout,
+                                      landmark_times,
                                       approx_times,
                                       nuisance,
                                       fold_ID){
@@ -14,7 +14,7 @@ generate_full_predictions <- function(time,
                                              "survSL.loglogreg",
                                              "survSL.AFTreg",
                                              "survSL.rfsrc")
-    
+
     fit <- survSuperLearner::survSuperLearner(time = time,
                                               event = event,
                                               X = X,
@@ -43,14 +43,14 @@ generate_full_predictions <- function(time,
     event_perfs <- rep(NA, nrow(tune_grid))
     cens_perfs <- rep(NA, nrow(tune_grid))
     for (i in 1:nrow(tune_grid)){
-      event_fit_perf <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ ., 
-                                               data = event_dat, 
+      event_fit_perf <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ .,
+                                               data = event_dat,
                                                ntree = tune_grid$ntree[i],
                                                mtry = tune_grid$mtry[i],
                                                nodesize = tune_grid$nodesize[i],
                                                importance = FALSE)$err.rate[tune_grid$ntree[i]]
-      cens_fit_perf <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ ., 
-                                              data = cens_dat, 
+      cens_fit_perf <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ .,
+                                              data = cens_dat,
                                               nodesize = tune_grid$nodesize[i],
                                               ntree = tune_grid$ntree[i],
                                               mtry = tune_grid$mtry[i],
@@ -66,14 +66,14 @@ generate_full_predictions <- function(time,
     opt_cens_mtry <- tune_grid$mtry[opt_cens_index]
     opt_cens_ntree <- tune_grid$ntree[opt_cens_index]
     opt_cens_nodesize <- tune_grid$nodesize[opt_cens_index]
-    event_fit <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ ., 
-                                        data = event_dat, 
+    event_fit <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ .,
+                                        data = event_dat,
                                         ntree = opt_event_ntree,
                                         mtry = opt_event_mtry,
                                         importance = FALSE,
                                         perf.type = "none")
-    cens_fit <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ ., 
-                                       data = cens_dat, 
+    cens_fit <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ .,
+                                       data = cens_dat,
                                        ntree = opt_cens_ntree,
                                        mtry = opt_cens_mtry,
                                        importance = FALSE,
@@ -83,27 +83,27 @@ generate_full_predictions <- function(time,
     cens_q_pred <- predict(cens_fit, newdata=X_holdout, importance='none')$survival
     cens_q_pred_train <- predict(cens_fit, newdata=X, importance='none')$survival
     f_hat <- t(sapply(1:nrow(event_q_pred), function(i) {
-      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred[i,]), 
+      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred[i,]),
                     method='constant', xout = landmark_times, rule = 2)$y
     }))
     f_hat_train <- t(sapply(1:nrow(event_q_pred_train), function(i) {
-      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred_train[i,]), 
+      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred_train[i,]),
                     method='constant', xout = landmark_times, rule = 2)$y
     }))
     S_hat <- t(sapply(1:nrow(event_q_pred), function(i) {
-      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred[i,]), 
+      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred[i,]),
                     method='constant', xout = approx_times, rule = 2)$y
     }))
     S_hat_train <- t(sapply(1:nrow(event_q_pred_train), function(i) {
-      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred_train[i,]), 
+      stats::approx(c(0,event_fit$time.interest), c(1,event_q_pred_train[i,]),
                     method='constant', xout = approx_times, rule = 2)$y
     }))
     G_hat <- t(sapply(1:nrow(cens_q_pred), function(i) {
-      stats::approx(c(0,cens_fit$time.interest), c(1,cens_q_pred[i,]), 
+      stats::approx(c(0,cens_fit$time.interest), c(1,cens_q_pred[i,]),
                     method='constant', xout = approx_times, rule = 2)$y
     }))
     G_hat_train <- t(sapply(1:nrow(cens_q_pred_train), function(i) {
-      stats::approx(c(0,cens_fit$time.interest), c(1,cens_q_pred_train[i,]), 
+      stats::approx(c(0,cens_fit$time.interest), c(1,cens_q_pred_train[i,]),
                     method='constant', xout = approx_times, rule = 2)$y
     }))
   } else if (nuisance == "coxph"){
@@ -123,7 +123,7 @@ generate_full_predictions <- function(time,
       S_hat <- cbind(S_hat, matrix(S_hat[,ncol(S_hat)],
                                    nrow=nrow(S_hat),
                                    ncol=length(approx_times) - ncol(S_hat)))
-      
+
     }
     S_hat_train <- t(summary(survival::survfit(fit,
                                                newdata=X_holdout,
@@ -135,7 +135,7 @@ generate_full_predictions <- function(time,
       S_hat_train <- cbind(S_hat_train, matrix(S_hat_train[,ncol(S_hat_train)],
                                                nrow=nrow(S_hat_train),
                                                ncol=length(approx_times) - ncol(S_hat_train)))
-      
+
     }
     f_hat <- t(summary(survival::survfit(fit,
                                          newdata=X_holdout,
@@ -147,7 +147,7 @@ generate_full_predictions <- function(time,
       f_hat <- cbind(f_hat, matrix(f_hat[,ncol(f_hat)],
                                    nrow=nrow(f_hat),
                                    ncol=length(landmark_times) - ncol(f_hat)))
-      
+
     }
     f_hat_train <- t(summary(survival::survfit(fit,
                                                newdata=X,
@@ -159,7 +159,7 @@ generate_full_predictions <- function(time,
       f_hat_train <- cbind(f_hat_train, matrix(f_hat_train[,ncol(f_hat_train)],
                                                nrow=nrow(f_hat_train),
                                                ncol=length(landmark_times) - ncol(f_hat_train)))
-      
+
     }
     cens_event <- 1 - event
     fit <- survival::coxph(
@@ -178,7 +178,7 @@ generate_full_predictions <- function(time,
       G_hat <- cbind(G_hat, matrix(G_hat[,ncol(G_hat)],
                                    nrow=nrow(G_hat),
                                    ncol=length(approx_times) - ncol(G_hat)))
-      
+
     }
     G_hat_train <- t(summary(survival::survfit(fit,
                                                newdata=X_holdout,
@@ -190,7 +190,7 @@ generate_full_predictions <- function(time,
       G_hat_train <- cbind(G_hat_train, matrix(G_hat_train[,ncol(G_hat_train)],
                                                nrow=nrow(G_hat_train),
                                                ncol=length(approx_times) - ncol(G_hat_train)))
-      
+
     }
   } else if (nuisance == "stackG"){
     tune <- list(ntrees = c(250, 500, 1000), max_depth = c(1, 2), minobspernode = 10, shrinkage = 0.01)
@@ -213,7 +213,7 @@ generate_full_predictions <- function(time,
     S_hat_train <- surv_out$S_T_preds[(nrow(X_holdout)+1):(nrow(X_holdout)+nrow(X)),]
     G_hat_train <- surv_out$S_C_preds[(nrow(X_holdout)+1):(nrow(X_holdout)+nrow(X)),]
     f_hat_train <- S_hat_train[,which(approx_times %in% landmark_times),drop=FALSE]
-  } 
+  }
   # for some algorithms, if you only give one landmark time, it returns a row vector
   # instead of a column vector
   if (dim(f_hat)[2] != length(landmark_times)){
@@ -233,11 +233,11 @@ generate_reduced_predictions_regress <- function(f_hat,
                                                  X_reduced_holdout,
                                                  landmark_times,
                                                  setting){
-  
+
   tune <- list(ntrees = c(250, 500, 1000), max_depth = c(1, 2), minobspernode = 10, shrinkage = 0.01)
   xgb_grid <- create.SL.xgboost(tune = tune)
   SL.library <- c("SL.mean", "SL.glm", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
-  
+
   long_dat <- data.frame(f_hat = f_hat, X_reduced)
   long_new_dat <- data.frame(X_reduced_holdout)
   reduced_fit <- SuperLearner::SuperLearner(Y = long_dat$f_hat,
@@ -249,13 +249,13 @@ generate_reduced_predictions_regress <- function(f_hat,
   fs_hat <- matrix(predict(reduced_fit, newdata = long_new_dat)$pred,
                    nrow = nrow(X_reduced_holdout),
                    ncol = length(landmark_times))
-  
-  
+
+
   return(list(fs_hat = fs_hat))
 }
 
 survSL.AFTreg <- function(time, event, X, newX, new.times, obsWeights, ...) {
-  
+
   if(any(time == 0 & event == 1)) {
     timepos <- as.numeric(time > 0 & event == 1)
     fit.pos <- stats::glm(timepos ~ ., data=cbind(timepos, X)[event == 1,], family='binomial', weights = obsWeights[event == 1])
@@ -264,7 +264,7 @@ survSL.AFTreg <- function(time, event, X, newX, new.times, obsWeights, ...) {
     fit.pos <- 1
     pos.pred <- rep(1, nrow(newX))
   }
-  
+
   fit.expreg <- survival::survreg(survival::Surv(time[time > 0], event[time > 0]) ~ .,
                                   data = X[time > 0,],
                                   weights = obsWeights[time > 0], dist = "lognormal")
@@ -273,7 +273,7 @@ survSL.AFTreg <- function(time, event, X, newX, new.times, obsWeights, ...) {
     pos.pred[j] * (1-stats::approx(pred[j,], seq(0, .999, by=.001), xout = new.times, method = 'linear', rule = 2)$y)
   })), silent = TRUE)
   if(inherits(pred, "try-error")) stop("Survival regression failed to produce predictions.")
-  
+
   fit <- list(reg.object = fit.expreg, pos.object = fit.pos)
   class(fit) <- c("survSL.AFTreg")
   out <- list(pred = pred, fit = fit)
@@ -281,18 +281,18 @@ survSL.AFTreg <- function(time, event, X, newX, new.times, obsWeights, ...) {
 }
 
 predict.survSL.AFTreg <- function(object, newX, new.times, ...) {
-  
+
   if(inherits(object$pos.object, "glm")) {
     pos.pred <- predict(object$pos.object, newdata = newX, type = 'response')
   } else {
     pos.pred <- rep(1, nrow(newX))
   }
-  
+
   pred <- predict(object$reg.object, newdata = newX, type = 'quantile', p = seq(0, .999, by=.001))
   pred <- t(sapply(1:nrow(pred), function(j) {
     pos.pred[j] * (1-stats::approx(pred[j,], seq(0, .999, by=.001), xout = new.times, method = 'linear', rule = 2)$y)
   }))
-  
+
   return(pred)
 }
 

@@ -1,19 +1,19 @@
 do_one <- function(seed,
                    global_seed,
                    approach){
-  
+
   sample_split <- TRUE
   nfolds <- 5
   crossfit <- TRUE
   nuisance <- "stackG"
-  
+
   dat <- readRDS("/home/cwolock/surv_vim_supplementary/data_analysis/cleaned_RS_data_combined36.rds")
   landmark_times <- c(545, 730, 912)
-  
+
   cf_fold_num <- switch((crossfit) + 1, 1, nfolds)
   ss_fold_num <- 2*cf_fold_num
   V <- switch((sample_split) + 1, cf_fold_num, ss_fold_num)
-  
+
   folds <- sample(rep(seq_len(V), length = nrow(dat))) # 2V of them
   if (sample_split){
     ss_folds <- c(rep(1, V/2), rep(2, V/2))
@@ -21,11 +21,11 @@ do_one <- function(seed,
     ss_folds <- rep(1, V)
   }
   ss_folds <- as.numeric(folds %in% which(ss_folds == 2))
-  
+
   time <- dat$HIV36fu
   event <- dat$HIV36
   X <- dat %>% select(-c(HIV36fu, HIV36))
-  
+
   X_names <- names(X)
   vacc_index <- which(X_names == "VACC")
   sex_index <- which(X_names == "female")
@@ -42,7 +42,7 @@ do_one <- function(seed,
                        X_names != "BMIGE25" & X_names != "VACC" & X_names != "REG1" &
                        X_names != "REG2")
   all_index <- 1:length(X_names)
-  
+
   sex_index <- c(sex_index, vacc_index)
   age_index <- c(age_index, vacc_index)
   geo_index <- c(geo_index, vacc_index)
@@ -51,9 +51,9 @@ do_one <- function(seed,
   sexbehave_index <- c(sexbehave_index, vacc_index)
   social_index <- c(social_index, vacc_index)
   brs_index <- c(brs_index, vacc_index)
-  
+
   all_but_geo_index <- unique(c(brs_index, sex_index, age_index, bmi_index, vacc_index))
-  
+
   vacc_index_text <- paste(vacc_index, collapse = ",")
   sex_index_text <- paste(sex_index, collapse = ",")
   age_index_text <- paste(age_index, collapse = ",")
@@ -65,12 +65,12 @@ do_one <- function(seed,
   brs_variables_text <- as.character(brs_index)
   brs_index_text <- paste(brs_index, collapse = ",")
   all_but_geo_text <- paste(all_but_geo_index, collapse = ",")
-  
+
   print(sort(all_index))
   print(sort(all_but_geo_index))
-  
+
   if (approach == "marginal"){
-    
+
     all_index_text <- c(sex_index_text,
                         age_index_text,
                         bmi_index_text,
@@ -80,7 +80,7 @@ do_one <- function(seed,
                          "bmi", "BRS_sexhealth",
                          "BRS_sexbehave", "BRS_social")
   } else if (approach == "conditional"){
-    
+
     all_index_text <- c(geo_index_text, sex_index_text,
                         age_index_text,
                         bmi_index_text,
@@ -90,10 +90,10 @@ do_one <- function(seed,
                          "bmi", "BRS_sexhealth",
                          "BRS_sexbehave", "BRS_social")
   }
-  
+
   approx_times <- sort(unique(c(time[event == 1], landmark_times)))
   approx_times <- approx_times[approx_times <= max(landmark_times)]
-  
+
   V0_preds <- CV_generate_full_predictions(time = time,
                                            event = event,
                                            X = X,
@@ -102,14 +102,14 @@ do_one <- function(seed,
                                            nuisance = nuisance,
                                            folds = folds,
                                            sample_split = sample_split)
-  
-  
+
+
   CV_full_preds_to_save <- V0_preds$CV_full_preds
   CV_full_preds_train <- V0_preds$CV_full_preds_train
   CV_S_preds <- V0_preds$CV_S_preds
   CV_S_preds_train <- V0_preds$CV_S_preds_train
   CV_G_preds <- V0_preds$CV_G_preds
-  
+
   if (approach == "marginal"){
     all_but_geo <- as.numeric(strsplit(all_but_geo_text, split = ",")[[1]])
     # these can be considered "baseline" models - they only use geography
@@ -121,9 +121,9 @@ do_one <- function(seed,
                                                 sample_split = sample_split,
                                                 indx = all_but_geo,
                                                 full_preds_train = CV_full_preds_train)
-    
+
     CV_reduced_preds <- V0_preds
-    
+
   } else if (approach == "conditional"){
     V0_preds <- CV_generate_reduced_predictions(time = time,
                                                 event = event,
@@ -133,10 +133,10 @@ do_one <- function(seed,
                                                 sample_split = sample_split,
                                                 indx = vacc_index,
                                                 full_preds_train = CV_full_preds_train)
-    
+
     CV_full_preds <- V0_preds
   }
-  
+
   for (i in 1:length(all_index_text)){
     char_indx <- as.character(all_index_text[i])
     char_indx_name <- all_index_names[i]
@@ -167,7 +167,7 @@ do_one <- function(seed,
                                                   full_preds_train = CV_full_preds_train)
       CV_reduced_preds <- V0_preds
     }
-    
+
     output_AUC <- survML::vim_AUC(time = time,
                               event = event,
                               approx_times = approx_times,
@@ -180,7 +180,7 @@ do_one <- function(seed,
                               ss_folds = ss_folds,
                               sample_split = sample_split,
                               scale_est = TRUE)
-    
+
     output_AUC$vim <- "AUC"
     output_brier <- survML::vim_brier(time = time,
                               event = event,
@@ -194,9 +194,23 @@ do_one <- function(seed,
                               ss_folds = ss_folds,
                               sample_split = sample_split,
                               scale_est = TRUE)
-    
+
     output_brier$vim <- "brier"
-    output <- rbind(output_AUC, output_brier)
+    output_rsquared <- survML::vim_rsquared(time = time,
+                                      event = event,
+                                      approx_times = approx_times,
+                                      landmark_times = landmark_times,
+                                      f_hat = CV_full_preds,
+                                      fs_hat = CV_reduced_preds,
+                                      S_hat = CV_S_preds,
+                                      G_hat = CV_G_preds,
+                                      folds = folds,
+                                      ss_folds = ss_folds,
+                                      sample_split = sample_split,
+                                      scale_est = TRUE)
+
+    output_rsquared$vim <- "rsquared"
+    output <- rbind(output_AUC, output_brier, output_rsquared)
     output$indx <- rep(char_indx, nrow(output))
     output$indx_name <- rep(char_indx_name, nrow(output))
     if (!(i == 1)){
@@ -204,9 +218,9 @@ do_one <- function(seed,
     } else{
       pooled_output <- output
     }
-    
+
   }
-  
+
   dat <- pooled_output
   dat$approach <- approach
   dat$seed <- seed

@@ -191,7 +191,21 @@ do_one <- function(seed,
                                       scale_est = TRUE)
 
     output_brier$vim <- "brier"
-    output <- rbind(output_AUC, output_brier)
+    output_rsquared <- survML::vim_rsquared(time = time,
+                                            event = event,
+                                            approx_times = approx_times,
+                                            landmark_times = landmark_times,
+                                            f_hat = CV_full_preds,
+                                            fs_hat = CV_reduced_preds,
+                                            S_hat = CV_S_preds,
+                                            G_hat = CV_G_preds,
+                                            folds = folds,
+                                            ss_folds = ss_folds,
+                                            sample_split = sample_split,
+                                            scale_est = TRUE)
+
+    output_rsquared$vim <- "rsquared"
+    output <- rbind(output_AUC, output_brier, output_rsquared)
     output$indx <- rep(char_indx, nrow(output))
     output$indx_name <- rep(char_indx_name, nrow(output))
     if (!(i == 1)){
