@@ -1,12 +1,12 @@
 #!/usr/local/bin/Rscript
-.library(tidyverse, lib = "/home/cwolock/R_lib")
+library(tidyverse, lib = "/home/cwolock/R_lib")
 library(survival, lib = "/home/cwolock/R_lib")
 library(survML, lib = "/home/cwolock/R_lib")
 library(SuperLearner, lib = "/home/cwolock/R_lib")
 library(earth, lib = "/home/cwolock/R_lib")
 library(ranger, lib = "/home/cwolock/R_lib")
 library(xgboost, lib = "/home/cwolock/R_lib")
-
+library(Iso, lib = "/home/cwolock/R_lib")
 source("/home/cwolock/surv_vim_supplementary/data_analysis/702_utils.R")
 source("/home/cwolock/surv_vim_supplementary/data_analysis/female/702_data_analysis.R")
 
@@ -24,7 +24,7 @@ param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
 current_dynamic_args <- param_grid[job_id, ]
-global_Seed <- 92723
+global_seed <- 92723
 set.seed(global_seed) # overall seed
 current_seed <- as.integer((1e9*runif(job_id))[job_id])
 set.seed(current_seed)

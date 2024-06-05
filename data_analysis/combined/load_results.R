@@ -1,11 +1,7 @@
 #!/usr/local/bin/Rscript
-.libPaths(c(
-  "/home/cwolock/R_lib",
-  .libPaths()
-))
 
 name <- "combined_analysis"
-nreps_total <- 10
+nreps_total <- 50
 nreps_per_job <- 1
 
 ## set up directories for output, plots

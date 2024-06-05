@@ -1,7 +1,7 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario1"
-nreps_total <- 500
+sim_name <- "scenario1_landmark_053024"
+nreps_total <- 250
 nreps_per_job <- 1
 
 output_dir <- "output/"
