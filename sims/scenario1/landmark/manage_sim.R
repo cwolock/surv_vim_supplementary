@@ -7,12 +7,12 @@ library(survival, lib = "/home/cwolock/R_lib")
 library(randomForestSRC, lib = "/home/cwolock/R_lib")
 library(survSuperLearner, lib = "/home/cwolock/R_lib")
 
-source("/home/cwolock/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
-source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
-source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-#source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
-#source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
-#source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
+# source("/home/cwolock/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
+# source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
+# source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
 
 sim_name <- "scenario1_landmark_053024"
 nreps_total <- 500
