@@ -1,15 +1,11 @@
 #!/usr/local/bin/Rscript
-.libPaths(c(
-  "/home/cwolock/R_lib",
-  .libPaths()
-))
 
 ## set up directories for output, plots
 output_dir <- "output/"
 
 ## set up parameter grid
 name <- "male_analysis"
-nreps_total <- 10
+nreps_total <- 50
 nreps_per_job <- 1
 approach <- c("conditional", "marginal")
 
