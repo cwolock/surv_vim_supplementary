@@ -1,23 +1,27 @@
 #!/usr/local/bin/Rscript
-.libPaths(c(
-  "/home/cwolock/R_lib",
-  .libPaths()
-))
-suppressMessages(library(dplyr))
-suppressMessages(library(survML))
-suppressMessages(library(SuperLearner))
-suppressMessages(library(survival))
-suppressMessages(library(randomForestSRC))
-suppressMessages(library(survSuperLearner))
-suppressMessages(library(gtools))
-suppressMessages(library(mboost))
+R.Version()
+.libPaths()
+library(dplyr)
+library(survML)
+library(SuperLearner)
+library(survival)
+library(randomForestSRC)
+library(survSuperLearner)
+library(gtools)
+library(mboost)
 
 source("/home/cwolock/surv_vim_supplementary/sims/scenario1/cindex/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
+source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 
-sim_name <- "scenario1_cindex"
-nreps_total <- 500
+# source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/scenario1/cindex/do_one.R")
+# source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
+# source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/boost_c_index.R")
+# source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
+
+sim_name <- "scenario1_cindex_053024"
+nreps_total <- 250
 nreps_per_job <- 1
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
