@@ -17,8 +17,8 @@ boost_c_index <- function(time, # follow up times
     subsample_inds <- sample(1:length(time), size = subsample_n, replace = FALSE)
     time <- time[subsample_inds]
     event <- event[subsample_inds]
-    X <- X[subsample_inds,]
-    S_hat <- S_hat[subsample_inds,]
+    X <- X[subsample_inds,,drop=FALSE]
+    S_hat <- S_hat[subsample_inds,,drop=FALSE]
   }
   
   print(length(time))
