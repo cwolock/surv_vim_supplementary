@@ -7,10 +7,24 @@ boost_c_index <- function(time, # follow up times
                           indx = NULL, # index of feature to be removed
                           tuning = "CV", # whether to do CV or simply fit a model
                           produce_fit = FALSE, # whether to produce a fit after CV
+                          subsample_n = 500,
                           params = list(mstop = c(1000), # tuning parameter list
                                         nu = c(0.3),
                                         sigma = c(0.1),
                                         learner = "glm")){
+  
+  if (subsample_n < length(time)){
+    subsample_inds <- sample(1:length(time), size = subsample_n, replace = FALSE)
+    time <- time[subsample_inds]
+    event <- event[subsample_inds]
+    X <- X[subsample_inds,]
+    S_hat <- S_hat[subsample_inds,]
+  }
+  
+  print(length(time))
+  print(length(event))
+  print(dim(X))
+  print(dim(S_hat))
   
   reverse_sorted_mstop <- params$mstop[order(params$mstop, decreasing = TRUE)]
   tau <- max(approx_times)

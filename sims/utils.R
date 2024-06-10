@@ -656,6 +656,7 @@ CV_generate_predictions_cindex <- function(time,
                                            indx,
                                            CV_S_preds_train,
                                            CV_S_preds,
+                                           subsample_n,
                                            params){
   .V <- length(unique(folds))
   CV_preds <- list()
@@ -683,6 +684,7 @@ CV_generate_predictions_cindex <- function(time,
                                  indx = indx,
                                  tuning = "CV",
                                  produce_fit = FALSE,
+                                 subsample_n = subsample_n,
                                  params = params)
   print(boost_results)
   mstop_opt <- boost_results$param_grid[boost_results$opt_index,1]
@@ -703,6 +705,7 @@ CV_generate_predictions_cindex <- function(time,
                                    indx = indx,
                                    tuning = "none",
                                    produce_fit = TRUE,
+                                   subsample_n = subsample_n,
                                    params = list(mstop = c(mstop_opt),
                                                  nu = c(nu_opt),
                                                  sigma = c(sigma_opt),
