@@ -51,9 +51,9 @@ do_one <- function(n_train,
                                              approx_times = approx_times,
                                              folds = folds,
                                              sample_split = sample_split,
-                                             indx = NULL,
                                              CV_S_preds_train =  CV_S_preds_train,
                                              CV_S_preds = CV_S_preds,
+                                             indx = NULL,
                                              params =  list(
                                                mstop = c(100, 250, 500),
                                                nu = c(0.1),
@@ -81,7 +81,6 @@ do_one <- function(n_train,
                                                  nu = c(0.1),
                                                  sigma = c(0.01, 0.05),
                                                  learner = c("glm")))
-    
     CV_reduced_preds <- V0_preds$CV_preds
     
     output <- survML::vim_cindex(time = train$y,

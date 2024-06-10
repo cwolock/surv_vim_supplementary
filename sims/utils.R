@@ -410,6 +410,7 @@ CV_generate_full_predictions_landmark <- function(time,
       CV_full_preds[[j]] <- full_preds$f_hat[folds == j,]
       CV_S_preds[[j]] <- full_preds$S_hat[folds == j,]
       CV_G_preds[[j]] <- full_preds$G_hat[folds == j,]
+      CV_S_preds_train[[j]] <- full_preds$S_hat
     }
     
   } else{
@@ -435,6 +436,7 @@ CV_generate_full_predictions_landmark <- function(time,
       CV_full_preds_train[[j]] <- full_preds$f_hat_train
       CV_full_preds[[j]] <- full_preds$f_hat
       CV_S_preds[[j]] <- full_preds$S_hat
+      CV_S_preds_train[[j]] <- full_preds$S_hat_train
       CV_G_preds[[j]] <- full_preds$G_hat
     }
   }
@@ -442,6 +444,7 @@ CV_generate_full_predictions_landmark <- function(time,
   return(list(CV_full_preds_train = CV_full_preds_train,
               CV_full_preds = CV_full_preds,
               CV_S_preds = CV_S_preds,
+              CV_S_preds_train = CV_S_preds_train,
               CV_G_preds = CV_G_preds))
 }
 
@@ -509,7 +512,7 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #   CV_S_preds <- list()
 #   CV_S_preds_train <- list()
 #   CV_G_preds <- list()
-#   
+# 
 #   all_time_split <- time
 #   all_time_split <- all_time_split[order(folds)]
 #   all_event_split <- event
@@ -517,7 +520,7 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #   all_X_split <- X[,,drop=FALSE]
 #   all_X_split <- all_X_split[order(folds),,drop=FALSE]
 #   all_folds_split <- folds[order(folds)]
-#   
+# 
 #   if (.V == 2 & sample_split){
 #     time_train <- time
 #     event_train <- event
@@ -537,7 +540,7 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #     }
 #   } else{
 #     for (j in 1:.V){
-#       
+# 
 #       if (.V == 1){ # if not actually cross fitting
 #         time_train <- time[folds == j]
 #         event_train <- event[folds == j]
@@ -560,7 +563,7 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #       CV_G_preds[[j]] <- full_preds$G_hat
 #     }
 #   }
-#   
+# 
 #   all_CV_S_preds <- do.call(rbind,CV_S_preds)
 #   print("Tuning full model")
 #   boost_results <- boost_c_index(time = all_time_split,
@@ -583,13 +586,13 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #   nu_opt <- boost_results$param_grid[boost_results$opt_index,2]
 #   sigma_opt <- boost_results$param_grid[boost_results$opt_index,3]
 #   learner_opt <- boost_results$param_grid[boost_results$opt_index,4]
-#   
+# 
 #   if (.V == 2 & sample_split){
 #     time_train <- all_time_split
 #     event_train <- all_event_split
 #     X_train <- all_X_split
 #     X_holdout <- all_X_split
-#     
+# 
 #     boost_results <- boost_c_index(time = time_train,
 #                                    event = event_train,
 #                                    X = X_train,
@@ -608,7 +611,7 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #     }
 #   } else{
 #     for (j in 1:.V){
-#       
+# 
 #       if (.V == 1){ # if not actually cross fitting
 #         time_train <- time[folds == j]
 #         event_train <- event[folds == j]
@@ -619,7 +622,7 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #         X_train <- X[folds != j,]
 #       }
 #       X_holdout <- X[folds == j,]
-#       
+# 
 #       print(paste0("Fitting optimal full model on cross-fitting fold", j))
 #       boost_results <- boost_c_index(time = time_train,
 #                                      event = event_train,
@@ -637,7 +640,7 @@ CV_generate_reduced_predictions_landmark <- function(time,
 #       CV_full_preds[[j]] <- -predict(boost_results$opt_model, newdata = dtest)[,1]
 #     }
 #   }
-#   
+# 
 #   return(list(CV_full_preds = CV_full_preds,
 #               CV_S_preds = CV_S_preds,
 #               CV_S_preds_train = CV_S_preds_train,
@@ -766,7 +769,7 @@ CV_generate_predictions_cindex <- function(time,
 #                                                    params){
 #   .V <- length(unique(folds))
 #   CV_reduced_preds <- list()
-#   
+# 
 #   all_time_split <- time
 #   all_time_split <- all_time_split[order(folds)]
 #   all_event_split <- event
@@ -774,7 +777,7 @@ CV_generate_predictions_cindex <- function(time,
 #   all_X_split <- X[,-indx,drop=FALSE]
 #   all_X_split <- all_X_split[order(folds),,drop=FALSE]
 #   all_folds_split <- folds[order(folds)]
-#   
+# 
 #   all_CV_S_preds <- do.call(rbind, CV_S_preds)
 #   print(paste0("Tuning reduced model for index", indx))
 #   boost_results <- boost_c_index(time = all_time_split,
@@ -791,7 +794,7 @@ CV_generate_predictions_cindex <- function(time,
 #   nu_opt <- boost_results$param_grid[boost_results$opt_index,2]
 #   sigma_opt <- boost_results$param_grid[boost_results$opt_index,3]
 #   learner_opt <- boost_results$param_grid[boost_results$opt_index,4]
-#   
+# 
 #   if (.V == 2 & sample_split){
 #     time_train <- all_time_split
 #     event_train <- all_event_split
@@ -824,7 +827,7 @@ CV_generate_predictions_cindex <- function(time,
 #         event_train <- event[folds != j]
 #         X_reduced_train <- X[folds != j,-indx,drop=FALSE]
 #       }
-#       
+# 
 #       X_reduced_holdout <- X[folds == j,-indx,drop=FALSE]
 #       print(paste0("Fitting optimal reduced model for index", indx))
 #       boost_results <- boost_c_index(time = time_train,
