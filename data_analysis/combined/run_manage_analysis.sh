@@ -1,7 +1,8 @@
 #!/bin/bash
+ml R/4.4.0-gfbf-2023b
 
 num_combos=2
 
-njobs=`expr 50 / 1 \* $num_combos`
+njobs=`expr 10 \* $num_combos`
 
 sbatch --array=1-$njobs -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/data_analysis/combined/call_manage_analysis.sh
