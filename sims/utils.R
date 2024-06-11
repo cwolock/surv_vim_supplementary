@@ -757,7 +757,7 @@ CV_generate_predictions_cindex <- function(time,
       CV_preds[[j]] <- -predict(boost_results$opt_model, newdata = dtest)[,1]
     }
   }
-  return(list(CV_preds = CV_preds))
+  return(CV_preds)
 }
 
 # CV_generate_reduced_predictions_cindex <- function(time,
