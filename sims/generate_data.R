@@ -7,6 +7,14 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     interceptc <- 0
     xnames <- paste0("x", c(1,2))
     Sigma <- diag(1, p)
+  } else if (scenario == "1A"){
+    p <- 2
+    beta_t <- matrix(c(0.5, -0.3))
+    beta_c <- matrix(c(-0.2, 0.2))
+    beta_int <- 0.2
+    interceptc <- 0
+    xnames <- paste0("x", c(1,2))
+    Sigma <- diag(1, p)
   } else if (scenario == "2"){
     p <- 25
     beta_t <- matrix(c(0.5, -0.3, rep(0, (p-2))))
@@ -58,7 +66,7 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
   x <- MASS::mvrnorm(n = n, mu = mu_x, Sigma = Sigma)
   eps <- rnorm(n = n, mean = 0, sd = sdy)
   epsc <- rnorm(n = n, mean = 0, sd = sdy)
-  logt <- x %*% beta_t + eps
+  logt <- x %*% beta_t + x[,1]*x[,2]*beta_int + eps
   t <- exp(logt)
 
   logc <- interceptc + x %*% beta_c + epsc
