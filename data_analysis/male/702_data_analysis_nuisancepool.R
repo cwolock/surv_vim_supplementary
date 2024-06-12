@@ -131,6 +131,10 @@ do_one <- function(seed,
   time_male <- dat_male$HIV36fu
   event_male <- dat_male$HIV36
   
+  dat_female <- dat %>% filter(female == 1) %>% select(-c(female))
+  time_female <- dat_female$HIV36fu
+  event_female <- dat_female$HIV36
+  
   if (approach == "marginal"){
     all_but_geo <- as.numeric(strsplit(all_but_geo_text, split = ",")[[1]])
     # these can be considered "baseline" models - they only use geography
@@ -259,7 +263,7 @@ do_one <- function(seed,
       CV_reduced_preds_cindex <- V0_preds
     }
     
-    
+    ### MALE
     CV_full_preds_landmark_male <- lapply(1:V,
                                           FUN = function(x){
                                             dat_j <- dat[folds == x,]
@@ -297,7 +301,7 @@ do_one <- function(seed,
                                 return(CV_G_preds[[x]][males_j,])
                               })
     
-    output_auc <- survML::vim_AUC(time = time_male,
+    output_auc_male <- survML::vim_AUC(time = time_male,
                                   event = event_male,
                                   approx_times = approx_times,
                                   landmark_times = landmark_times,
@@ -310,10 +314,11 @@ do_one <- function(seed,
                                   sample_split = sample_split,
                                   scale_est = TRUE)
     
-    output_auc$vim <- "AUC"
-    output_auc <- output_auc %>% mutate(tau = landmark_time) %>%
+    output_auc_male$vim <- "AUC"
+    output_auc_male$SAB <- "male"
+    output_auc_male <- output_auc_male %>% mutate(tau = landmark_time) %>%
       select(-landmark_time)
-    output_cindex <- survML::vim_cindex(time = time_male,
+    output_cindex_male <- survML::vim_cindex(time = time_male,
                                         event = event_male,
                                         approx_times = approx_times,
                                         tau = max(approx_times),
@@ -325,10 +330,86 @@ do_one <- function(seed,
                                         ss_folds = male_ss_folds,
                                         sample_split = sample_split,
                                         scale_est = TRUE)
-    output_cindex$vim <- "cindex"
-    output_cindex <- output_cindex %>% mutate(tau = restriction_time) %>%
+    output_cindex_male$vim <- "cindex"
+    output_cindex_male$SAB <- "male"
+    output_cindex_male <- output_cindex_male %>% mutate(tau = restriction_time) %>%
       select(-restriction_time)
-    output <- rbind(output_auc, output_cindex)
+    
+    
+    ### FEMALE
+    CV_full_preds_landmark_female <- lapply(1:V,
+                                          FUN = function(x){
+                                            dat_j <- dat[folds == x,]
+                                            females_j <- which(dat_j$female == 1)
+                                            return(CV_full_preds_landmark[[x]][females_j,])
+                                          })
+    CV_reduced_preds_landmark_female <- lapply(1:V,
+                                             FUN = function(x){
+                                               dat_j <- dat[folds == x,]
+                                               females_j <- which(dat_j$female == 1)
+                                               return(CV_reduced_preds_landmark[[x]][females_j,])
+                                             })
+    CV_full_preds_cindex_female <- lapply(1:V,
+                                        FUN = function(x){
+                                          dat_j <- dat[folds == x,]
+                                          females_j <- which(dat_j$female == 1)
+                                          return(CV_full_preds_cindex[[x]][females_j])
+                                        })
+    CV_reduced_preds_cindex_female <- lapply(1:V,
+                                           FUN = function(x){
+                                             dat_j <- dat[folds == x,]
+                                             females_j <- which(dat_j$female == 1)
+                                             return(CV_reduced_preds_cindex[[x]][females_j])
+                                           })
+    CV_S_preds_female <- lapply(1:V,
+                              FUN = function(x){
+                                dat_j <- dat[folds == x,]
+                                females_j <- which(dat_j$female == 1)
+                                return(CV_S_preds[[x]][females_j,])
+                              })
+    CV_G_preds_female <- lapply(1:V,
+                              FUN = function(x){
+                                dat_j <- dat[folds == x,]
+                                females_j <- which(dat_j$female == 1)
+                                return(CV_G_preds[[x]][females_j,])
+                              })
+    
+    output_auc_female <- survML::vim_AUC(time = time_female,
+                                       event = event_female,
+                                       approx_times = approx_times,
+                                       landmark_times = landmark_times,
+                                       f_hat = lapply(CV_full_preds_landmark_female, function(x) 1-x),
+                                       fs_hat = lapply(CV_reduced_preds_landmark_female, function(x) 1-x),
+                                       S_hat = CV_S_preds_female,
+                                       G_hat = CV_G_preds_female,
+                                       folds = female_folds,
+                                       ss_folds = female_ss_folds,
+                                       sample_split = sample_split,
+                                       scale_est = TRUE)
+    
+    output_auc_female$vim <- "AUC"
+    output_auc_female$SAB <- "female"
+    output_auc_female <- output_auc_female %>% mutate(tau = landmark_time) %>%
+      select(-landmark_time)
+    output_cindex_female <- survML::vim_cindex(time = time_female,
+                                             event = event_female,
+                                             approx_times = approx_times,
+                                             tau = max(approx_times),
+                                             f_hat = CV_full_preds_cindex_female,
+                                             fs_hat = CV_reduced_preds_cindex_female,
+                                             S_hat = CV_S_preds_female,
+                                             G_hat = CV_G_preds_female,
+                                             folds = female_folds,
+                                             ss_folds = female_ss_folds,
+                                             sample_split = sample_split,
+                                             scale_est = TRUE)
+    output_cindex_female$vim <- "cindex"
+    output_cindex_female$SAB <- "female"
+    output_cindex_female <- output_cindex_female %>% mutate(tau = restriction_time) %>%
+      select(-restriction_time)
+    
+    
+    output <- rbind(output_auc_male, output_cindex_male, output_auc_female, output_cindex_female)
     output$indx <- rep(char_indx, nrow(output))
     output$indx_name <- rep(char_indx_name, nrow(output))
     if (!(i == 1)){
