@@ -276,13 +276,13 @@ do_one <- function(seed,
                                           FUN = function(x){
                                             dat_j <- dat[folds == x,]
                                             males_j <- which(dat_j$female == 0)
-                                            return(CV_full_preds_cindex[[x]][males_j,])
+                                            return(CV_full_preds_cindex[[x]][males_j])
                                           })
     CV_reduced_preds_cindex_male <- lapply(1:V,
                                              FUN = function(x){
                                                dat_j <- dat[folds == x,]
                                                males_j <- which(dat_j$female == 0)
-                                               return(CV_reduced_preds_cindex[[x]][males_j,])
+                                               return(CV_reduced_preds_cindex[[x]][males_j])
                                              })
     CV_S_preds_male <- lapply(1:V,
                               FUN = function(x){
