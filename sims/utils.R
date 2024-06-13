@@ -127,7 +127,7 @@ generate_full_predictions <- function(time,
       
     }
     S_hat_train <- t(summary(survival::survfit(fit,
-                                               newdata=X_holdout,
+                                               newdata=X,
                                                se.fit = FALSE,
                                                conf.int = FALSE),
                              times=approx_times)$surv)
@@ -182,7 +182,7 @@ generate_full_predictions <- function(time,
       
     }
     G_hat_train <- t(summary(survival::survfit(fit,
-                                               newdata=X_holdout,
+                                               newdata=X,
                                                se.fit = FALSE,
                                                conf.int = FALSE),
                              times=approx_times)$surv)
@@ -344,7 +344,7 @@ survSL.AFTreg <- function(time, event, X, newX, new.times, obsWeights, ...) {
     pos.pred <- rep(1, nrow(newX))
   }
   
-  fit.expreg <- survival::survreg(survival::Surv(time[time > 0], event[time > 0]) ~ .,
+  fit.expreg <- survival::survreg(survival::Surv(time[time > 0], event[time > 0]) ~ .^2,
                                   data = X[time > 0,],
                                   weights = obsWeights[time > 0], dist = "lognormal")
   pred <- predict(fit.expreg, newdata = newX, type = 'quantile', p = seq(0, .999, by=.001))
@@ -749,6 +749,7 @@ CV_generate_predictions_cindex <- function(time,
                                      indx = indx,
                                      tuning = "none",
                                      produce_fit = TRUE,
+                                     subsample_n = subsample_n,
                                      params = list(mstop = c(mstop_opt),
                                                    nu = c(nu_opt),
                                                    sigma = c(sigma_opt),
