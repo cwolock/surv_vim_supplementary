@@ -160,8 +160,10 @@ boost_c_index <- function(time, # follow up times
         if (learner_curr == "tree"){
           mod <- mboost::blackboost(as.formula(formula_text),
                                     family = my_Cindex(sigma = sigma_curr),
-                                    control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
-                                    tree_controls = partykit::ctree_control(maxdepth = 1),
+                                    control = mboost::boost_control(mstop = mstop_curr, 
+                                                                    trace = TRUE, 
+                                                                    nu = nu_curr),
+                                    tree_controls = partykit::ctree_control(maxdepth = 2),
                                     data = dtrain)
         } else if (learner_curr == "glm"){
           mod <- mboost::glmboost(as.formula(formula_text),
@@ -231,8 +233,8 @@ boost_c_index <- function(time, # follow up times
       if (learner_curr == "tree"){
         mod <- mboost::blackboost(Surv(time, event) ~ .,
                                   family = my_Cindex(sigma = sigma_curr),
-                                  control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
-                                  tree_controls = partykit::ctree_control(maxdepth = 1),
+                                  control = mboost::boost_control(mstop = mstop_curr, trace = TRUE, nu = nu_curr),
+                                  tree_controls = partykit::ctree_control(maxdepth = 2),
                                   data = dtrain)
       } else if (learner_curr == "glm"){
         mod <- mboost::glmboost(Surv(time, event) ~ .,
