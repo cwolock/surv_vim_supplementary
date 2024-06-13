@@ -128,7 +128,7 @@ generate_full_predictions <- function(time,
       
     }
     S_hat_train <- t(summary(survival::survfit(fit,
-                                               newdata=X_holdout,
+                                               newdata=X,
                                                se.fit = FALSE,
                                                conf.int = FALSE),
                              times=approx_times)$surv)
@@ -183,7 +183,7 @@ generate_full_predictions <- function(time,
       
     }
     G_hat_train <- t(summary(survival::survfit(fit,
-                                               newdata=X_holdout,
+                                               newdata=X,
                                                se.fit = FALSE,
                                                conf.int = FALSE),
                              times=approx_times)$surv)
@@ -751,6 +751,7 @@ CV_generate_predictions_cindex <- function(time,
                                      indx = indx,
                                      tuning = "none",
                                      produce_fit = TRUE,
+                                     subsample_n = subsample_n,
                                      params = list(mstop = c(mstop_opt),
                                                    nu = c(nu_opt),
                                                    sigma = c(sigma_opt),
