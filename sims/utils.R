@@ -7,13 +7,20 @@ generate_full_predictions <- function(time,
                                       nuisance,
                                       fold_ID){
   if (nuisance == "survSL"){
-    event.SL.library <- cens.SL.library <- c("survSL.km",
-                                             "survSL.coxph",
-                                             "survSL.expreg",
-                                             "survSL.weibreg",
-                                             "survSL.loglogreg",
-                                             "survSL.AFTreg",
-                                             "survSL.rfsrc")
+    
+    event.SL.library <- cens.SL.library <- lapply(c("survSL.km", "survSL.coxph", 
+                                                    "survSL.expreg", "survSL.weibreg", 
+                                                    "survSL.loglogreg", "survSL.AFTreg", 
+                                                    "survSL.rfsrc"), function(alg) {
+                                                      c(alg, "survscreen.marg")
+                                                    })
+    # event.SL.library <- cens.SL.library <- c("survSL.km",
+    #                                          "survSL.coxph",
+    #                                          "survSL.expreg",
+    #                                          "survSL.weibreg",
+    #                                          "survSL.loglogreg",
+    #                                          "survSL.AFTreg",
+    #                                          "survSL.rfsrc")
     
     fit <- survSuperLearner::survSuperLearner(time = time,
                                               event = event,
@@ -196,9 +203,6 @@ generate_full_predictions <- function(time,
     }
   } else if (nuisance == "stackG"){
     # tune <- list(ntrees = c(250, 500, 1000),
-                 # max_depth = c(1, 2),
-                 # minobspernode = 10,
-                 # shrinkage = 0.01)
     tune <- list(ntrees = c(1000),
                  max_depth = c(1, 2, 3),
                  minobspernode = 10,
@@ -681,7 +685,7 @@ CV_generate_predictions_cindex <- function(time,
   } else{
     all_X_split <- X
   }
-
+  
   all_X_split <- all_X_split[order(folds),,drop=FALSE]
   all_folds_split <- folds[order(folds)]
   
@@ -750,7 +754,7 @@ CV_generate_predictions_cindex <- function(time,
       } else{
         X_reduced_holdout <- X[folds == j,,drop=FALSE]
       }
-     
+      
       print(paste0("Fitting optimal reduced model for index", indx))
       boost_results <- boost_c_index(time = time_train,
                                      event = event_train,
