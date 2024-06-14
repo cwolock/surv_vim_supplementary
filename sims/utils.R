@@ -199,12 +199,12 @@ generate_full_predictions <- function(time,
                  # max_depth = c(1, 2),
                  # minobspernode = 10,
                  # shrinkage = 0.01)
-    tune <- list(ntrees = c(250, 500),
+    tune <- list(ntrees = c(1000),
                  max_depth = c(1, 2, 3),
                  minobspernode = 10,
-                 shrinkage = 0.1)
+                 shrinkage = 0.01)
     xgb_grid <- create.SL.xgboost(tune = tune)
-    SL.library <- c("SL.mean", "SL.glm", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
+    SL.library <- c("SL.mean", "SL.glm.interaction", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
     surv_out <- survML::stackG(time = time,
                                event = event,
                                X = X,
@@ -318,12 +318,12 @@ generate_reduced_predictions <- function(f_hat,
   #              max_depth = c(1, 2),
   #              minobspernode = 10, shrinkage = 0.01)
   
-  tune <- list(ntrees = c(250, 500),
+  tune <- list(ntrees = c(1000),
                max_depth = c(1, 2, 3),
                minobspernode = 10,
-               shrinkage = 0.1)
+               shrinkage = 0.01)
   xgb_grid <- create.SL.xgboost(tune = tune)
-  SL.library <- c("SL.mean", "SL.glm", "SL.earth",
+  SL.library <- c("SL.mean", "SL.glm.interaction", "SL.earth",
                   "SL.gam", "SL.ranger", xgb_grid$names)
   
   long_dat <- data.frame(f_hat = f_hat, X_reduced)
