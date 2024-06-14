@@ -194,10 +194,14 @@ generate_full_predictions <- function(time,
       
     }
   } else if (nuisance == "stackG"){
-    tune <- list(ntrees = c(250, 500, 1000),
-                 max_depth = c(1, 2),
+    # tune <- list(ntrees = c(250, 500, 1000),
+                 # max_depth = c(1, 2),
+                 # minobspernode = 10,
+                 # shrinkage = 0.01)
+    tune <- list(ntrees = c(250, 500),
+                 max_depth = c(1, 2, 3),
                  minobspernode = 10,
-                 shrinkage = 0.01)
+                 shrinkage = 0.1)
     xgb_grid <- create.SL.xgboost(tune = tune)
     SL.library <- c("SL.mean", "SL.glm", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
     surv_out <- survML::stackG(time = time,
