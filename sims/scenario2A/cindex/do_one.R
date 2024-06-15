@@ -32,6 +32,18 @@ do_one <- function(n_train,
   }
 
   ss_folds <- as.numeric(folds %in% which(ss_folds == 2))
+  
+  nuisance_preds <- CV_generate_full_predictions_landmark(time = time,
+                                                          event = event,
+                                                          X = X,
+                                                          landmark_times = tau,
+                                                          approx_times = approx_times,
+                                                          nuisance = nuisance,
+                                                          folds = folds,
+                                                          sample_split = sample_split)
+  CV_S_preds <- nuisance_preds$CV_S_preds
+  CV_S_preds_train <- nuisance_preds$CV_S_preds_train
+  CV_G_preds <- nuisance_preds$CV_G_preds
 
   V0_preds <- CV_generate_predictions_cindex(time = time,
                                              event = event,
@@ -49,10 +61,7 @@ do_one <- function(n_train,
                                                sigma = c(0.01, 0.05),
                                                learner = c("glm")))
 
-  CV_full_preds <- V0_preds$CV_full_preds
-  CV_S_preds <- V0_preds$CV_S_preds
-  CV_S_preds_train <- V0_preds$CV_S_preds_train
-  CV_G_preds <- V0_preds$CV_G_preds
+  CV_full_preds <- V0_preds
 
   for (i in 1:length(indxs)){
     char_indx <- as.character(indxs[i])
@@ -74,7 +83,7 @@ do_one <- function(n_train,
                                                  sigma = c(0.01, 0.05),
                                                  learner = c("glm")))
 
-    CV_reduced_preds <- V0_preds$CV_reduced_preds
+    CV_reduced_preds <- V0_preds
 
     output <- survML::vim_cindex(time = train$y,
                                   event = train$delta,
