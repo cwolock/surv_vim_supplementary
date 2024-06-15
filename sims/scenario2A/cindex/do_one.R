@@ -33,19 +33,21 @@ do_one <- function(n_train,
 
   ss_folds <- as.numeric(folds %in% which(ss_folds == 2))
 
-  V0_preds <- CV_generate_full_predictions_cindex(time = time,
-                                                  event = event,
-                                                  X = X,
-                                                  approx_times = approx_times,
-                                                  nuisance = nuisance,
-                                                  folds = folds,
-                                                  sample_split = sample_split,
-                                                  subsample_n = 500,
-                                                  params =  list(#mstop = c(100, 200, 300, 400, 500),
-                                                    mstop = c(100, 250, 500),#, 1000),
-                                                    nu = c(0.1),
-                                                    sigma = c(0.01, 0.05),
-                                                    learner = c("glm")))
+  V0_preds <- CV_generate_predictions_cindex(time = time,
+                                             event = event,
+                                             X = X,
+                                             approx_times = approx_times,
+                                             folds = folds,
+                                             sample_split = sample_split,
+                                             CV_S_preds_train =  CV_S_preds_train,
+                                             CV_S_preds = CV_S_preds,
+                                             indx = NULL,
+                                             subsample_n = 500,
+                                             params =  list(
+                                               mstop = c(100, 250, 500),
+                                               nu = c(0.1),
+                                               sigma = c(0.01, 0.05),
+                                               learner = c("glm")))
 
   CV_full_preds <- V0_preds$CV_full_preds
   CV_S_preds <- V0_preds$CV_S_preds
@@ -56,21 +58,21 @@ do_one <- function(n_train,
     char_indx <- as.character(indxs[i])
     indx <- as.numeric(strsplit(char_indx, split = ",")[[1]])
 
-    V0_preds <- CV_generate_reduced_predictions_cindex(time = time,
-                                                       event = event,
-                                                       X = X,
-                                                       approx_times = approx_times,
-                                                       folds = folds,
-                                                       sample_split = sample_split,
-                                                       indx = indx,
-                                                       CV_S_preds_train =  CV_S_preds_train,
-                                                       CV_S_preds = CV_S_preds,
-                                                       subsample_n = 500,
-                                                       params =  list(#mstop = c(100, 200, 300, 400, 500),
-                                                         mstop = c(100, 250, 500),#, 1000),
-                                                         nu = c(0.1),
-                                                         sigma = c(0.01, 0.05),
-                                                         learner = c("glm")))
+    V0_preds <- CV_generate_predictions_cindex(time = time,
+                                               event = event,
+                                               X = X,
+                                               approx_times = approx_times,
+                                               folds = folds,
+                                               sample_split = sample_split,
+                                               indx = indx,
+                                               CV_S_preds_train =  CV_S_preds_train,
+                                               CV_S_preds = CV_S_preds,
+                                               subsample_n = 500,
+                                               params =  list(
+                                                 mstop = c(100, 250, 500),
+                                                 nu = c(0.1),
+                                                 sigma = c(0.01, 0.05),
+                                                 learner = c("glm")))
 
     CV_reduced_preds <- V0_preds$CV_reduced_preds
 
