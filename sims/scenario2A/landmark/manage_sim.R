@@ -19,7 +19,7 @@ nreps_total <- 250
 nreps_per_job <- 1
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL", "stackG")
+nuisances <- c("stackG", "survSL")
 crossfits <- c(FALSE, TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job

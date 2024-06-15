@@ -15,14 +15,14 @@ library(mboost)
 source("/home/cwolock/surv_vim_supplementary/sims/scenario2A/cindex/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-
+source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 sim_name <- "scenario2A_cindex"
 nreps_total <- 200
 nreps_per_job <- 1
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
 nuisances <- c("survSL", "stackG")
-crossfits <- c(FALSE, TRUE)
+crossfits <- c(TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 
