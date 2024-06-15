@@ -300,7 +300,7 @@ boost_c_index <- function(time, # follow up times
       mod <- mboost::blackboost(Surv(time, event) ~ .,
                                 family = my_Cindex(sigma = sigma_curr),
                                 control = mboost::boost_control(mstop = mstop_curr, trace = FALSE, nu = nu_curr),
-                                tree_controls = partykit::ctree_control(maxdepth = 1),
+                                tree_controls = partykit::ctree_control(maxdepth = 2),
                                 data = dtrain)
     } else if (learner_curr == "glm"){
       mod <- mboost::glmboost(Surv(time, event) ~ .,
