@@ -37,7 +37,6 @@ generate_full_predictions <- function(time,
                                                              event.t.grid = approx_times[approx_times <= max(time)],
                                                              cens.t.grid = approx_times[approx_times <= max(time)]),
                                               cvControl = list(V = 5))
-    print(fit$event.coef)
     S_hat_train <- fit$event.SL.predict[(nrow(X_holdout)+1):(nrow(X_holdout)+nrow(X)),]
     G_hat_train <- fit$cens.SL.predict[(nrow(X_holdout)+1):(nrow(X_holdout)+nrow(X)),]
     S_hat <- fit$event.SL.predict[1:nrow(X_holdout),]
@@ -361,7 +360,6 @@ survSL.AFTreg <- function(time, event, X, newX, new.times, obsWeights, ...) {
   fit.expreg <- survival::survreg(survival::Surv(time[time > 0], event[time > 0]) ~ .^2,
                                   data = X[time > 0,],
                                   weights = obsWeights[time > 0], dist = "lognormal")
-  print(fit.expreg)
   pred <- predict(fit.expreg, newdata = newX, type = 'quantile', p = seq(0, .999, by=.001))
   pred <- try(t(sapply(1:nrow(pred), function(j) {
     pos.pred[j] * (1-stats::approx(pred[j,], seq(0, .999, by=.001),
