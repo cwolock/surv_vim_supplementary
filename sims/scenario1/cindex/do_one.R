@@ -82,7 +82,7 @@ do_one <- function(n_train,
                                                  mstop = c(100, 250, 500),
                                                  nu = c(0.1),
                                                  sigma = c(0.01, 0.05),
-                                                 learner = c("tree")))
+                                                 learner = c("glm")))
     CV_reduced_preds <- V0_preds
     
     output <- survML::vim_cindex(time = train$y,

@@ -14,7 +14,7 @@ source("/home/cwolock/surv_vim_supplementary/sims/scenario1A/cindex/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-
+source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 # source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/scenario1/cindex/do_one.R")
 # source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
 # source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/boost_c_index.R")

@@ -10,10 +10,10 @@ do_one <- function(n_train,
   landmark_times <- c(0.5, 0.9)
 
   # training data
-  train <- generate_data(n = n_train, scenario = "1", sdy = 1)
+  train <- generate_data(n = n_train, scenario = "1A", sdy = 1)
 
   sample_split <- FALSE
-  dimension <- 2
+  dimension <- 4
 
   time <- train$y
   event <- train$delta

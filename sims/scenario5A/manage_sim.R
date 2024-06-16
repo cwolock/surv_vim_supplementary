@@ -1,39 +1,35 @@
 #!/usr/local/bin/Rscript
 R.Version()
 .libPaths()
+#library(Rsolnp)
+#library(mgcv)
 library(dplyr)
 library(survML)
 library(SuperLearner)
 library(survival)
 library(randomForestSRC)
 library(survSuperLearner)
-library(gtools)
-library(mboost)
 
-source("/home/cwolock/surv_vim_supplementary/sims/scenario1/cindex/do_one.R")
+source("/home/cwolock/surv_vim_supplementary/sims/scenario5A/do_one_bothrobust.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
-source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-
-source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/scenario1/cindex/do_one.R")
-source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
-source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/boost_c_index.R")
-source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
-
-sim_name <- "scenario1_cindex_053024"
-nreps_total <- 250
+source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
+sim_name <- "scenario5A_bothrobust_moreNs"
+nreps_total <- 500
 nreps_per_job <- 1
 
-n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL", "stackG", "rfsrc")
-crossfits <- c(FALSE, TRUE)
+n_trains <- c(250, 500, 2500)
+misspec_types <- c("none", "censoring", "event_plusf0")
+robust_Vs <- c(FALSE, TRUE)
+robust_fs <- c(FALSE, TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 
 param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
-                          crossfit = crossfits,
                           n_train = n_trains,
-                          nuisance = nuisances)
+                          misspec_type = misspec_types,
+                          robust_f = robust_fs,
+                          robust_V = robust_Vs)
 
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
@@ -43,8 +39,9 @@ current_seed <- as.integer((1e9*runif(job_id))[job_id])
 set.seed(current_seed)
 output <- replicate(nreps_per_job,
                     do_one(n_train = current_dynamic_args$n_train,
-                           nuisance = current_dynamic_args$nuisance,
-                           crossfit = current_dynamic_args$crossfit),
+                           misspec_type = current_dynamic_args$misspec_type,
+                           robust_f = current_dynamic_args$robust_f,
+                           robust_V = current_dynamic_args$robust_V),
                     simplify = FALSE)
 sim_output <- lapply(as.list(1:length(output)),
                      function(x) tibble::add_column(output[[x]]))
