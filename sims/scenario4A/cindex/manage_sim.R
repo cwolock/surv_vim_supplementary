@@ -16,6 +16,7 @@ source("/home/cwolock/surv_vim_supplementary/sims/scenario4A/cindex/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
+source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 sim_name <- "scenario4A_cindex"
 nreps_total <- 200
 nreps_per_job <- 1

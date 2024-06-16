@@ -13,7 +13,7 @@ library(survSuperLearner)
 source("/home/cwolock/surv_vim_supplementary/sims/scenario2A/landmark/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-
+source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 sim_name <- "scenario2A_landmark"
 nreps_total <- 250
 nreps_per_job <- 1

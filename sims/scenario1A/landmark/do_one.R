@@ -11,7 +11,7 @@ do_one <- function(n_train,
   train <- generate_data(n = n_train, scenario = "1A", sdy = 1)
 
   sample_split <- FALSE
-  dimension <- 2
+  dimension <- 4
   indxs <- c("1", "2")
 
   time <- train$y

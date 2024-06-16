@@ -4,17 +4,17 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     p <- 2
     beta_t <- matrix(c(0.5, -0.3))
     beta_c <- matrix(c(-0.2, 0.2))
-    beta_int1 <- 0
     interceptc <- 0
     xnames <- paste0("x", c(1,2))
     Sigma <- diag(1, p)
-  } else if (scenario == "1A"){
-    p <- 2
-    beta_t <- matrix(c(0.5, -0.3))
-    beta_c <- matrix(c(-0.2, 0.2))
+  } else if (scenario == "1A"| scenario == "3A_50"){
+    p <- 4
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
     beta_int1 <- 0.2
+    beta_int2 <- -0.1
     interceptc <- 0
-    xnames <- paste0("x", c(1,2))
+    xnames <- paste0("x", 1:p)
     Sigma <- diag(1, p)
   } else if (scenario == "2"){
     p <- 25
@@ -80,6 +80,42 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     interceptc <- -0.75
     xnames <- paste0("x", c(1,2))
     Sigma <- diag(1, p)
+  } else if (scenario == "3A_30"){
+    p <- 4
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int1 <- 0.2
+    beta_int2 <- -0.1
+    interceptc <- 0.75
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+  } else if (scenario == "3A_40"){
+    p <- 4
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int1 <- 0.2
+    beta_int2 <- -0.1
+    interceptc <- 0.5
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+  } else if (scenario == "3A_60"){
+    p <- 4
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int1 <- 0.2
+    beta_int2 <- -0.1
+    interceptc <- -0.5
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+  } else if (scenario == "3A_70"){
+    p <- 4
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int1 <- 0.2
+    beta_int2 <- -0.1
+    interceptc <- -0.75
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
   }
 
   mu_x <- rep(0, p)
@@ -87,8 +123,8 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
   x <- MASS::mvrnorm(n = n, mu = mu_x, Sigma = Sigma)
   eps <- rnorm(n = n, mean = 0, sd = sdy)
   epsc <- rnorm(n = n, mean = 0, sd = sdy)
-  if (scenario != "2A" & scenario != "4A"){
-    logt <- x %*% beta_t + x[,1]*x[,2]*beta_int1 + eps
+  if (scenario != "2A" & scenario != "4A" & scenario != "1A" & scenario != "3A_50" & scenario != "3A_30" & scenario != "3A_40" & scenario != "3A_60" & scenario != "3A_70"){
+    logt <- x %*% beta_t + eps
   } else{
     logt <- x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2 + eps
   }

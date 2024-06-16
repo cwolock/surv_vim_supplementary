@@ -9,8 +9,8 @@ generate_full_predictions <- function(time,
   if (nuisance == "survSL"){
     
     event.SL.library <- cens.SL.library <- lapply(c("survSL.km", "survSL.coxph", 
-                                                    "survSL.expreg", "survSL.weibreg", 
-                                                    "survSL.loglogreg", "survSL.AFTreg", 
+                                                    "survSL.expreg.int", "survSL.weibreg.int", 
+                                                    "survSL.loglogreg.int", "survSL.AFTreg.int", 
                                                     "survSL.rfsrc"), function(alg) {
                                                       c(alg, "survscreen.marg")
                                                     })
@@ -249,12 +249,12 @@ generate_DR_predictions <- function(time,
                                     S_hat,
                                     G_hat){
   
-  tune <- list(ntrees = c(250, 500, 1000),
-               max_depth = c(1, 2),
+  tune <- list(ntrees = c(1000),
+               max_depth = c(1, 2, 3),
                minobspernode = 10,
                shrinkage = 0.01)
   xgb_grid <- create.SL.xgboost(tune = tune)
-  SL.library <- c("SL.mean", "SL.glm", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
+  SL.library <- c("SL.mean", "SL.glm.interaction", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
   
   DR_predictions <- matrix(NA, nrow = nrow(X_holdout), ncol = length(landmark_times))
   DR_predictions_train <- matrix(NA, nrow = nrow(X), ncol = length(landmark_times))
