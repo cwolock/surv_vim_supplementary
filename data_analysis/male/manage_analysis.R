@@ -6,12 +6,12 @@ library(SuperLearner)
 # source("/home/cwolock/surv_vim_supplementary/data_analysis/702_utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
-source("/home/cwolock/surv_vim_supplementary/data_analysis/male/702_data_analysis_nuisancepool.R")
+source("/home/cwolock/surv_vim_supplementary/data_analysis/male/702_data_analysis.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/boost_c_index.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/male/702_data_analysis_nuisancepool.R")
 
-name <- "male_female_analysis_pooled"
+name <- "male_female_analysis_interactions"
 nreps_total <- 10
 nreps_per_job <- 1
 approach <- c("conditional", "marginal")
