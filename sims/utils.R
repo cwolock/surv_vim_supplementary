@@ -228,6 +228,7 @@ generate_full_predictions <- function(time,
   }
   # weird things happen with a single landmark time for some algorithms
   if (dim(f_hat)[2] != length(landmark_times)){
+    print("Dimension issues with f_hat")
     f_hat <- t(f_hat)
     f_hat_train <- t(f_hat_train)
   }

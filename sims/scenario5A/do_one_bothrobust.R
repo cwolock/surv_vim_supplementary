@@ -2,24 +2,24 @@ do_one <- function(n_train,
                    misspec_type,
                    robust_V,
                    robust_f){
-
+  
   start <- Sys.time()
 
   nuisance <- "survSL"
   crossfit <- TRUE
-  landmark_times <- c(0.5, 0.9)
+  landmark_times <- c(0.5)
 
   # training data
   train <- generate_data(n = n_train, scenario = "4A", sdy = 1)
 
   sample_split <- FALSE
-  dimension <- 25
+  dimension <- 5
 
   time <- train$y
   event <- train$delta
   X <- train[,1:dimension]
   approx_times <- sort(unique(c(0, time[event == 1], landmark_times)))
-  approx_times <- approx_times[approx_times <= max(landmark_times)]
+  approx_times <- approx_times[approx_times <= 0.9]#max(landmark_times)]
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num
@@ -35,7 +35,7 @@ do_one <- function(n_train,
   }
 
   ss_folds <- as.numeric(folds %in% which(ss_folds == 2))
-
+  
   V0_preds <- CV_generate_full_predictions_landmark_misspec(time = time,
                                                             event = event,
                                                             X = X,
