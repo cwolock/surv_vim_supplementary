@@ -1,12 +1,12 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario5_bothrobust_moreNs"
-nreps_total <- 500
+sim_name <- "scenario5A"
+nreps_total <- 200
 nreps_per_job <- 1
 
 output_dir <- "output/"
 
-n_trains <- c(500, 750, 1000)
+n_trains <- c(500, 750, 1000, 150)
 misspec_types <- c("none", "censoring", "event")
 robust_Vs <- c(FALSE, TRUE)
 robust_fs <- c(FALSE, TRUE)
