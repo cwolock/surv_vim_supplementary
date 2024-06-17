@@ -14,11 +14,11 @@ source("/home/cwolock/surv_vim_supplementary/sims/scenario5A/do_one_bothrobust.R
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
-sim_name <- "scenario5A"
+sim_name <- "scenario5A_moreN"
 nreps_total <- 200
 nreps_per_job <- 1
 
-n_trains <- c(250, 500, 1000,  2500)
+n_trains <- c(250, 500, 1000, 2500, 5000)
 misspec_types <- c("none", "censoring", "event_plusf0")
 robust_Vs <- c(FALSE, TRUE)
 robust_fs <- c(FALSE, TRUE)

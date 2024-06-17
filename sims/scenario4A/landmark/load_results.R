@@ -1,14 +1,14 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario4_landmark"
-nreps_total <- 500
+sim_name <- "scenario4A_landmark"
+nreps_total <- 200
 nreps_per_job <- 1
 
 output_dir <- "output/"
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL", "stackG", "rfsrc")
-crossfits <- c(FALSE, TRUE)
+nuisances <- c("survSL")
+crossfits <- c(FALSE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 

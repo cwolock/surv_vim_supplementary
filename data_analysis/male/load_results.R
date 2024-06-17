@@ -4,8 +4,8 @@
 output_dir <- "output/"
 
 ## set up parameter grid
-name <- "male_analysis"
-nreps_total <- 50
+name <- "male_female_analysis_pooled"
+nreps_total <- 10
 nreps_per_job <- 1
 approach <- c("conditional", "marginal")
 
@@ -22,7 +22,10 @@ param_grid <- expand.grid(mc_id = 1:nreps_per_combo,
 ## names of files to read in
 output_nms <- paste0(name, "_", 1:dim(param_grid)[1], ".rds")
 avail_nms <- list.files(output_dir, pattern = paste0(name, "_*"))
+print(output_nms)
+print(avail_nms)
 names_to_try <- output_nms[which(output_nms %in% avail_nms)]
+print(names_to_try)
 ## list of output
 output_lst <- lapply(paste0(output_dir, names_to_try), readRDS)
 ## make it a matrix

@@ -1,14 +1,14 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario3_landmark"
-nreps_total <- 500
+sim_name <- "scenario3A_landmark"
+nreps_total <- 200
 nreps_per_job <- 1
 
 output_dir <- "output/"
 
 cens_rates <- c("30%", "40%", "50%", "60%", "70%")
-nuisances <- c("survSL", "stackG", "rfsrc")
-crossfits <- c(FALSE, TRUE)
+nuisances <- c("survSL", "stackG")
+crossfits <- c(TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 

@@ -6,7 +6,7 @@ library(SuperLearner)
 
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
-source("/home/cwolock/surv_vim_supplementary/data_analysis/male/702_data_analysis.R")
+source("/home/cwolock/surv_vim_supplementary/data_analysis/combined/702_data_analysis.R")
 
 name <- "combined_analysis"
 nreps_total <- 10

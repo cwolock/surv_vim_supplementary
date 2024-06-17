@@ -4,7 +4,7 @@ ml R/4.4.0-gfbf-2023b
 # 2 is the number of reps per combos
 # 3 is number of reps performed per job
 # 1 is sim name
-num_combos=48
+num_combos=60
 
 njobs=`expr 200 \* $num_combos`
 
