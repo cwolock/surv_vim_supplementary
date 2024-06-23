@@ -166,6 +166,14 @@ do_one <- function(seed,
     CV_full_preds_cindex <- V0_preds
   }
 
+  if (approach == "conditional"){
+    nuisances <- list(CV_full_preds_landmark_train, CV_S_preds, CV_S_preds_train, CV_G_preds, CV_full_preds_landmark, CV_full_preds_cindex)
+  } else{
+    nuisances <- list(CV_full_preds_landmark_train, CV_S_preds, CV_S_preds_train, CV_G_preds, CV_reduced_preds_landmark, CV_reduced_preds_cindex)
+  }
+  fname <- paste0("nuisances_", seed, ".rds")
+  saveRDS(nuisances, paste0("/home/cwolock/surv_vim_supplementary/data_analysis/female/saved_nuisances/", fname))
+
   for (i in 1:length(all_index_text)){
     char_indx <- as.character(all_index_text[i])
     char_indx_name <- all_index_names[i]
