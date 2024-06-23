@@ -4,7 +4,7 @@
 output_dir <- "output/"
 
 ## set up parameter grid
-name <- "male_female_analysis_pooled"
+name <- "male_analysis_interactions_oldlibrary_smallersigma_noSS"
 nreps_total <- 10
 nreps_per_job <- 1
 approach <- c("conditional", "marginal")

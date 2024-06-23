@@ -1,6 +1,6 @@
 #!/usr/local/bin/Rscript
 
-name <- "combined_analysis"
+name <- "combined_analysis_interactions_oldlibrary_smallersigma"
 nreps_total <- 10
 nreps_per_job <- 1
 

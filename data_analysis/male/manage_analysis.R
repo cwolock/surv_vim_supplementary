@@ -11,7 +11,7 @@ source("/home/cwolock/surv_vim_supplementary/data_analysis/male/702_data_analysi
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/boost_c_index.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/male/702_data_analysis_nuisancepool.R")
 
-name <- "male_female_analysis_interactions"
+name <- "male_analysis_interactions_oldlibrary_smallersigma_noSS"
 nreps_total <- 10
 nreps_per_job <- 1
 approach <- c("conditional", "marginal")
