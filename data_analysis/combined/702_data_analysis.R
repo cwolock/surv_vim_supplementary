@@ -5,9 +5,10 @@ do_one <- function(seed,
   sample_split <- TRUE
   nfolds <- 5
   crossfit <- TRUE
-  nuisance <- "stackG"
+  nuisance <- "survSL"
 
   dat <- readRDS("/home/cwolock/surv_vim_supplementary/data_analysis/cleaned_RS_data_combined36.rds")
+  dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/cleaned_RS_data_combined36.rds")
   landmark_times <- c(545, 730, 912)
 
   cf_fold_num <- switch((crossfit) + 1, 1, nfolds)
