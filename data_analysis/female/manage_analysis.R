@@ -8,7 +8,7 @@ source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/data_analysis/female/702_data_analysis.R")
 
-name <- "female_analysis_interactions"
+name <- "female_analysis_interactions_oldlibrary_smallersigma_oldseed"
 nreps_total <- 10
 nreps_per_job <- 1
 
@@ -22,7 +22,7 @@ param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
 current_dynamic_args <- param_grid[job_id, ]
-global_seed <- 92723
+global_seed <- 42623
 set.seed(global_seed) # overall seed
 current_seed <- as.integer((1e9*runif(job_id))[job_id])
 set.seed(current_seed)

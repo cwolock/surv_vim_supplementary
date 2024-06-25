@@ -1,6 +1,6 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario4A_landmark"
+sim_name <- "scenario4A_landmark_stackGoldlibrary"
 nreps_total <- 200
 nreps_per_job <- 1
 

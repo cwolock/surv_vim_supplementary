@@ -12,8 +12,8 @@ do_one <- function(n_train,
   # training data
   train <- generate_data(n = n_train, scenario = "4A", sdy = 1)
 
-  sample_split <- FALSE
-  dimension <- 5
+  sample_split <- TRUE
+  dimension <- 25
 
   time <- train$y
   event <- train$delta
