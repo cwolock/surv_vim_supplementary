@@ -8,7 +8,7 @@ source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/data_analysis/combined/702_data_analysis.R")
 source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
-name <- "combined_analysis_interactions_oldlibrary_smallersigma_noSS"
+name <- "combined_analysis_interactions_oldlib_smallersigma_subsample1500"
 nreps_total <- 10
 nreps_per_job <- 1
 

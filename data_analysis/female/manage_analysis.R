@@ -8,7 +8,7 @@ source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/data_analysis/female/702_data_analysis.R")
 
-name <- "female_analysis_interactions_oldlibrary_smallersigma_oldseed"
+name <- "female_analysis_interactions_oldlib_smallersigma_subsample1500"
 nreps_total <- 10
 nreps_per_job <- 1
 

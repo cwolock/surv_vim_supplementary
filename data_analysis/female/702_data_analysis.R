@@ -2,6 +2,8 @@ do_one <- function(seed,
                    global_seed,
                    approach){
 
+  start <- Sys.time()
+
   crossfit <- TRUE
   sample_split <- TRUE
   nfolds <- 5
@@ -126,7 +128,7 @@ do_one <- function(seed,
                                                CV_S_preds_train =  CV_S_preds_train,
                                                CV_S_preds = CV_S_preds,
                                                indx = all_but_geo,
-                                               subsample_n = 1000,
+                                               subsample_n = 1500,
                                                params =  list(
                                                  mstop = c(100, 250, 500, 1000),
                                                  nu = c(0.1),
@@ -156,7 +158,7 @@ do_one <- function(seed,
                                                CV_S_preds_train =  CV_S_preds_train,
                                                CV_S_preds = CV_S_preds,
                                                indx = vacc_index,
-                                               subsample_n = 1000,
+                                               subsample_n = 1500,
                                                params =  list(
                                                  mstop = c(100, 250, 500, 1000),
                                                  nu = c(0.1),
@@ -200,7 +202,7 @@ do_one <- function(seed,
                                                  CV_S_preds_train =  CV_S_preds_train,
                                                  CV_S_preds = CV_S_preds,
                                                  indx = indx,
-                                                 subsample_n = 1000,
+                                                 subsample_n = 1500,
                                                  params =  list(
                                                    mstop = c(100, 250, 500, 1000),
                                                    nu = c(0.1),
@@ -229,7 +231,7 @@ do_one <- function(seed,
                                                  CV_S_preds_train =  CV_S_preds_train,
                                                  CV_S_preds = CV_S_preds,
                                                  indx = indx,
-                                                 subsample_n = 1000,
+                                                 subsample_n = 1500,
                                                  params =  list(
                                                    mstop = c(100, 250, 500, 1000),
                                                    nu = c(0.1),
@@ -284,6 +286,14 @@ do_one <- function(seed,
   dat$approach <- approach
   dat$seed <- seed
   dat$global_seed <- global_seed
+  dat$nuisance <- nuisance
+  dat$sample_split <- sample_split
+  dat$crossfit <- crossfit
+  dat$nfolds <- nfolds
+
+  end <- Sys.time()
+  runtime <- difftime(end, start, units = "mins")
+  dat$runtime <- runtime
   return(dat)
 }
 
