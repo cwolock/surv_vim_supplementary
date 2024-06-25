@@ -1,3 +1,4 @@
+options(expressions= 20000)
 do_one <- function(seed,
                    global_seed,
                    approach){
