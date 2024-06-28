@@ -8,8 +8,9 @@ truth_list <- compile_truth(true_param_file = truth_file,
                             true_avar_file = var_truth_file)
 
 # LANDMARK SIMS
-# landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1_landmark.rds")
-landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1_landmark_053024.rds")
+landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1_landmark.rds")
+landmark_dat <- landmark_dat %>% mutate(landmark_time = tau)
+# landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1_landmark_053024.rds")
 landmark_summ <- summarize_results(landmark_dat, scenario = "1", truth_list$truth, truth_list$var_truth)
 
 # C-INDEX SIMS

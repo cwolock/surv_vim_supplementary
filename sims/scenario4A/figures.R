@@ -3,12 +3,14 @@ source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figur
 # read in truth files
 # truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim/scratch/sims/landmark/truth_interaction.rds"
 truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/truth_interaction.rds"
-var_truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/variance_truth.rds"
+var_truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/mc_truth_variance_interaction.rds"
 truth_list <- compile_truth(true_param_file = truth_file,
                             true_avar_file = var_truth_file)
 
 # LANDMARK SIMS
 landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario4A_landmark.rds")
+# landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario4A_landmark.rds")
+
 landmark_summ <- summarize_results(landmark_dat, scenario = "4", truth_list$truth, truth_list$var_truth)
 
 # C-INDEX SIMS

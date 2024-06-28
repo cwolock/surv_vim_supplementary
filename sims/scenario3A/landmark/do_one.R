@@ -17,7 +17,7 @@ do_one <- function(cens_rate,
 
   sample_split <- TRUE
   dimension <- 25
-  indxs <- c("1", "2")
+  indxs <- c("1", "5")
 
   time <- train$y
   event <- train$delta

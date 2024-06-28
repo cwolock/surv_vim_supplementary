@@ -1,39 +1,32 @@
-source("/Users/cwolock//Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figure_utils.R")
+source("/Users/cwolock//Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figure_utils_newA.R")
 
 # read in truth files
-truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim/scratch/sims/landmark/truth.rds"
+truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/truth_interaction.rds"
 var_truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/variance_truth.rds"
 truth_list <- compile_truth(true_param_file = truth_file,
                             true_avar_file = var_truth_file)
 
-dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario5_bothrobust.rds")
-dat2 <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario5_bothrobust_moreNs.rds")
+dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario5A_moreN.rds")
+dat <- dat %>% filter(n_train %in% c(250, 500, 1000, 2500, 5000)) %>%
+  mutate(tau = landmark_time)
 
-dat <- bind_rows(dat, dat2)
-
-dat <- dat %>% filter(n_train %in% c(250, 500, 1000, 2500, 5000))
-
-dat <- dat %>% pivot_longer(cols = c("one_step"),
-                            names_to = "estimator",
-                            values_to = "estimate")
-
-dat <- dat %>% mutate(correlation = FALSE)
+dat <- dat %>% mutate(correlation = TRUE)
 dat <- left_join(dat, truth_list$truth, by = c("tau", "vim", "correlation"))
 
 dat <- dat %>% mutate(param = case_when(
   indx == 1 ~ V_full - V_01,
   indx == 2 ~ V_full - V_02,
-  indx == 4 ~ 0,
-  indx == "1,4" ~ V_full - V_014
+  indx == 5 ~ V_full - V_05,
+  indx == "1,5" ~ V_full - V_015
 ))
 
-dat <- dat %>% mutate(err = (estimate - param))
+dat <- dat %>% mutate(err = (est - param))
 
 this_vim <- "AUC" #indx_vim_t_combos$vim[i]
-this_indx <- 1#indx_vim_t_combos$indx[i]
+this_indx <- "1,5"#indx_vim_t_combos$indx[i]
 this_t <- 0.5#indx_vim_t_combos$t[i]
 
-this_dat <- dat %>% filter(vim == this_vim & t == this_t & indx == this_indx)
+this_dat <- dat %>% filter(vim == this_vim & tau == this_t & indx == this_indx)
 blah <- this_dat %>%
   group_by(misspec_type, n_train, indx, robust_V, robust_f) %>%
   summarize(nreps = n(),
@@ -80,7 +73,7 @@ blah <- this_dat %>%
 
 
 
-p <- blah %>% ggplot(aes(x = factor(n_train), y = mse)) +
+p <- blah %>% ggplot(aes(x = factor(n_train), y = mse )) +
   geom_point(aes(shape = robust_V), size = 2.5, color = "grey40") +
   geom_line(aes(linetype = robust_f,
                 group = interaction(robust_f, robust_V)),
