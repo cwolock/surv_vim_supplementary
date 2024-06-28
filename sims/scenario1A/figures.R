@@ -1,15 +1,15 @@
-source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figure_utils_new.R")
+source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figure_utils_newA.R")
 
 # read in truth files
 # truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim/scratch/sims/landmark/truth.rds"
 truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/truth_interaction.rds"
-var_truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/variance_truth.rds"
+var_truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/mc_truth_variance_interaction.rds"
 truth_list <- compile_truth(true_param_file = truth_file,
                             true_avar_file = var_truth_file)
 
 # LANDMARK SIMS
-# landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1_landmark.rds")
-landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1A_landmark_061424.rds")
+landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1A_landmark.rds")
+landmark_dat <- landmark_dat %>% mutate(tau = landmark_time)
 landmark_summ <- summarize_results(landmark_dat, scenario = "1", truth_list$truth, truth_list$var_truth)
 
 # C-INDEX SIMS
@@ -23,7 +23,7 @@ make_sim_plot(summ,
               scenario = "1",
               big = TRUE,
               wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario1A-big_061124")
+              fname = "scenario1A-big_062624")
 
 # summ <- summ %>% filter(vim == "AUC" & indx == 1)
 # make_sim_plot(summ,

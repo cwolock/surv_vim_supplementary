@@ -14,8 +14,7 @@ landmark_summ <- summarize_results(landmark_dat, scenario = "2", truth_list$trut
 
 # C-INDEX SIMS
 cindex_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario2_cindex.rds")
-cindex_dat <- landmark_dat %>% mutate(
-                                        est = one_step)
+cindex_dat <- cindex_dat %>% mutate(est = one_step)
 cindex_summ <- summarize_results(cindex_dat, scenario = "2", truth_list$truth, truth_list$var_truth)
 
 
@@ -24,7 +23,7 @@ make_sim_plot(summ,
               scenario = "2",
               big = TRUE,
               wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario2-big")
+              fname = "scenario2-big-axistesting")
 
 # summ <- summ %>% filter(vim == "AUC" & indx == 4)
 # make_sim_plot(summ,
@@ -38,4 +37,4 @@ make_sim_plot(summ,
               scenario = "2",
               big = FALSE,
               wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario2-small")
+              fname = "scenario2-small-axistesting")

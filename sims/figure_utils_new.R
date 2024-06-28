@@ -26,8 +26,10 @@ small_fig_height <- 6
 # small_fig_width <- 6
 # small_fig_height <- 4
 nuisance_cols <- c("red", "blue", "green")
+# nuisance_linetypes <- c("dotted", "longdash", "solid")
+# xfit_colors <- c("red", "blue")
 xfit_linetypes <- c("solid", "longdash")
-strip_text_size <- 10
+# strip_text_size <- 10
 
 compile_truth <- function(true_param_file, true_avar_file){
   # get true VIM values
@@ -129,7 +131,7 @@ summarize_results <- function(dat, scenario, truth, var_truth){
                             variance = n_eff * variance,
                             bias_mc_se = sqrt(n_eff)*bias_mc_se)
     summ <- left_join(summ, var_truth, by = c("tau", "vim", "indx", "scenario"))
-    summ <- summ %>% mutate(scaled_var = variance / true_avar)
+    summ <- summ %>% mutate(scaled_var = variance/true_avar)
   }
   return(summ)
 }
@@ -144,18 +146,18 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
     mutate(vim = factor(vim,
                         levels = c("AUC_0.5", "AUC_0.9",
                                    "brier_0.5", "brier_0.9",
-                                   "rsquared_0.5", "rsquared_0.9",
                                    "cindex_0.9"),
                         labels = c("AUC at 0.5", "AUC at 0.9",
                                    "Brier score at 0.5", "Brier score at 0.9",
-                                   "R-squared at 0.5", "R-squared at 0.9",
                                    "C-index")))
-
   if (!big){
 
     plot_tib <- plot_tib %>% mutate(indx = factor(indx,
                                                   levels = c("1", "4"),
                                                   labels = c("(a)~X[1]~(non-null)", "(b)~X[4]~(null)")))
+
+    plot_tib <- plot_tib %>% filter(!(nuisance == "random surv. forest" & !crossfit))
+
     Switch <- FALSE
     xvar <- "n"
     xlab <- "Sample size"
@@ -165,8 +167,8 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       mutate(scaled_bias_low = bias - 2*bias_mc_se,
              scaled_bias_hi = bias + 2*bias_mc_se) %>%
       summarize(bias_l = min(scaled_bias_low), bias_h = max(scaled_bias_hi))
-    this_bias_lim_lower <- this_bias_lim$bias_l
-    this_bias_lim_upper <- this_bias_lim$bias_h
+    this_bias_lim_lower <- c(this_bias_lim$bias_l)
+    this_bias_lim_upper <- c(this_bias_lim$bias_h)
 
     this_width_lim <- plot_tib %>%
       mutate(width_low = ci_width - 2*width_mc_se,
@@ -201,7 +203,7 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       ggplot(aes(x = eval(str2lang(xvar)), y = bias, color = nuisance)) +
       geom_hline(yintercept = 0, linetype = "solid", color = "black") +
       geom_point(size = point_size) +
-      geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
+      # geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
       scale_color_manual(values = nuisance_cols) +
       scale_linetype_manual(values = xfit_linetypes) +
@@ -222,7 +224,7 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       ggplot(aes(x = eval(str2lang(xvar)), y = bias, color = nuisance)) +
       geom_hline(yintercept = 0, linetype = "solid", color = "black") +
       geom_point(size = point_size) +
-      geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
+      # geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
       scale_color_manual(values = nuisance_cols) +
       scale_linetype_manual(values = xfit_linetypes) +
@@ -243,12 +245,12 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       geom_hline(yintercept = 0.95, linetype = "solid", color = "black") +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-      geom_errorbar(aes(ymin=ifelse(coverage-1.96*cov_mc_se <0, 0, coverage-1.96*cov_mc_se),
-                        ymax=ifelse(coverage+1.96*cov_mc_se >1, 1, coverage+1.96*cov_mc_se)),
-                    width=.1) +
+      # geom_errorbar(aes(ymin=ifelse(coverage-1.96*cov_mc_se <0, 0, coverage-1.96*cov_mc_se),
+                        # ymax=ifelse(coverage+1.96*cov_mc_se >1, 1, coverage+1.96*cov_mc_se)),
+                    # width=.1) +
       scale_color_manual(values = nuisance_cols) +
       scale_linetype_manual(values = xfit_linetypes) +
-      ylim(c(0, 1)) +
+      ylim(c(0.75, 1)) +
       ylab("Empirical coverage") +
       labs(linetype = "Method:", color = "Nuisance:") +
       xlab(xlab) +
@@ -266,12 +268,12 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       geom_hline(yintercept = 0.95, linetype = "solid", color = "black") +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-      geom_errorbar(aes(ymin=ifelse(coverage-1.96*cov_mc_se <0, 0, coverage-1.96*cov_mc_se),
-                        ymax=ifelse(coverage+1.96*cov_mc_se >1, 1, coverage+1.96*cov_mc_se)),
-                    width=.1) +
+      # geom_errorbar(aes(ymin=ifelse(coverage-1.96*cov_mc_se <0, 0, coverage-1.96*cov_mc_se),
+                        # ymax=ifelse(coverage+1.96*cov_mc_se >1, 1, coverage+1.96*cov_mc_se)),
+                    # width=.1) +
       scale_color_manual(values = nuisance_cols) +
       scale_linetype_manual(values = xfit_linetypes) +
-      ylim(c(0, 1)) +
+      ylim(c(0.75, 1)) +
       ylab("Empirical coverage") +
       xlab(xlab) +
       # ggtitle("Coverage") +
@@ -287,13 +289,14 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       ggplot(aes(x = eval(str2lang(xvar)), y = power, color = nuisance)) +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-      geom_errorbar(aes(ymin=ifelse(power-1.96*power_mc_se <0, 0, power-1.96*power_mc_se),
-                        ymax=ifelse(power+1.96*power_mc_se >1, 1, power+1.96*power_mc_se)),
-                    width=.1) +
+      # geom_errorbar(aes(ymin=ifelse(power-1.96*power_mc_se <0, 0, power-1.96*power_mc_se),
+                        # ymax=ifelse(power+1.96*power_mc_se >1, 1, power+1.96*power_mc_se)),
+                    # width=.1) +
       geom_hline(yintercept = 0.05, linetype = "solid", color = "black") +
       scale_color_manual(values = nuisance_cols) +
       scale_linetype_manual(values = xfit_linetypes) +
-      ylim(c(this_power_lim_lower, this_power_lim_upper)) +
+      ylim(c(0, 0.25)) +
+      # ylim(c(this_power_lim_lower, this_power_lim_upper)) +
       facet_wrap(~ indx, labeller = label_parsed, strip.position = "right") +
       ylab("Empirical type I error") +
       xlab(xlab) +
@@ -313,9 +316,9 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       ggplot(aes(x = eval(str2lang(xvar)), y = scaled_var, color = nuisance)) +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-      geom_errorbar(aes(ymin=scaled_var - 1.96*var_mc_se,
-                        ymax=scaled_var + 1.96*var_mc_se),
-                    width=.1) +
+      # geom_errorbar(aes(ymin=scaled_var - 1.96*var_mc_se,
+                        # ymax=scaled_var + 1.96*var_mc_se),
+                    # width=.1) +
       {if(!Switch) geom_hline(yintercept = 1, linetype = "solid", color = "black")} +
       scale_color_manual(values = nuisance_cols)+
       scale_linetype_manual(values = xfit_linetypes) +
@@ -336,9 +339,9 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
       ggplot(aes(x = eval(str2lang(xvar)), y = scaled_var, color = nuisance)) +
       geom_point(size = point_size) +
       geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-      geom_errorbar(aes(ymin=scaled_var - 1.96*var_mc_se,
-                        ymax=scaled_var + 1.96*var_mc_se),
-                    width=.1) +
+      # geom_errorbar(aes(ymin=scaled_var - 1.96*var_mc_se,
+                        # ymax=scaled_var + 1.96*var_mc_se),
+                    # width=.1) +
       {if(!Switch) geom_hline(yintercept = 1, linetype = "solid", color = "black")} +
       scale_color_manual(values = nuisance_cols)+
       scale_linetype_manual(values = xfit_linetypes) +
@@ -516,7 +519,7 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         ggplot(aes(x = eval(str2lang(xvar)), y = bias, color = nuisance)) +
         geom_hline(yintercept = 0, linetype = "solid", color = "black") +
         geom_point(size = point_size) +
-        geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
+        # geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
         geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
         scale_color_manual(values = nuisance_cols) +
         scale_linetype_manual(values = xfit_linetypes) +
@@ -526,7 +529,7 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         labs(linetype = "Method:", color = "Nuisance:") +
         # ggtitle("A. BIAS") +
         ggtitle("(a)") +
-        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
+        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right", scales = scales) +
         theme_bw() +
         theme(#axis.ticks.length.x = unit(0, "cm"),
               panel.spacing.x = unit(0, "cm"),
@@ -542,9 +545,9 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         geom_hline(yintercept = 0.95, linetype = "solid", color = "black") +
         geom_point(size = point_size) +
         geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-        geom_errorbar(aes(ymin=ifelse(coverage-1.96*cov_mc_se <0, 0, coverage-1.96*cov_mc_se),
-                          ymax=ifelse(coverage+1.96*cov_mc_se >1, 1, coverage+1.96*cov_mc_se)),
-                      width=.1) +
+        # geom_errorbar(aes(ymin=ifelse(coverage-1.96*cov_mc_se <0, 0, coverage-1.96*cov_mc_se),
+                          # ymax=ifelse(coverage+1.96*cov_mc_se >1, 1, coverage+1.96*cov_mc_se)),
+                      # width=.1) +
         scale_color_manual(values = nuisance_cols) +
         scale_linetype_manual(values = xfit_linetypes) +
         ylim(c(0, 1)) +
@@ -553,7 +556,7 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         labs(linetype = "Method:", color = "Nuisance:") +
         # ggtitle("C. COVERAGE") +
         ggtitle("(c)") +
-        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
+        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right", scales = scales) +
         theme_bw() +
         theme(#axis.ticks.length.x = unit(0, "cm"),
               panel.spacing.x = unit(0, "cm"),
@@ -568,19 +571,20 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         ggplot(aes(x = eval(str2lang(xvar)), y = power, color = nuisance)) +
         geom_point(size = point_size) +
         geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-        geom_errorbar(aes(ymin=ifelse(power-1.96*power_mc_se <0, 0, power-1.96*power_mc_se),
-                          ymax=ifelse(power+1.96*power_mc_se >1, 1, power+1.96*power_mc_se)),
-                      width=.1) +
+        # geom_errorbar(aes(ymin=ifelse(power-1.96*power_mc_se <0, 0, power-1.96*power_mc_se),
+                          # ymax=ifelse(power+1.96*power_mc_se >1, 1, power+1.96*power_mc_se)),
+                      # width=.1) +
         geom_hline(yintercept = 0.05, linetype = "solid", color = "black") +
         scale_color_manual(values = nuisance_cols) +
         scale_linetype_manual(values = xfit_linetypes) +
-        ylim(c(this_power_lim_lower, this_power_lim_upper)) +
+        # ylim(c(this_power_lim_lower, this_power_lim_upper)) +
+        ylim(c(0, 1)) +
         ylab("Empirical type I error") +
         xlab(xlab) +
         labs(linetype = "Method:", color = "Nuisance:") +
         # ggtitle("D. TYPE I ERROR") +
         ggtitle("(d)") +
-        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
+        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right", scales = scales) +
         theme_bw() +
         theme(#axis.ticks.length.x = unit(0, "cm"),
               panel.spacing.x = unit(0, "cm"),
@@ -596,9 +600,9 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         ggplot(aes(x = eval(str2lang(xvar)), y = scaled_var, color = nuisance)) +
         geom_point(size = point_size) +
         geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-        geom_errorbar(aes(ymin=scaled_var - 1.96*var_mc_se,
-                          ymax=scaled_var + 1.96*var_mc_se),
-                      width=.1) +
+        # geom_errorbar(aes(ymin=scaled_var - 1.96*var_mc_se,
+                          # ymax=scaled_var + 1.96*var_mc_se),
+                      # width=.1) +
         {if(!Switch) geom_hline(yintercept = 1, linetype = "solid", color = "black")} +
         # geom_hline(yintercept = 1, linetype = "solid", color = "black") +
         scale_color_manual(values = nuisance_cols)+
@@ -625,18 +629,18 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         ggplot(aes(x = eval(str2lang(xvar)), y = ci_width, color = nuisance)) +
         geom_point(size = point_size) +
         geom_line(aes(group = interaction(nuisance, Method), linetype = Method)) +
-        geom_errorbar(aes(ymin = ci_width - 1.96*width_mc_se,
-                          ymax = ci_width + 1.96*width_mc_se),
-                      width=.1) +
+        # geom_errorbar(aes(ymin = ci_width - 1.96*width_mc_se,
+                          # ymax = ci_width + 1.96*width_mc_se),
+                      # width=.1) +
         scale_color_manual(values = nuisance_cols) +
         scale_linetype_manual(values = xfit_linetypes) +
-        ylim(c(this_width_lim_lower, this_width_lim_upper)) +
+        # ylim(c(this_width_lim_lower, this_width_lim_upper)) +
         ylab("Confidence interval width") +
         xlab(xlab) +
         labs(linetype = "Method:", color = "Nuisance:") +
         # ggtitle("D. WIDTH") +
         ggtitle("(d)") +
-        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
+        facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right", scales = scales) +
         theme_bw() +
         theme(#axis.ticks.length.x = unit(0, "cm"),
               panel.spacing.x = unit(0, "cm"),

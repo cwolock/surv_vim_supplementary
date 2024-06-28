@@ -37,26 +37,27 @@ compile_truth <- function(true_param_file, true_avar_file){
   # this is a MC estimate of the true asymptotic variance of the estimator using the IF
   # with known nuisances plugged in
   var_truth <- readRDS(true_avar_file)
-  var_truth$tau <- var_truth$t
-  var_truth <- var_truth %>% group_by(vim, tau, scenario) %>%
+  print(head(var_truth))
+
+  var_truth <- var_truth %>% group_by(vim, tau, correlation) %>%
     summarize(var_1 = mean(vim_1),
               var_2 = mean(vim_2),
               var_1_split = mean(vim_1_split),
-              var_4_split = mean(vim_4_split),
-              var_14_split = mean(vim_14_split),
+              var_5_split = mean(vim_5_split),
+              var_15_split = mean(vim_15_split),
               .groups = "drop") %>%
-    pivot_longer(cols = c(var_1, var_2, var_1_split, var_4_split, var_14_split),
+    pivot_longer(cols = c(var_1, var_2, var_1_split, var_5_split, var_15_split),
                  names_to = "indx",
                  values_to = "true_avar") %>%
-    filter(!(!grepl("split", indx) & scenario == "4")) %>%
+    filter(!(!grepl("split", indx) & correlation)) %>%
     mutate(
       scenario = case_when(
-        grepl("split", indx) & scenario == "1" ~ "2",
-        !grepl("split", indx) & scenario == "1" ~ "1",
-        scenario == "4" ~ "4"
+        grepl("split", indx) & !correlation ~ "2",
+        !grepl("split", indx) & !correlation ~ "1",
+        correlation ~ "4"
       ), indx = case_when(
-        indx == "var_4" | indx == "var_4_split" ~ "4",
-        indx == "var_14" | indx == "var_14_split" ~ "1,4",
+        indx == "var_5" | indx == "var_5_split" ~ "5",
+        indx == "var_15" | indx == "var_15_split" ~ "1,5",
         indx == "var_1" | indx == "var_1_split" ~ "1",
         indx == "var_2" | indx == "var_2_split" ~ "2"
       ))
@@ -647,7 +648,7 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
               panel.grid.major.x = element_blank(),
               panel.grid.major.y = element_line(color = "grey85"))
 
-      if (this_indx == "4"){
+      if (this_indx == "5"){
         four_panel_plot_j <- plot_grid(
           bias_plot_j + theme(legend.position = "none",
                               title = element_text(size = title_text_size, family = "Times New Roman"),

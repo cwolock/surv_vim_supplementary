@@ -15,9 +15,9 @@ do_one <- function(cens_rate,
                                cens_rate == "70%" ~ "3A_70")
   train <- generate_data(n = 1000, scenario = scenario, sdy = 1)
 
-  sample_split <- FALSE
-  dimension <- 4
-  indxs <- c("1", "2")
+  sample_split <- TRUE
+  dimension <- 25
+  indxs <- c("1", "5")
 
   time <- train$y
   event <- train$delta
