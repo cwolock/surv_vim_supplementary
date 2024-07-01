@@ -17,13 +17,13 @@ source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
 
-sim_name <- "scenario1A_landmark_061424"
-nreps_total <- 200
+sim_name <- "scenario1A_landmark"
+nreps_total <- 500
 nreps_per_job <- 1
 
-n_trains <- c(500, 1000, 1500)
-nuisances <- c("stackG")
-crossfits <- c(TRUE)
+n_trains <- c(500, 750, 1000, 1250, 1500)
+nuisances <- c("survSL", "stackG", "rfsrc")
+crossfits <- c(FALSE, TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 

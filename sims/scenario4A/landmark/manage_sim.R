@@ -15,13 +15,13 @@ source("/home/cwolock/surv_vim_supplementary/sims/scenario4A/landmark/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
-sim_name <- "scenario4A_landmark_stackGoldlibrary"
-nreps_total <- 200
+sim_name <- "scenario4A_landmark"
+nreps_total <- 500
 nreps_per_job <- 1
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("stackG")
-crossfits <- c(TRUE)
+nuisances <- c("stackG", "survSL", "rfsrc")
+crossfits <- c(TRUE, FALSE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 

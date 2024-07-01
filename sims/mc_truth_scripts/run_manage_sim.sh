@@ -7,4 +7,4 @@ ml R/4.4.0-gfbf-2023b
 num_combos=2
 njobs=`expr 100 \* $num_combos`
 
-sbatch --array=1-$njobs%100 -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/sims/mc_truth_scripts/call_manage_sim.sh
+sbatch --array=1-$njobs -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/sims/mc_truth_scripts/call_manage_sim.sh

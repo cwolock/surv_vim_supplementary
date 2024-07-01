@@ -1,13 +1,14 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario4A_cindex"
+sim_name <- "cindex_subsampling"
 nreps_total <- 200
 nreps_per_job <- 1
 
 output_dir <- "output/"
 
-n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL", "stackG")
+n_trains <- c(1500)
+nuisances <- c("survSL")
+subsamples <- c(0.25, 0.33, 0.5, 1)
 crossfits <- c(TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
@@ -15,6 +16,7 @@ njobs_per_combo <- nreps_total/nreps_per_job
 param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
                           crossfit = crossfits,
                           n_train = n_trains,
+subsample = subsamples,
                           nuisance = nuisances)
 
 output_nms <- paste0(sim_name, "_", 1:dim(param_grid)[1], ".rds")

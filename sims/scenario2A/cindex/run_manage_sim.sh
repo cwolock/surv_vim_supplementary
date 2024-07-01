@@ -4,8 +4,8 @@ ml R/4.4.0-gfbf-2023b
 # 2 is the number of reps per combos
 # 3 is number of reps performed per job
 # 1 is sim name
-num_combos=10
+num_combos=1
 
-njobs=`expr 200 \* $num_combos`
+njobs=`expr 20 \* $num_combos`
 
 sbatch --array=1-$njobs -p short -t 10:00:00 -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/sims/scenario2A/cindex/call_manage_sim.sh

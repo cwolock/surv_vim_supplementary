@@ -2,7 +2,6 @@
 library(dplyr)
 
 source("/home/cwolock/surv_vim_supplementary/sims/mc_truth_scripts/do_one_interaction.R")
-source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 
 sim_name <- "mc_truth_variance_interaction"
@@ -27,7 +26,7 @@ current_seed <- as.integer((1e9*runif(job_id))[job_id])
 set.seed(current_seed)
 output <- replicate(nreps_per_job,
                     do_one(n_train = current_dynamic_args$n_train,
-                           scenario = current_dynamic_args$scenario),
+                           correlation = current_dynamic_args$correlation),
                     simplify = FALSE)
 sim_output <- lapply(as.list(1:length(output)),
                      function(x) tibble::add_column(output[[x]]))

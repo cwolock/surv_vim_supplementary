@@ -31,7 +31,7 @@ njobs_per_combo <- nreps_total/nreps_per_job
 param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
                           crossfit = crossfits,
                           n_train = n_trains,
-                          subsample <- subsamples,
+                          subsample = subsamples,
                           nuisance = nuisances)
 
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
