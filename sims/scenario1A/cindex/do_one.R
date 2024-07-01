@@ -3,36 +3,36 @@ do_one <- function(n_train,
                    nuisance,
                    crossfit){
   start <- Sys.time()
-  
+
   # training data
   train <- generate_data(n = n_train, scenario = "1A", sdy = 1)
-  
+
   sample_split <- FALSE
   dimension <- 4
   indxs <- c("1", "2")
-  
+
   time <- train$y
   event <- train$delta
   X <- train[,1:dimension]
-  
+
   tau <- 0.9
-  approx_times <- sort(unique(c(0, time[time <= tau & event == 1])))
-  
+  approx_times <- sort(c(unique(c(0, time[time <= tau & event == 1])), tau))
+
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num
-  
+
   V <- switch((sample_split) + 1, cf_fold_num, ss_fold_num)
-  
+
   folds <- sample(rep(seq_len(V), length = length(time))) # 2V of them
-  
+
   if (sample_split){
     ss_folds <- c(rep(1, V/2), rep(2, V/2))
   } else{
     ss_folds <- rep(1, V)
   }
-  
+
   ss_folds <- as.numeric(folds %in% which(ss_folds == 2))
-  
+
   nuisance_preds <- CV_generate_full_predictions_landmark(time = time,
                                                           event = event,
                                                           X = X,
@@ -44,7 +44,7 @@ do_one <- function(n_train,
   CV_S_preds <- nuisance_preds$CV_S_preds
   CV_S_preds_train <- nuisance_preds$CV_S_preds_train
   CV_G_preds <- nuisance_preds$CV_G_preds
-  
+
   V0_preds <- CV_generate_predictions_cindex(time = time,
                                              event = event,
                                              X = X,
@@ -60,14 +60,14 @@ do_one <- function(n_train,
                                                nu = c(0.1),
                                                sigma = c(0.01, 0.05),
                                                learner = c("tree")))
-  
+
   CV_full_preds <- V0_preds
-  
-  
+
+
   for (i in 1:length(indxs)){
     char_indx <- as.character(indxs[i])
     indx <- as.numeric(strsplit(char_indx, split = ",")[[1]])
-    
+
     V0_preds <- CV_generate_predictions_cindex(time = time,
                                                event = event,
                                                X = X,
@@ -84,7 +84,7 @@ do_one <- function(n_train,
                                                  sigma = c(0.01, 0.05),
                                                  learner = c("tree")))
     CV_reduced_preds <- V0_preds
-    
+
     output <- survML::vim_cindex(time = train$y,
                                  event = train$delta,
                                  approx_times = approx_times,
@@ -96,16 +96,16 @@ do_one <- function(n_train,
                                  sample_split = sample_split,
                                  ss_folds = ss_folds,
                                  tau = tau)
-    
+
     output$indx <- rep(char_indx, nrow(output))
-    
+
     if (i != 1){
       pooled_output <- rbind(pooled_output, output)
     } else{
       pooled_output <- output
     }
   }
-  
+
   end <- Sys.time()
   runtime <- difftime(end, start, units = "mins")
   pooled_output$runtime <- runtime

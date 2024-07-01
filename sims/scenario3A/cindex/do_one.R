@@ -21,7 +21,7 @@ do_one <- function(cens_rate,
   X <- train[,1:dimension]
 
   tau <- 0.9
-  approx_times <- sort(unique(c(0, time[time <= tau & event == 1])))
+  approx_times <- sort(c(unique(c(0, time[time <= tau & event == 1])), tau))
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num
@@ -49,7 +49,7 @@ do_one <- function(cens_rate,
   CV_S_preds <- nuisance_preds$CV_S_preds
   CV_S_preds_train <- nuisance_preds$CV_S_preds_train
   CV_G_preds <- nuisance_preds$CV_G_preds
-  
+
   V0_preds <- CV_generate_predictions_cindex(time = time,
                                              event = event,
                                              X = X,
@@ -65,7 +65,7 @@ do_one <- function(cens_rate,
                                                nu = c(0.1),
                                                sigma = c(0.01, 0.05),
                                                learner = c("glm")))
-  
+
   CV_full_preds <- V0_preds
 
   for (i in 1:length(indxs)){
@@ -87,7 +87,7 @@ do_one <- function(cens_rate,
                                                  nu = c(0.1),
                                                  sigma = c(0.01, 0.05),
                                                  learner = c("glm")))
-    
+
     CV_reduced_preds <- V0_preds
 
     output <- survML::vim_cindex(time = train$y,

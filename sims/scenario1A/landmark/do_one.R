@@ -91,18 +91,6 @@ do_one <- function(n_train,
                                   folds = folds,
                                   ss_folds = ss_folds,
                                   sample_split = sample_split)
-      } else if (vim == "rsquared"){
-        output <- survML::vim_rsquared(time = train$y,
-                                       event = train$delta,
-                                       approx_times = approx_times,
-                                       landmark_times = landmark_times,
-                                       f_hat = CV_full_preds,
-                                       fs_hat = CV_reduced_preds,
-                                       S_hat = CV_S_preds,
-                                       G_hat = CV_G_preds,
-                                       folds = folds,
-                                       ss_folds = ss_folds,
-                                       sample_split = sample_split)
       }
       output$vim <- vim
       output$indx <- char_indx

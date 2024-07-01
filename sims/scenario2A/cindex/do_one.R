@@ -16,7 +16,7 @@ do_one <- function(n_train,
   X <- train[,1:dimension]
 
   tau <- 0.9
-  approx_times <- sort(unique(c(0, time[time <= tau & event == 1])))
+  approx_times <- sort(c(unique(c(0, time[time <= tau & event == 1])), tau))
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num
@@ -32,7 +32,7 @@ do_one <- function(n_train,
   }
 
   ss_folds <- as.numeric(folds %in% which(ss_folds == 2))
-  
+
   nuisance_preds <- CV_generate_full_predictions_landmark(time = time,
                                                           event = event,
                                                           X = X,
