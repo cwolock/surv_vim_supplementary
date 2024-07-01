@@ -54,12 +54,12 @@ do_one <- function(n_train,
                                              CV_S_preds_train =  CV_S_preds_train,
                                              CV_S_preds = CV_S_preds,
                                              indx = NULL,
-                                             subsample_n = 500,
+                                             subsample_n = ceiling(n_train/3),
                                              params =  list(
                                                mstop = c(100, 250, 500),
                                                nu = c(0.1),
-                                               sigma = c(0.01, 0.05),
-                                               learner = c("tree")))
+                                               sigma = c(0.005, 0.01),
+                                               learner = c("glm")))
 
   CV_full_preds <- V0_preds
 
@@ -77,12 +77,12 @@ do_one <- function(n_train,
                                                indx = indx,
                                                CV_S_preds_train =  CV_S_preds_train,
                                                CV_S_preds = CV_S_preds,
-                                               subsample_n = 500,
+                                               subsample_n = ceiling(n_train/3),
                                                params =  list(
                                                  mstop = c(100, 250, 500),
                                                  nu = c(0.1),
-                                                 sigma = c(0.01, 0.05),
-                                                 learner = c("tree")))
+                                                 sigma = c(0.005, 0.01),
+                                                 learner = c("glm")))
     CV_reduced_preds <- V0_preds
 
     output <- survML::vim_cindex(time = train$y,
