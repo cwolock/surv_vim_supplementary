@@ -49,10 +49,10 @@ do_one <- function(n_train, correlation){
 
   for (t in landmark_times){
     if (scenario == "4"){
-      f <- 1-pnorm(-(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2) -interceptt + log(t), 
+      f <- 1-pnorm(-(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2) -interceptt + log(t),
                      mean = 0,
                      sd = sdy)
-      f2 <- 1-pnorm(-(x2 %*% beta_t + x2[,1]*x2[,2]*beta_int1 + x2[,3]*x2[,4]*beta_int2) -interceptt + log(t), 
+      f2 <- 1-pnorm(-(x2 %*% beta_t + x2[,1]*x2[,2]*beta_int1 + x2[,3]*x2[,4]*beta_int2) -interceptt + log(t),
                    mean = 0,
                    sd = sdy)
       f_01 <- 1-pnorm(-(x[,2]*beta_t[2] + beta_int2*x[,3]*x[,4]) - interceptt + log(t),
@@ -64,22 +64,22 @@ do_one <- function(n_train, correlation){
       f_02 <- 1-pnorm(-(x[,1]*beta_t[1] + beta_int2*x[,3]*x[,4]) - interceptt + log(t),
                       mean = (beta_t[2] + beta_int1*x[,1])*rho23*x[,3],
                       sd = sqrt((beta_t[2] + beta_int1*x[,1])^2*(1-rho23^2) + sdy^2))
-      f_015 <- 1-pnorm(-(x[,2]*beta_t[2] + beta_int2*x[,3]*x[,4]) - interceptt + log(t), 
+      f_015 <- 1-pnorm(-(x[,2]*beta_t[2] + beta_int2*x[,3]*x[,4]) - interceptt + log(t),
                        mean = 0,
                        sd = sqrt((beta_t[1] + beta_int1*x[,2])^2 + sdy^2))
-      f_015_2 <- 1-pnorm(-(x2[,2]*beta_t[2] + beta_int2*x2[,3]*x2[,4]) - interceptt + log(t), 
+      f_015_2 <- 1-pnorm(-(x2[,2]*beta_t[2] + beta_int2*x2[,3]*x2[,4]) - interceptt + log(t),
                        mean = 0,
                        sd = sqrt((beta_t[1] + beta_int1*x2[,2])^2 + sdy^2))
     } else{
       f <- 1-pnorm(-(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2) -interceptt + log(t), sd = sdy)
       f2 <- 1-pnorm(-(x2 %*% beta_t + x2[,1]*x2[,2]*beta_int1 + x2[,3]*x2[,4]*beta_int2) -interceptt + log(t), sd = sdy)
-      f_01 <- 1-pnorm(-(x[, 2] * beta_t[2] + x[,3]*x[,4]*beta_int2) - interceptt + log(t), 
+      f_01 <- 1-pnorm(-(x[, 2] * beta_t[2] + x[,3]*x[,4]*beta_int2) - interceptt + log(t),
                       mean = 0,
                       sd = sqrt((beta_t[1] + beta_int1*x[,2])^2 + sdy^2))
-      f_01_2 <- 1-pnorm(-(x2[, 2] * beta_t[2] + x2[,3]*x2[,4]*beta_int2) - interceptt + log(t), 
+      f_01_2 <- 1-pnorm(-(x2[, 2] * beta_t[2] + x2[,3]*x2[,4]*beta_int2) - interceptt + log(t),
                       mean = 0,
                       sd = sqrt((beta_t[1] + beta_int1*x2[,2])^2 + sdy^2))
-      f_02 <- 1-pnorm(-(x[, 1] * beta_t[1] + x[,3]*x[,4]*beta_int2) - interceptt + log(t), 
+      f_02 <- 1-pnorm(-(x[, 1] * beta_t[1] + x[,3]*x[,4]*beta_int2) - interceptt + log(t),
                       mean = 0,
                       sd = sqrt((beta_t[2] + beta_int1*x[,1])^2 + sdy^2))
       f_015 <- f_01
@@ -230,16 +230,16 @@ do_one <- function(n_train, correlation){
     if (scenario == "4A"){
       f <- -(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2)
       f2 <- -(x2 %*% beta_t + x2[,1]*x2[,2]*beta_int1 + x2[,3]*x2[,4]*beta_int2)
-      f_01 <- -(x[, 2] * beta_t[2] + (beta_t[1] + beta_int1*x[,2])*rho15*x[,4])
-      f_02 <- -(x[, 1] * beta_t[1] + (beta_t[2] + beta_int1*x[,1])*rho23*x[,3])
+      f_01 <- -(x[, 2] * beta_t[2] + beta_int2*x[,3]*x[,4] + (beta_t[1] + beta_int1*x[,2])*rho15*x[,4])
+      f_02 <- -(x[, 1] * beta_t[1] + beta_int2*x2[,3]*x2[,4] + (beta_t[2] + beta_int1*x[,1])*rho23*x[,3])
       f_015 <- -(x[, 2] * beta_t[2] + beta_int2*x[,3]*x[,4])
       f_015_2 <- -(x2[, 2] * beta_t[2]+ beta_int2*x2[,3]*x2[,4])
     } else{
       f <- -(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2)
       f2 <- -(x2 %*% beta_t + x2[,1]*x2[,2]*beta_int1 + x2[,3]*x2[,4]*beta_int2)
-      f_01 <- -(x[, 2] * beta_t[2])
-      f_01_2 <- -(x2[, 2] * beta_t[2])
-      f_02 <- -(x[, 1] * beta_t[1])
+      f_01 <- -(x[, 2] * beta_t[2] + beta_int2*x[,3]*x[,4])
+      f_01_2 <- -(x2[, 2] * beta_t[2] + beta_int2*x2[,3]*x2[,4])
+      f_02 <- -(x[, 1] * beta_t[1]+ beta_int2*x[,3]*x[,4])
       f_015 <- f_01
       f_015_2 <- f_01_2
     }

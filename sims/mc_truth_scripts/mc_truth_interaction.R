@@ -1,7 +1,7 @@
 library(tidyverse)
 # source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
-n_train <- 1e7
+n_train <- 1e6
 set.seed(1234)
 sdy <- 1
 ##################
@@ -27,13 +27,16 @@ auc_02 <- rep(NA, length(landmark_times))
 
 for (t in landmark_times){
   y <- ifelse(dat$t > t, 1, 0)
-  f_0 <- 1-pnorm(-(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2) -interceptt + log(t), sd = sdy)
-  f_01 <- 1-pnorm(-(x[, 2] * beta_t[2] + x[,3]*x[,4]*beta_int2) - interceptt + log(t), 
+  f_0 <- 1-pnorm(-(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2) -interceptt + log(t),
+                 mean = 0,
+                 sd = sdy)
+  f_01 <- 1-pnorm(-(x[, 2] * beta_t[2] + x[,3]*x[,4]*beta_int2) - interceptt + log(t),
                   mean = 0,
                   sd = sqrt((beta_t[1] + beta_int1*x[,2])^2 + sdy^2))
-  f_02 <- 1-pnorm(-(x[, 1] * beta_t[1] + x[,3]*x[,4]*beta_int2) - interceptt + log(t), 
+  f_02 <- 1-pnorm(-(x[, 1] * beta_t[1] + x[,3]*x[,4]*beta_int2) - interceptt + log(t),
                   mean = 0,
                   sd = sqrt((beta_t[2] + beta_int1*x[,1])^2 + sdy^2))
+
   mse_t <- vimp::measure_mse(f_0, y)$point_est
   auc_t <- cvAUC::AUC(f_0, y)
   mse_t1 <- vimp::measure_mse(f_01, y)$point_est
@@ -75,12 +78,12 @@ taus <- c(0.9)
 dat_test <- generate_data(n = n_train, scenario = "1A")
 outcome <- dat_test$t
 preds <- -beta_t[1]*dat_test[,1] - beta_t[2]*dat_test[,2] - beta_int1*dat_test[,1]*dat_test[,2] - beta_int2*dat_test[,3]*dat_test[,4]
-preds_01 <- -beta_t[2]*dat_test[,2]
-preds_02 <- -beta_t[1]*dat_test[,1]
+preds_01 <- -beta_t[2]*dat_test[,2] - beta_int2*dat_test[,3]*dat_test[,4]
+preds_02 <- -beta_t[1]*dat_test[,1] - beta_int2*dat_test[,3]*dat_test[,4]
 outcome2 <- dat$t
 preds2 <- -beta_t[1]*dat[,1] - beta_t[2]*dat[,2]- beta_int1*dat[,1]*dat[,2] - beta_int2*dat[,3]*dat[,4]
-preds2_01 <- -beta_t[2]*dat[,2]
-preds2_02 <- -beta_t[1]*dat[,1]
+preds2_01 <- -beta_t[2]*dat[,2] - beta_int2*dat[,3]*dat[,4]
+preds2_02 <- -beta_t[1]*dat[,1] - beta_int2*dat[,3]*dat[,4]
 
 full_c <- rep(NA, length(taus))
 c_01 <- rep(NA, length(taus))
@@ -139,7 +142,7 @@ auc_015 <- rep(NA, length(landmark_times))
 
 for (t in landmark_times){
   y <- ifelse(dat$t > t, 1, 0)
-  f_0 <- 1-pnorm(-(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2) -interceptt + log(t), 
+  f_0 <- 1-pnorm(-(x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2) -interceptt + log(t),
                  mean = 0,
                  sd = sdy)
   f_01 <- 1-pnorm(-(x[,2]*beta_t[2] + beta_int2*x[,3]*x[,4]) - interceptt + log(t),
@@ -148,7 +151,7 @@ for (t in landmark_times){
   f_02 <- 1-pnorm(-(x[,1]*beta_t[1] + beta_int2*x[,3]*x[,4]) - interceptt + log(t),
                   mean = (beta_t[2] + beta_int1*x[,1])*rho23*x[,3],
                   sd = sqrt((beta_t[2] + beta_int1*x[,1])^2*(1-rho23^2) + sdy^2))
-  f_015 <- 1-pnorm(-(x[,2]*beta_t[2] + beta_int2*x[,3]*x[,4]) - interceptt + log(t), 
+  f_015 <- 1-pnorm(-(x[,2]*beta_t[2] + beta_int2*x[,3]*x[,4]) - interceptt + log(t),
                    mean = 0,
                    sd = sqrt((beta_t[1] + beta_int1*x[,2])^2 + sdy^2))
   mse_t <- vimp::measure_mse(f_0, y)$point_est
@@ -194,7 +197,7 @@ preds_02 <- -beta_t[1]*dat_test[,1] - (beta_t[2] + beta_int1*dat_test[,1])*rho23
 preds_015 <- -beta_t[2]*dat_test[,2] - beta_int2*dat_test[,3]*dat_test[,4]
 outcome2 <- dat$t
 preds2 <- -beta_t[1]*dat[,1] -beta_t[2]*dat[,2]- beta_int1*dat[,1]*dat[,2] - beta_int2*dat[,3]*dat[,4]
-preds2_01 <- -beta_t[2]*dat[,2] - (beta_t[1] + beta_int1*dat[,2])*rho15*dat[,5]
+preds2_01 <- -beta_t[2]*dat[,2] - (beta_t[1] + beta_int1*dat[,2])*rho15*dat[,5]- beta_int2*dat[,3]*dat[,4]
 preds2_02 <- -beta_t[1]*dat[,1] -(beta_t[2] + beta_int1*dat[,1])*rho23*dat[,3] - beta_int2*dat[,3]*dat[,4]
 preds2_015 <- -beta_t[2]*dat[,2]- beta_int2*dat[,3]*dat[,4]
 
@@ -227,5 +230,5 @@ output2_global <- data.frame(vim = "cindex",
 output2_global <- output2_global %>% mutate(correlation = TRUE)
 output2 <- bind_rows(output2_landmark, output2_global)
 
-output <- bind_rows(output1, output2)
-saveRDS(output, "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/truth_interaction.rds")
+output2 <- bind_rows(output1, output2)
+# saveRDS(output, "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/truth_interaction.rds")
