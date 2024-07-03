@@ -1,7 +1,7 @@
 library(tidyverse)
 # source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
-n_train <- 1e6
+n_train <- 1e7
 set.seed(1234)
 sdy <- 1
 ##################

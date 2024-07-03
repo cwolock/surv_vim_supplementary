@@ -78,12 +78,14 @@ generate_full_predictions <- function(time,
                                         data = event_dat,
                                         ntree = opt_event_ntree,
                                         mtry = opt_event_mtry,
+                                        nodesize = opt_event_nodesize,
                                         importance = FALSE,
                                         perf.type = "none")
     cens_fit <- randomForestSRC::rfsrc(Surv(Y, Delta) ~ .,
                                        data = cens_dat,
                                        ntree = opt_cens_ntree,
                                        mtry = opt_cens_mtry,
+                                       nodesize = opt_cens_nodesize,
                                        importance = FALSE,
                                        perf.type = "none")
     event_q_pred_train <- predict(event_fit, newdata=X, importance='none')$survival
