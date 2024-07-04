@@ -115,7 +115,7 @@ do_one <- function(n_train,
     # plot(model_parts_survSL)
   } else if (method == "intrinsic"){
 
-    sample_split <- TRUE
+    sample_split <- FALSE
     crossfit <- TRUE
     indxs <- c("1", "2", "3", "4", "5")
 
