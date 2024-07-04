@@ -17,13 +17,13 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     xnames <- paste0("x", 1:p)
     Sigma <- diag(1, p)
   } else if (scenario == "1B"){
-    p <- 5
-    beta_t <- matrix(c(0.5, -0.3, 0.2, -0.1, 0))
+    p <- 4
+    beta_t <- matrix(c(0.5, -0.3, -0.1, 0))
     beta_c <- matrix(rep(0, p))
     interceptc <- 0
     xnames <- paste0("x", 1:p)
     Sigma <- diag(1, p)
-    Sigma[1,5] <- Sigma[5,1] <- 0.9
+    Sigma[1,4] <- Sigma[4,1] <- 0.9
     # Sigma[2,3] <- Sigma[3,2] <- -0.3
   } else if (scenario == "2"){
     p <- 25

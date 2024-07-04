@@ -8,7 +8,7 @@ do_one <- function(n_train,
   train <- generate_data(n = n_train, scenario = "1B", sdy = 1)
   train <- train %>% select(-c(t, c))
 
-  dimension <- 5
+  dimension <- 4
   time <- train$y
   event <- train$delta
   X <- train[,1:dimension]
@@ -53,13 +53,12 @@ do_one <- function(n_train,
     time_indices <- sapply(landmark_times,
                            FUN = function(x) which.min(abs(x - res$`_times_`)))
     pooled_output <- res[time_indices,] %>%  mutate(landmark_time = c(0.5, 0.9)) %>%
-      select(landmark_time, x1, x2, x3, x4, x5) %>%
+      select(landmark_time, x1, x2, x3, x4) %>%
       pivot_longer(cols = -landmark_time, names_to = "indx", values_to = "est") %>%
       mutate(indx = case_when(indx == "x1" ~ "1",
                               indx == "x2" ~ "2",
                               indx == "x3" ~ "3",
-                              indx == "x4" ~ "4",
-                              indx == "x5" ~ "5"))
+                              indx == "x4" ~ "4"))
 
 
     # event.SL.library <- cens.SL.library <- lapply(c("survSL.km", "survSL.coxph",
@@ -117,7 +116,7 @@ do_one <- function(n_train,
 
     sample_split <- FALSE
     crossfit <- TRUE
-    indxs <- c("1", "2", "3", "4", "5")
+    indxs <- c("1", "2", "3", "4")
 
     cf_fold_num <- switch((crossfit) + 1, 1, 5)
     ss_fold_num <- 2*cf_fold_num
@@ -184,6 +183,16 @@ do_one <- function(n_train,
   pooled_output <- pooled_output %>% select(landmark_time, indx, est)
   pooled_output$n_train <- n_train
   pooled_output$method <- method
+  out1 <- pooled_output %>% filter(landmark_time == 0.5)
+  out1$rank <- rank(-out1$est)
+  out1$true_rank <- c(2,1,3,4)
+
+  out2 <- pooled_output %>% filter(landmark_time == 0.9)
+  out2$rank <- rank(-out2$est)
+  out2$true_rank <- c(2,1,3,4)
+
+  pooled_output <- rbind(out1, out2)
+
   end <- Sys.time()
   pooled_output$runtime <- difftime(end, start, units = "mins")
   return(pooled_output)
