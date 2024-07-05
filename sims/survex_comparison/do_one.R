@@ -189,14 +189,15 @@ do_one <- function(n_train,
   pooled_output <- pooled_output %>% select(landmark_time, indx, est)
   pooled_output$n_train <- n_train
   pooled_output$method <- method
+  pooled_output$correlation <- correlation
   out1 <- pooled_output %>% filter(landmark_time == 0.5)
   out1$rank <- rank(-out1$est)
-  out1$true_rank <- c(2,1,3,4)
+  out1$true_rank <- ifelse(correlation, c(2,1,3,4), c(1,2,3,4))
   out1$all_right <- all(out1$rank == out1$true_rank)
 
   out2 <- pooled_output %>% filter(landmark_time == 0.9)
   out2$rank <- rank(-out2$est)
-  out2$true_rank <- c(2,1,3,4)
+  out2$true_rank <- ifelse(correlation, c(2,1,3,4), c(1,2,3,4))
   out2$all_right <- all(out2$rank == out2$true_rank)
 
   pooled_output <- rbind(out1, out2)
