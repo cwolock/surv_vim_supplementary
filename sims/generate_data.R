@@ -25,6 +25,15 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     Sigma <- diag(1, p)
     Sigma[1,4] <- Sigma[4,1] <- 0.9
     # Sigma[2,3] <- Sigma[3,2] <- -0.3
+  } else if (scenario == "1C"){
+    p <- 4
+    beta_t <- matrix(c(0.5, -0.3, -0.1, 0))
+    beta_c <- matrix(rep(0, p))
+    interceptc <- 0
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+    Sigma[1,4] <- Sigma[4,1] <- 0
+    # Sigma[2,3] <- Sigma[3,2] <- -0.3
   } else if (scenario == "2"){
     p <- 25
     beta_t <- matrix(c(0.5, -0.3, rep(0, (p-2))))

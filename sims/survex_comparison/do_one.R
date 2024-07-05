@@ -1,11 +1,17 @@
 do_one <- function(n_train,
-                   method){
+                   method,
+                   correlation){
 
   start <- Sys.time()
   landmark_times <- c(0.5, 0.9)
 
   # training data
-  train <- generate_data(n = n_train, scenario = "1B", sdy = 1)
+  if (correlation){
+    scenario <- "1B"
+  } else{
+    scenario <- "1C"
+  }
+  train <- generate_data(n = n_train, scenario = scenario, sdy = 1)
   train <- train %>% select(-c(t, c))
 
   dimension <- 4
@@ -45,7 +51,7 @@ do_one <- function(n_train,
     rsf_exp <- survex::explain(rsf)
 
     # model_parts_rsf <- model_parts(rsf_exp)
-    model_parts_rsf_auc  <- model_parts(rsf_exp, loss_function=loss_one_minus_cd_auc)
+    model_parts_rsf_auc  <- survex::model_parts(rsf_exp, loss_function=loss_one_minus_cd_auc)
 
     # plot(model_parts_rsf_auc)
 
