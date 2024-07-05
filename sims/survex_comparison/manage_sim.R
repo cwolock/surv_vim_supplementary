@@ -26,12 +26,14 @@ nreps_per_job <- 1
 
 n_trains <- c(500, 1000,1500, 2000, 2500, 3000)
 methods <- c("permutation", "intrinsic")
+correlations <- c(TRUE, FALSE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 
 param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
                           n_train = n_trains,
-                          method = methods)
+                          method = methods,
+                          correlation = correlations)
 
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
@@ -41,7 +43,8 @@ current_seed <- as.integer((1e9*runif(job_id))[job_id])
 set.seed(current_seed)
 output <- replicate(nreps_per_job,
                     do_one(n_train = current_dynamic_args$n_train,
-                          method = current_dynamic_args$method),
+                          method = current_dynamic_args$method,
+                          correlation = current_dynamic_args$correlation),
                     simplify = FALSE)
 sim_output <- lapply(as.list(1:length(output)),
                      function(x) tibble::add_column(output[[x]]))
