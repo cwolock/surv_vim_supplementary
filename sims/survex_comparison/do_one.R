@@ -1,16 +1,11 @@
 do_one <- function(n_train,
                    method,
-                   correlation){
+                   scenario){
 
   start <- Sys.time()
   landmark_times <- c(0.5, 0.9)
 
   # training data
-  if (correlation){
-    scenario <- "1B"
-  } else{
-    scenario <- "1C"
-  }
   train <- generate_data(n = n_train, scenario = scenario, sdy = 1)
   train <- train %>% select(-c(t, c))
 
@@ -51,15 +46,19 @@ do_one <- function(n_train,
     rsf_exp <- survex::explain(rsf)
 
     # model_parts_rsf <- model_parts(rsf_exp)
-    model_parts_rsf_auc  <- survex::model_parts(rsf_exp, loss_function=loss_one_minus_cd_auc)
+    model_parts_rsf_auc  <- survex::model_parts(rsf_exp,
+                                                # variables = list(c("x4")),
+                                                loss_function=loss_one_minus_cd_auc)
 
     # plot(model_parts_rsf_auc)
 
     res <- model_parts_rsf_auc$result %>% filter(`_permutation_` == 0)
     time_indices <- sapply(landmark_times,
                            FUN = function(x) which.min(abs(x - res$`_times_`)))
+    # names(res)[names(res) == "loss_variables"] <- "x4"
     pooled_output <- res[time_indices,] %>%  mutate(landmark_time = c(0.5, 0.9)) %>%
       select(landmark_time, x1, x2, x3, x4) %>%
+      # select(landmark_time, x4) %>%
       pivot_longer(cols = -landmark_time, names_to = "indx", values_to = "est") %>%
       mutate(indx = case_when(indx == "x1" ~ "1",
                               indx == "x2" ~ "2",
@@ -189,25 +188,30 @@ do_one <- function(n_train,
   pooled_output <- pooled_output %>% select(landmark_time, indx, est)
   pooled_output$n_train <- n_train
   pooled_output$method <- method
-  pooled_output$correlation <- correlation
+  pooled_output$scenario <- scenario
+
   out1 <- pooled_output %>% filter(landmark_time == 0.5)
   out1$rank <- rank(-out1$est)
-  if (correlation){
-    out1$true_rank <- c(2,1,3,4)
-  } else{
-    out1$true_rank <- c(1,2,3,4)
-  }
+  out1 <- out1 %>% filter(indx == "4") %>%
+    mutate(correct = ifelse(rank == 4, 1, 0))
+  # if (correlation){
+    # out1$true_rank <- c(2,1,3,4)
+  # } else{
+    # out1$true_rank <- c(1,2,3,4)
+  # }
 
-  out1$all_right <- all(out1$rank == out1$true_rank)
+  # out1$all_right <- all(out1$rank == out1$true_rank)
 
   out2 <- pooled_output %>% filter(landmark_time == 0.9)
   out2$rank <- rank(-out2$est)
-  if (correlation){
-    out2$true_rank <- c(2,1,3,4)
-  } else{
-    out2$true_rank <- c(1,2,3,4)
-  }
-  out2$all_right <- all(out2$rank == out2$true_rank)
+  out2 <- out2 %>% filter(indx == "4") %>%
+    mutate(correct = ifelse(rank == 4, 1, 0))
+  # if (correlation){
+  # #   # out2$true_rank <- c(2,1,3,4)
+  # # } else{
+  #   out2$true_rank <- c(1,2,3,4)
+  # }
+  # out2$all_right <- all(out2$rank == out2$true_rank)
 
   pooled_output <- rbind(out1, out2)
 
