@@ -16,6 +16,14 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     interceptc <- 0
     xnames <- paste0("x", 1:p)
     Sigma <- diag(1, p)
+  } else if (scenario == "1B"){
+    p <- 5
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- 0
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
   } else if (scenario == "5A"){
     p <- 4
     beta_t <- matrix(c(0.5, -0.3, -0.15, 0))
@@ -68,6 +76,14 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     interceptc <- 0
     xnames <- paste0("x", 1:p)
     Sigma <- diag(1, p)
+  } else if (scenario == "2B"){
+    p <- 25
+    beta_t <- matrix(c(0.5, -0.3, rep(0, (p-2))))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, (p-2))))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- 0
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
   } else if (scenario == "4A"){
     p <- 25
     beta_t <- matrix(c(0.5, -0.3, rep(0, (p-2))))
@@ -78,6 +94,16 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     xnames <- paste0("x", 1:p)
     Sigma <- diag(1, p)
     Sigma[1,5] <- Sigma[5,1] <- 0.7
+    Sigma[2,3] <- Sigma[3,2] <- -0.3
+  } else if (scenario == "4B"){
+    p <- 25
+    beta_t <- matrix(c(0.5, -0.3, rep(0, (p-2))))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, (p-2))))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- 0
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+    Sigma[1,6] <- Sigma[6,1] <- 0.7
     Sigma[2,3] <- Sigma[3,2] <- -0.3
   } else if (scenario == "4"){
     p <- 5
@@ -161,6 +187,46 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     interceptc <- -0.85
     xnames <- paste0("x", 1:p)
     Sigma <- diag(1, p)
+  } else if (scenario == "3B_30"){
+    p <- 25
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- 0.85
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+  } else if (scenario == "3B_40"){
+    p <- 25
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- 0.5
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+  } else if (scenario == "3B_50"){
+    p <- 25
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- 0
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+  } else if (scenario == "3B_60"){
+    p <- 25
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- -0.45
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
+  } else if (scenario == "3B_70"){
+    p <- 25
+    beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
+    beta_c <- matrix(c(-0.2, 0.2, rep(0, p-2)))
+    beta_int <- c(0.1, -0.1, 0.1)
+    interceptc <- -0.85
+    xnames <- paste0("x", 1:p)
+    Sigma <- diag(1, p)
   }
 
   mu_x <- rep(0, p)
@@ -170,8 +236,10 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
   epsc <- rnorm(n = n, mean = 0, sd = sdy)
   if (scenario != "2A" & scenario != "4A" & scenario != "1A" & scenario != "3A_50" & scenario != "3A_30" & scenario != "3A_40" & scenario != "3A_60" & scenario != "3A_70"){
     logt <- x %*% beta_t + eps
-  } else{
+  } else if (scenario %in% c("1A", "2A", "4A", "3A_30", "3A_40", "3A_50", "3A_60", "3A_70")){
     logt <- x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2 + eps
+  } else if (scenario %in% c("1A", "2A", "4A", "3A_30", "3A_40", "3A_50", "3A_60", "3A_70")){
+    logt <- x %*% beta_t + x[,1]*x[,2]*beta_int[1] + x[,3]*x[,4]*beta_int[2] + x[,1]*x[,5]*beta_int[3] + eps
   }
 
   t <- exp(logt)
