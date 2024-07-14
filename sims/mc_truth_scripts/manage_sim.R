@@ -1,10 +1,10 @@
 #!/usr/local/bin/Rscript
 library(dplyr)
 
-source("/home/cwolock/surv_vim_supplementary/sims/mc_truth_scripts/do_one_interaction.R")
+source("/home/cwolock/surv_vim_supplementary/sims/mc_truth_scripts/do_one_interactionB.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 
-sim_name <- "mc_truth_variance_interaction"
+sim_name <- "mc_truth_variance_interactionB"
 nreps_total <- 100
 nreps_per_job <- 1
 

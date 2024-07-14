@@ -14,11 +14,12 @@ myFont <- "Times New Roman"
 
 # plotting parameters
 point_size <- 2
-title_text_size <- 14
-axis_text_size <- 12
+title_text_size <- 15
+axis_text_size <- 13
+axis_title_size <- 15
 big_fig_width <- 12
 big_fig_height <- 7
-strip_text_size <- 12
+strip_text_size <- 15
 
 ########################################
 ### combine results from multiple splits
@@ -150,7 +151,7 @@ method = "compound_bg"
 unscale <- FALSE
 
 ### marginal combined
-setwd("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/combined")
+setwd("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/data_analysis/combined")
 # f <- readRDS("analysis_112223.rds")
 # f <- readRDS("combined_analysis_061324.rds")
 f <- readRDS("combined_analysis_interactions_oldlib_smallersigma_subsample1500_oldseed.rds")
@@ -178,7 +179,7 @@ combined_ss_both_conditional <- multisplit(f, f1, method)
 combined_ss_both_conditional <- combined_ss_both_conditional
 
 ### marginal female
-setwd("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/female")
+setwd("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/data_analysis/female")
 # f <- readRDS("analysis_112223.rds")
 f <- readRDS("female_analysis_interactions_oldlib_smallersigma_subsample1500.rds")
 names(f)[names(f) == "tau"] <- "landmark_time"
@@ -205,7 +206,7 @@ female_ss_both_conditional <- multisplit(f, f1, method)
 female_ss_both_conditional <- female_ss_both_conditional
 
 ### pooled male and female marginal
-# setwd("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/male")
+# setwd("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/data_analysis/male")
 # # f <- readRDS("analysis_112223.rds")
 # f <- readRDS("pooled_analysis_interactions_stackGoldlib.rds")
 # names(f)[names(f) == "tau"] <- "landmark_time"
@@ -218,7 +219,7 @@ female_ss_both_conditional <- female_ss_both_conditional
 # pooled_ss_both_marginal <- multisplit(f, f1, method)
 # pooled_ss_both_marginal <- pooled_ss_both_marginal %>% mutate(SAB = ifelse(SAB == "male", "Male cohort", "Female cohort"))
 #
-# setwd("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/male")
+# setwd("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/data_analysis/male")
 # # f <- readRDS("analysis_112223.rds")
 # f <- readRDS("pooled_analysis_interactions_stackGoldlib.rds")
 # names(f)[names(f) == "tau"] <- "landmark_time"
@@ -234,7 +235,7 @@ female_ss_both_conditional <- female_ss_both_conditional
 #
 
 ### marginal male
-setwd("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/data_analysis/male")
+setwd("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/data_analysis/male")
 # f <- readRDS("analysis_112223.rds")
 f <- readRDS("male_analysis_interactions_oldlib_smallersigma_subsample1500_oldseed.rds")
 names(f)[names(f) == "tau"] <- "landmark_time"
@@ -271,6 +272,12 @@ make_plot_combined <- function(combined){
   xmax_auc <- 0.5
   xmin <- 0
 
+  for (i in 1:nrow(combined)){
+    if (combined$pval[i] <= 0.05){
+      combined$indx_number[i] <- paste0("*", combined$indx_number[i])
+    }
+  }
+
 
   vimp_plot_combined <- combined %>%
     filter(SAB == "Combined cohort") %>%
@@ -294,12 +301,15 @@ make_plot_combined <- function(combined){
         facet_wrap(~vim, dir = "v", strip.position = "right", scales = "free_y", nrow = 4) +
         ggtitle("Combined cohort")+
         theme(title = element_text(size = title_text_size, family = "Times New Roman"),
-              axis.title.x = element_text(size = axis_text_size, family = "Times New Roman"),
-              axis.title.y = element_text(size = axis_text_size, margin = margin(t = 0, r = 7, b = 0, l = 0)),
+              axis.title.x = element_text(size = axis_title_size, family = "Times New Roman"),
+              axis.title.y = element_text(size = axis_title_size, margin = margin(t = 0, r = 7, b = 0, l = 0)),
               axis.text = element_text(size = axis_text_size, family = "Times New Roman"),
               strip.background = element_blank(),
               strip.placement = "outside",
-              strip.text = element_blank())
+              strip.text = element_blank(),
+              panel.grid.minor.y = element_blank(),
+              panel.grid.minor.x = element_blank(),
+              panel.grid.major.y = element_blank())
     }
 
   vimp_plot_female <- combined %>%
@@ -324,12 +334,15 @@ make_plot_combined <- function(combined){
         facet_wrap(~vim, dir = "v", strip.position = "right", scales = "free_y", nrow = 4) +
         ggtitle("Female cohort")+
         theme(title = element_text(size = title_text_size, family = "Times New Roman"),
-              axis.title.x = element_text(size = axis_text_size, family = "Times New Roman"),
+              axis.title.x = element_text(size = axis_title_size, family = "Times New Roman"),
               axis.title.y = element_blank(),#element_text(size = axis_text_size, margin = margin(t = 0, r = 7, b = 0, l = 0)),
               axis.text = element_text(size = axis_text_size, family = "Times New Roman"),
               strip.background = element_blank(),
               strip.placement = "outside",
-              strip.text = element_blank())
+              strip.text = element_blank(),
+              panel.grid.minor.y = element_blank(),
+              panel.grid.minor.x = element_blank(),
+              panel.grid.major.y = element_blank())
     }
 
   vimp_plot_male <- combined %>%
@@ -354,12 +367,15 @@ make_plot_combined <- function(combined){
         facet_wrap(~vim, dir = "v", strip.position = "right", scales = "free_y", nrow = 4) +
         ggtitle("Male cohort")+
         theme(title = element_text(size = title_text_size, family = "Times New Roman"),
-              axis.title.x = element_text(size = axis_text_size, family = "Times New Roman"),
+              axis.title.x = element_text(size = axis_title_size, family = "Times New Roman"),
               axis.title.y = element_blank(),#element_text(size = axis_text_size, margin = margin(t = 0, r = 7, b = 0, l = 0)),
               axis.text = element_text(size = axis_text_size, family = "Times New Roman"),
               strip.background = element_blank(),
               strip.placement = "outside",
-              strip.text = element_text(size = strip_text_size, family = "Times New Roman"))
+              strip.text = element_text(size = strip_text_size, family = "Times New Roman"),
+              panel.grid.minor.y = element_blank(),
+              panel.grid.minor.x = element_blank(),
+              panel.grid.major.y = element_blank())
     }
 
   multipanel <- ggarrange(vimp_plot_combined,
@@ -383,11 +399,11 @@ combined_ss_marginal <- bind_rows(combined_ss_both_marginal,
 p_marg <- make_plot_combined(combined_ss_marginal)
 
 
-# wd <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/"
-# fname <- "702-marginal-vax-062524-10split-tnr"
-# ggsave(filename = paste0(wd, fname, ".pdf"),
-# plot = p_marg, device = "pdf",
-# width = big_fig_width, height = big_fig_height, dpi = 300, units = "in")
+wd <- "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/"
+fname <- "702-marginal-vax-071324-10split-tnr"
+ggsave(filename = paste0(wd, fname, ".pdf"),
+plot = p_marg, device = "pdf",
+width = big_fig_width, height = big_fig_height, dpi = 300, units = "in")
 
 combined_ss_conditional <- bind_rows(combined_ss_both_conditional,
                                      # pooled_ss_both_conditional) %>%
@@ -397,10 +413,10 @@ combined_ss_conditional <- bind_rows(combined_ss_both_conditional,
 
 p_cond <- make_plot_combined(combined_ss_conditional)
 
-# fname <- "702-conditional-vax-062524-10split-tnr"
-# ggsave(filename = paste0(wd, fname, ".pdf"),
-# plot = p_cond, device = "pdf",
-# width = big_fig_width, height = big_fig_height, dpi = 300, units = "in")
+fname <- "702-conditional-vax-071324-10split-tnr"
+ggsave(filename = paste0(wd, fname, ".pdf"),
+plot = p_cond, device = "pdf",
+width = big_fig_width, height = big_fig_height, dpi = 300, units = "in")
 
 
 # look at significance

@@ -23,11 +23,11 @@ make_sim_plot(summ,
               scenario = "2",
               big = TRUE,
               wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario2A-big_062724")
+              fname = "scenario2A-big_070124")
 
 # summ <- summ %>% filter(vim == "AUC" & indx == 1)
-make_sim_plot(summ,
-              scenario = "2",
-              big = FALSE,
-              wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario2A-small")
+# make_sim_plot(summ,
+#               scenario = "2",
+#               big = FALSE,
+#               wd = "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/biometrika/",
+#               fname = "scenario2A-small")

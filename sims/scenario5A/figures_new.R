@@ -2,11 +2,11 @@ source("/Users/cwolock//Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/figu
 
 # read in truth files
 truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/truth_interaction.rds"
-var_truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/variance_truth.rds"
+var_truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/mc_truth_variance_interaction.rds"
 truth_list <- compile_truth(true_param_file = truth_file,
                             true_avar_file = var_truth_file)
 
-dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario5A_moreN.rds")
+dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario5A.rds")
 dat <- dat %>% filter(n_train %in% c(250, 500, 1000, 2500, 5000)) %>%
   mutate(tau = landmark_time)
 
@@ -73,7 +73,7 @@ blah <- this_dat %>%
 
 
 
-p <- blah %>% ggplot(aes(x = factor(n_train), y = mse )) +
+p <- blah %>% ggplot(aes(x = factor(n_train), y = mean_err )) +
   geom_point(aes(shape = robust_V), size = 2.5, color = "grey40") +
   geom_line(aes(linetype = robust_f,
                 group = interaction(robust_f, robust_V)),
