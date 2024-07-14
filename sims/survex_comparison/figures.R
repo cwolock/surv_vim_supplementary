@@ -10,20 +10,65 @@ truth <- truth %>% mutate(vim1 = V_full - V_01,
                           landmark_time = factor(tau))
 
 dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/survex_comparison.rds")
+# dat$correlation <- c(rep(TRUE, nrow(dat)/2), rep(FALSE, nrow(dat)/2))
+dat <- dat %>% filter(landmark_time == 0.5) %>%
+  mutate(scaled_est = ifelse(est <= 0, 0, est))
+# dat$rep <- rep(seq(1:(nrow(dat)/4)), each = 4)
+#
+# dat$all_right <- NA
+# for (i in 1:(nrow(dat)/4)){
+#   this_dat <- dat %>% filter(rep == i)
+#   if (this_dat$correlation[1]){
+#     all_right <- all(this_dat$rank == c(2,1,3,4))
+#   } else{
+#     all_right <- all(this_dat$rank == c(1,2,3,4))
+#   }
+#   dat[dat$rep == i,"all_right"] <- all_right
+# }
 
-summ <- dat %>% group_by(n_train, indx, method, landmark_time) %>%
-  summarize(rank_right = mean(rank == true_rank),
-            all_right = mean(all_right),
-            avg_est = mean(est),
-            runtime = mean(runtime)) %>%
-  mutate(landmark_time = factor(landmark_time))
+summ <- dat %>% group_by(n_train, method,scenario) %>%
+  summarize(nreps = n(),
+            rank_right = mean(correct),
+            mse = mean(est^2),
+            rank_right_mc_se = sqrt(rank_right * (1 - rank_right) / nreps),
+            # all_right = mean(all_right),
+            avg_est = mean(scaled_est),
+            runtime = mean(runtime))# %>%
+  # mutate(landmark_time = factor(landmark_time))
 
-summ_small <- summ %>% filter(indx == "1")
-p <- summ_small %>% ggplot(aes(x = n_train, y = all_right)) +
-  geom_point(aes(shape = method, color = landmark_time)) +
+summ_small <- summ #%>% filter(indx == "1")
+p <- summ_small %>% ggplot(aes(x = n_train, y = rank_right)) +
+  geom_line(aes(linetype = scenario)) +
+  geom_errorbar(aes(ymin=rank_right - 1.96*rank_right_mc_se,
+                    ymax=rank_right + 1.96*rank_right_mc_se),
+                width=.1) +
+  geom_point(size = 1) +
+  facet_wrap(~ method) +
   theme_bw() +
   scale_color_manual(values = c("black", "blue")) +
   ylim(c(0, 1))
+
+p <- summ_small %>% ggplot(aes(x = n_train, y = avg_est)) +
+  geom_line(aes(linetype = scenario)) +
+  # geom_errorbar(aes(ymin=rank_right - 1.96*rank_right_mc_se,
+                    # ymax=rank_right + 1C.96*rank_right_mc_se),
+                # width=.1) +
+  geom_point(size = 1) +
+  facet_wrap(~ method) +
+  theme_bw() +
+  scale_color_manual(values = c("black", "blue"))# +
+  # ylim(c(0, 1))
+
+p <- summ_small %>% ggplot(aes(x = n_train, y = mse)) +
+  geom_line(aes(linetype = scenario)) +
+  # geom_errorbar(aes(ymin=rank_right - 1.96*rank_right_mc_se,
+  # ymax=rank_right + 1C.96*rank_right_mc_se),
+  # width=.1) +
+  geom_point(size = 1) +
+  facet_wrap(~ method) +
+  theme_bw() +
+  scale_color_manual(values = c("black", "blue"))# +
+# ylim(c(0, 1))
 
 
 # dat <- left_join(dat, truth, by = c("landmark_time"))
