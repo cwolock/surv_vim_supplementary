@@ -232,7 +232,7 @@ do_one <- function(n_train, correlation){
   }
 
   for (t in c_landmark_times){
-    if (scenario == "4A"){
+    if (scenario == "4B"){
       f <- -(x %*% beta_t + x[,1]*x[,2]*beta_int[1] + x[,3]*x[,4]*beta_int[2] + x[,1]*x[,5]*beta_int[3])
       f2 <- -(x2 %*% beta_t + x2[,1]*x2[,2]*beta_int[1] + x2[,3]*x2[,4]*beta_int[2] + x2[,1]*x2[,5]*beta_int[3])
       f_01 <- -(x[, 2] * beta_t[2] + beta_int[2]*x[,3]*x[,4] + (beta_t[1] + beta_int[1]*x[,2] + beta_int[3]*x[,5])*rho16*x[,6])
