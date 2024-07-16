@@ -1,6 +1,6 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "mc_truth_variance_interaction"
+sim_name <- "mc_truth_variance_interactionB"
 nreps_total <- 100
 nreps_per_job <- 1
 

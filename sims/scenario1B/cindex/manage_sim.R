@@ -10,7 +10,7 @@ library(survSuperLearner)
 library(gtools)
 library(mboost)
 
-source("/home/cwolock/surv_vim_supplementary/sims/scenario1A/cindex/do_one.R")
+source("/home/cwolock/surv_vim_supplementary/sims/scenario1B/cindex/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
@@ -20,13 +20,13 @@ source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 # source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/boost_c_index.R")
 # source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
 
-sim_name <- "scenario1A_cindex"
-nreps_total <- 200
+sim_name <- "scenario1B_cindex"
+nreps_total <- 500
 nreps_per_job <- 1
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL")
-crossfits <- c(TRUE)
+nuisances <- c("survSL", "stackG", "rfsrc")
+crossfits <- c(TRUE, FALSE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 

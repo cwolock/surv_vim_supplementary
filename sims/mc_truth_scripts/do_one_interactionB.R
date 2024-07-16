@@ -1,5 +1,5 @@
 do_one <- function(n_train, correlation){
-  scenario <- ifelse(correlation, "2A", "4A")
+  scenario <- ifelse(correlation, "2B", "4B")
   sdy <- 1
   # training data
   dat <- generate_data(n = n_train, scenario = scenario, sdy = sdy)

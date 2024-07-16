@@ -18,7 +18,7 @@ source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 sim_name <- "scenario3A_cindex"
-nreps_total <- 500
+nreps_total <- 250
 nreps_per_job <- 1
 
 cens_rates <- c("30%", "40%", "50%", "60%", "70%")

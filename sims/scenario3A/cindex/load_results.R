@@ -1,7 +1,7 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "scenario3_cindex"
-nreps_total <- 500
+sim_name <- "scenario3A_cindex"
+nreps_total <- 250
 nreps_per_job <- 1
 
 output_dir <- "output/"
