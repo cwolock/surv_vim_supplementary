@@ -5,10 +5,10 @@ do_one <- function(n_train,
   start <- Sys.time()
 
   # training data
-  train <- generate_data(n = n_train, scenario = "1A", sdy = 1)
+  train <- generate_data(n = n_train, scenario = "1B", sdy = 1)
 
   sample_split <- FALSE
-  dimension <- 4
+  dimension <- 5
   indxs <- c("1", "2")
 
   time <- train$y

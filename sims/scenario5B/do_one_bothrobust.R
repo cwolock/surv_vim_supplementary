@@ -57,7 +57,7 @@ do_one <- function(n_train,
                                                        X = X,
                                                        landmark_times = landmark_times,
                                                        folds = folds,
-                                                       indx = c(1,5),
+                                                       indx = c(1,6),
                                                        sample_split = sample_split,
                                                        full_preds_train = CV_full_preds_train)
 
@@ -78,7 +78,7 @@ do_one <- function(n_train,
 
   output$n_train <- n_train
   output$vim <- "AUC"
-  output$indx <- "1,5"
+  output$indx <- "1,6"
   output$misspec_type <- misspec_type
   output$robust_V <- robust_V
   output$robust_f <- robust_f

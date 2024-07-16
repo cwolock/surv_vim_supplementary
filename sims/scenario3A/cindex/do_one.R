@@ -22,7 +22,6 @@ do_one <- function(cens_rate,
 
   tau <- 0.9
   approx_times <- sort(c(unique(c(0, time[time <= tau & event == 1])), tau))
-  approx_times <- approx_times[approx_times <= max(landmark_times)]
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num
