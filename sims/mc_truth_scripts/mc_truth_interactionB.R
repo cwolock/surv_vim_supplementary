@@ -65,7 +65,7 @@ output1_landmark <- output1_landmark %>% mutate(V_016 = V_01, correlation = FALS
 
 taus <- c(0.9)
 # c index stuff
-dat_test <- generate_data(n = n_train, scenario = "1A")
+dat_test <- generate_data(n = n_train, scenario = "1B")
 outcome <- dat_test$t
 preds <- -beta_t[1]*dat_test[,1] - beta_t[2]*dat_test[,2] - beta_int[1]*dat_test[,1]*dat_test[,2] - beta_int[2]*dat_test[,3]*dat_test[,4] - beta_int[3]*dat_test[,1]*dat_test[,5]
 preds_01 <- -beta_t[2]*dat_test[,2] - beta_int[2]*dat_test[,3]*dat_test[,4]
@@ -73,7 +73,7 @@ preds_02 <- -beta_t[1]*dat_test[,1] - beta_int[2]*dat_test[,3]*dat_test[,4] - be
 outcome2 <- dat$t
 preds2 <- -beta_t[1]*dat[,1] - beta_t[2]*dat[,2]- beta_int[1]*dat[,1]*dat[,2] - beta_int[2]*dat[,3]*dat[,4] - beta_int[3]*dat[,1]*dat[,5]
 preds2_01 <- -beta_t[2]*dat[,2] - beta_int[2]*dat[,3]*dat[,4]
-preds2_02 <- -beta_t[1]*dat[,1] - beta_int[2]*dat[,3]*dat[,4] - beta_int[3]*dat_test[,1]*dat_test[,5]
+preds2_02 <- -beta_t[1]*dat[,1] - beta_int[2]*dat[,3]*dat[,4] - beta_int[3]*dat[,1]*dat[,5]
 
 full_c <- rep(NA, length(taus))
 c_01 <- rep(NA, length(taus))

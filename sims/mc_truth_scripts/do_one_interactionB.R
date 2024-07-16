@@ -6,6 +6,7 @@ do_one <- function(n_train, correlation){
   x <- as.matrix(dat[,1:6])
   dat2 <- generate_data(n = n_train, scenario = scenario, sdy = sdy)
   x2 <- as.matrix(dat2[,1:6])
+  p <- 6
   beta_t <- matrix(c(0.5, -0.3, rep(0, p- 2)))
   beta_c <- matrix(c(-0.2, 0.2, rep(0, p- 2)))
   interceptt <- 0

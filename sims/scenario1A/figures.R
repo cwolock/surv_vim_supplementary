@@ -13,7 +13,7 @@ landmark_dat <- landmark_dat %>% mutate(tau = landmark_time)
 landmark_summ <- summarize_results(landmark_dat, scenario = "1", truth_list$truth, truth_list$var_truth)
 
 # C-INDEX SIMS
-cindex_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario1A_cindex.rds")
+cindex_dat <- readRDS("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/scenario1A_cindex.rds")
 # cindex_dat <- cindex_dat %>% mutate(est = one_step)
 cindex_dat <- cindex_dat %>% mutate(tau = restriction_time)
 cindex_summ <- summarize_results(cindex_dat, scenario = "1", truth_list$truth, truth_list$var_truth)

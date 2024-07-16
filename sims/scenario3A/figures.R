@@ -7,7 +7,7 @@ truth_list <- compile_truth(true_param_file = truth_file,
                             true_avar_file = var_truth_file)
 
 # LANDMARK SIMS
-landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/scratch/scenario3A_landmark.rds")
+landmark_dat <- readRDS("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/scenario3A_landmark.rds")
 landmark_summ <- summarize_results(landmark_dat, scenario = "3", truth_list$truth, truth_list$var_truth)
 
 # C-INDEX SIMS

@@ -3,7 +3,7 @@ source("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplement
 # read in truth files
 # truth_file <- "/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim/scratch/sims/landmark/truth_interaction.rds"
 truth_file <- "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/truth_interactionB.rds"
-var_truth_file <- "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/mc_truth_variance_interaction.rds"
+var_truth_file <- "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/mc_truth_variance_interactionB.rds"
 truth_list <- compile_truth(true_param_file = truth_file,
                             true_avar_file = var_truth_file)
 
@@ -18,10 +18,18 @@ cindex_dat <- readRDS("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv
 cindex_dat <- cindex_dat %>% mutate(tau = restriction_time)
 cindex_summ <- summarize_results(cindex_dat, scenario = "4", truth_list$truth, truth_list$var_truth)
 
-
 summ <- bind_rows(landmark_summ, cindex_summ)
+
+# make_sim_plot(summ,
+#               scenario = "4",
+#               big = TRUE,
+#               wd = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/",
+#               fname = "scenario4B-big-071324")
+
+summ <- summ %>% filter(vim == "AUC" & tau == 0.5)
+
 make_sim_plot(summ,
               scenario = "4",
-              big = TRUE,
+              big = FALSE,
               wd = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario4B-big-071324")
+              fname = "scenario4-small-071324")
