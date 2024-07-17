@@ -238,7 +238,7 @@ generate_data <- function(n = 500, scenario = "1", sdy = 1, max_fu = 100){
     logt <- x %*% beta_t + eps
   } else if (scenario %in% c("1A", "2A", "4A", "3A_30", "3A_40", "3A_50", "3A_60", "3A_70")){
     logt <- x %*% beta_t + x[,1]*x[,2]*beta_int1 + x[,3]*x[,4]*beta_int2 + eps
-  } else if (scenario %in% c("1A", "2A", "4A", "3A_30", "3A_40", "3A_50", "3A_60", "3A_70")){
+  } else if (scenario %in% c("1B", "2B", "4B", "3B_30", "3B_40", "3B_50", "3B_60", "3B_70")){
     logt <- x %*% beta_t + x[,1]*x[,2]*beta_int[1] + x[,3]*x[,4]*beta_int[2] + x[,1]*x[,5]*beta_int[3] + eps
   }
 
