@@ -1,6 +1,6 @@
 #!/usr/local/bin/Rscript
 
-name <- "female_analysis_interactions_oldlibrary_smallersigma_oldseed"
+name <- "female_analysis_interactions_oldlib_smallersigma_subsample1500"
 nreps_total <- 10
 nreps_per_job <- 1
 

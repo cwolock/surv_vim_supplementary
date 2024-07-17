@@ -5,11 +5,11 @@ do_one <- function(n_train,
   start <- Sys.time()
 
   # training data
-  train <- generate_data(n = n_train, scenario = "4A", sdy = 1)
+  train <- generate_data(n = n_train, scenario = "4B", sdy = 1)
 
   sample_split <- TRUE
   dimension <- 25
-  indxs <- c("1", "5", "1,5")
+  indxs <- c("1", "6", "1,6")
 
   time <- train$y
   event <- train$delta

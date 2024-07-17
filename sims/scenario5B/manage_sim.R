@@ -35,9 +35,7 @@ current_seed <- as.integer((1e9*runif(job_id))[job_id])
 set.seed(current_seed)
 output <- replicate(nreps_per_job,
                     do_one(n_train = current_dynamic_args$n_train,
-                           misspec_type = current_dynamic_args$misspec_type,
-                           robust_f = current_dynamic_args$robust_f,
-                           robust_V = current_dynamic_args$robust_V),
+                           misspec_type = current_dynamic_args$misspec_type),
                     simplify = FALSE)
 sim_output <- lapply(as.list(1:length(output)),
                      function(x) tibble::add_column(output[[x]]))
