@@ -20,16 +20,16 @@ cindex_summ <- summarize_results(cindex_dat, scenario = "4", truth_list$truth, t
 
 summ <- bind_rows(landmark_summ, cindex_summ)
 
-# make_sim_plot(summ,
-#               scenario = "4",
-#               big = TRUE,
-#               wd = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/",
-#               fname = "scenario4B-big-071324")
-
-summ <- summ %>% filter(vim == "AUC" & tau == 0.5)
-
 make_sim_plot(summ,
               scenario = "4",
-              big = FALSE,
+              big = TRUE,
               wd = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario4-small-071324")
+              fname = "scenario4B-big-071724")
+
+# summ <- summ %>% filter(vim == "AUC" & tau == 0.5)
+#
+# make_sim_plot(summ,
+#               scenario = "4",
+#               big = FALSE,
+#               wd = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/",
+#               fname = "scenario4-small-071324")
