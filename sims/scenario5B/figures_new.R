@@ -33,7 +33,8 @@ blah <- this_dat %>%
             mean_err = mean(err),
             mse = mean(err^2),
             sd_err = sd(err),
-            se_err = sqrt( mean((err - mean_err) ^ 2) / (nreps-1))) %>%
+            se_err = sqrt( mean((err - mean_err) ^ 2) / (nreps-1)),
+            runtime = mean(runtime)) %>%
   mutate(misspec_type = factor(misspec_type,
                                levels = c("none", "censoring", "event_plusf0"),
                                labels = c("None", "Censoring", "Event")),

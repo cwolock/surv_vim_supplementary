@@ -1,7 +1,5 @@
 do_one <- function(n_train,
-                   misspec_type,
-                   robust_V,
-                   robust_f){
+                   misspec_type){
 
   start <- Sys.time()
 
@@ -44,11 +42,12 @@ do_one <- function(n_train,
                                                             nuisance = nuisance,
                                                             folds = folds,
                                                             sample_split = sample_split,
-                                                            misspec_type = misspec_type,
-                                                            DR_f0 = robust_f)
+                                                            misspec_type = misspec_type)
 
-  CV_full_preds <- V0_preds$CV_full_preds
-  CV_full_preds_train <- V0_preds$CV_full_preds_train
+  CV_full_preds_robust <- V0_preds$CV_full_preds_robust
+  CV_full_preds_train_robust <- V0_preds$CV_full_preds_train_robust
+  CV_full_preds_nonrobust <- V0_preds$CV_full_preds_nonrobust
+  CV_full_preds_train_nonrobust <- V0_preds$CV_full_preds_train_nonrobust
   CV_S_preds <- V0_preds$CV_S_preds
   CV_G_preds <- V0_preds$CV_G_preds
 
@@ -59,29 +58,88 @@ do_one <- function(n_train,
                                                        folds = folds,
                                                        indx = c(1,6),
                                                        sample_split = sample_split,
-                                                       full_preds_train = CV_full_preds_train)
+                                                       full_preds_train = CV_full_preds_train_robust)
 
-  CV_reduced_preds <- V0_preds
+  CV_reduced_preds_robust <- V0_preds
 
-  output <- survML::vim_AUC(time = train$y,
+  V0_preds <- CV_generate_reduced_predictions_landmark(time = time,
+                                                       event = event,
+                                                       X = X,
+                                                       landmark_times = landmark_times,
+                                                       folds = folds,
+                                                       indx = c(1,6),
+                                                       sample_split = sample_split,
+                                                       full_preds_train = CV_full_preds_train_nonrobust)
+
+  CV_reduced_preds_nonrobust <- V0_preds
+
+  output_robustV_robustf <- survML::vim_AUC(time = train$y,
                             event = train$delta,
                             approx_times = approx_times,
                             landmark_times = landmark_times,
-                            f_hat = lapply(CV_full_preds, function(x) 1-x),
-                            fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
+                            f_hat = lapply(CV_full_preds_robust, function(x) 1-x),
+                            fs_hat = lapply(CV_reduced_preds_robust, function(x) 1-x),
                             S_hat = CV_S_preds,
                             G_hat = CV_G_preds,
                             folds = folds,
                             ss_folds = ss_folds,
                             sample_split = sample_split,
-                            robust = robust_V)
+                            robust = TRUE)
+  output_robustV_robustf$robust_V <- TRUE
+  output_robustV_robustf$robust_f <- TRUE
+
+  output_nonrobustV_robustf <- survML::vim_AUC(time = train$y,
+                                   event = train$delta,
+                                   approx_times = approx_times,
+                                   landmark_times = landmark_times,
+                                   f_hat = lapply(CV_full_preds_robust, function(x) 1-x),
+                                   fs_hat = lapply(CV_reduced_preds_robust, function(x) 1-x),
+                                   S_hat = CV_S_preds,
+                                   G_hat = CV_G_preds,
+                                   folds = folds,
+                                   ss_folds = ss_folds,
+                                   sample_split = sample_split,
+                                   robust = FALSE)
+  output_nonrobustV_robustf$robust_V <- FALSE
+  output_nonrobustV_robustf$robust_f <- TRUE
+
+  output_robustV_nonrobustf <- survML::vim_AUC(time = train$y,
+                                            event = train$delta,
+                                            approx_times = approx_times,
+                                            landmark_times = landmark_times,
+                                            f_hat = lapply(CV_full_preds_nonrobust, function(x) 1-x),
+                                            fs_hat = lapply(CV_reduced_preds_nonrobust, function(x) 1-x),
+                                            S_hat = CV_S_preds,
+                                            G_hat = CV_G_preds,
+                                            folds = folds,
+                                            ss_folds = ss_folds,
+                                            sample_split = sample_split,
+                                            robust = TRUE)
+  output_robustV_nonrobustf$robust_V <- TRUE
+  output_robustV_nonrobustf$robust_f <- FALSE
+
+  output_nonrobustV_nonrobustf <- survML::vim_AUC(time = train$y,
+                                               event = train$delta,
+                                               approx_times = approx_times,
+                                               landmark_times = landmark_times,
+                                               f_hat = lapply(CV_full_preds_nonrobust, function(x) 1-x),
+                                               fs_hat = lapply(CV_reduced_preds_nonrobust, function(x) 1-x),
+                                               S_hat = CV_S_preds,
+                                               G_hat = CV_G_preds,
+                                               folds = folds,
+                                               ss_folds = ss_folds,
+                                               sample_split = sample_split,
+                                               robust = FALSE)
+  output_nonrobustV_nonrobustf$robust_V <- FALSE
+  output_nonrobustV_nonrobustf$robust_f <- FALSE
+
+  output <- rbind(output_robustV_robustf, output_nonrobustV_robustf,
+                  output_robustV_nonrobustf, output_nonrobustV_nonrobustf)
 
   output$n_train <- n_train
   output$vim <- "AUC"
   output$indx <- "1,6"
   output$misspec_type <- misspec_type
-  output$robust_V <- robust_V
-  output$robust_f <- robust_f
   end <- Sys.time()
   runtime <- difftime(end, start, units = "mins")
   output$runtime <- runtime

@@ -20,16 +20,12 @@ nreps_per_job <- 1
 
 n_trains <- c(250, 500, 1000, 2500, 5000)
 misspec_types <- c("none", "censoring", "event_plusf0")
-robust_Vs <- c(FALSE, TRUE)
-robust_fs <- c(FALSE, TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 
 param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
                           n_train = n_trains,
-                          misspec_type = misspec_types,
-                          robust_f = robust_fs,
-                          robust_V = robust_Vs)
+                          misspec_type = misspec_types)
 
 job_id <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
