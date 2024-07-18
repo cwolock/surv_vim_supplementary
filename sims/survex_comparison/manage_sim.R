@@ -14,7 +14,7 @@ library(tidyr)
 source("/home/cwolock/surv_vim_supplementary/sims/survex_comparison/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
+# source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/survex_comparison/do_one.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
 #source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
@@ -25,7 +25,7 @@ nreps_total <- 500
 nreps_per_job <- 1
 
 n_trains <- c(500, 1000,1500, 2000, 2500, 3000)
-methods <- c("permutation", "intrinsic")
+methods <- c("permutation", "exclusion")
 scenarios <- c("5A", "5B", "5C", "5D")
 
 njobs_per_combo <- nreps_total/nreps_per_job

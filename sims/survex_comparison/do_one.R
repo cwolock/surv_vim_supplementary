@@ -43,12 +43,14 @@ do_one <- function(n_train,
                                   importance = FALSE,
                                   perf.type = "none")
     # rsf <- randomForestSRC::rfsrc(Surv(y, delta)~., data = train)
-    rsf_exp <- survex::explain(rsf)
+    rsf_exp <- survex::explain(rsf,
+                               verbose = FALSE)
 
     # model_parts_rsf <- model_parts(rsf_exp)
     model_parts_rsf_auc  <- survex::model_parts(rsf_exp,
                                                 # variables = list(c("x4")),
-                                                loss_function=loss_one_minus_cd_auc)
+                                                # loss_function=loss_one_minus_cd_auc,
+                                                loss_function = survex::loss_brier_score)
 
     # plot(model_parts_rsf_auc)
 
@@ -117,7 +119,7 @@ do_one <- function(n_train,
     # model_parts_survSL <- model_parts(manual_cph_explainer)
 
     # plot(model_parts_survSL)
-  } else if (method == "intrinsic"){
+  } else if (method == "exclusion"){
 
     sample_split <- FALSE
     crossfit <- TRUE
@@ -166,12 +168,23 @@ do_one <- function(n_train,
                                                            full_preds_train = CV_full_preds_train)
       CV_reduced_preds <- V0_preds
 
-      output <- survML::vim_AUC(time = train$y,
+      # output <- survML::vim_AUC(time = train$y,
+      #                           event = train$delta,
+      #                           approx_times = approx_times,
+      #                           landmark_times = landmark_times,
+      #                           f_hat = lapply(CV_full_preds, function(x) 1-x),
+      #                           fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
+      #                           S_hat = CV_S_preds,
+      #                           G_hat = CV_G_preds,
+      #                           folds = folds,
+      #                           ss_folds = ss_folds,
+      #                           sample_split = sample_split)
+      output <- survML::vim_brier(time = train$y,
                                 event = train$delta,
                                 approx_times = approx_times,
                                 landmark_times = landmark_times,
-                                f_hat = lapply(CV_full_preds, function(x) 1-x),
-                                fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
+                                f_hat = CV_full_preds,
+                                fs_hat = CV_reduced_preds, 
                                 S_hat = CV_S_preds,
                                 G_hat = CV_G_preds,
                                 folds = folds,
