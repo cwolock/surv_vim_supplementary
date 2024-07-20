@@ -1,28 +1,25 @@
 #!/usr/local/bin/Rscript
 R.Version()
 .libPaths()
-#library(Rsolnp)
-#library(mgcv)
 library(dplyr)
 library(survML)
 library(SuperLearner)
 library(survival)
 library(randomForestSRC)
 library(survSuperLearner)
+
+
 source("/home/cwolock/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-#source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/scenario1/landmark/do_one.R")
-#source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/utils.R")
-#source("/Users/cwolock/Dropbox/UW/DISSERTATION/surv_vim_supplementary/sims/generate_data.R")
-
-sim_name <- "scenario1_landmark_053024"
-nreps_total <- 250
+source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
+sim_name <- "scenario1_landmark"
+nreps_total <- 500
 nreps_per_job <- 1
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL", "stackG", "rfsrc")
-crossfits <- c(FALSE, TRUE)
+nuisances <- c("stackG", "survSL", "rfsrc")
+crossfits <- c(TRUE, FALSE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 

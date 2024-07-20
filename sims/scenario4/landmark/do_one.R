@@ -1,4 +1,4 @@
-do_one <- function(n_train,
+do_one <- function(cens_rate,
                    nuisance,
                    crossfit){
 
@@ -8,11 +8,16 @@ do_one <- function(n_train,
   landmark_times <- c(0.5, 0.9)
 
   # training data
-  train <- generate_data(n = n_train, scenario = "4", sdy = 1)
+  scenario <- dplyr::case_when(cens_rate == "30%" ~ "4_30",
+                               cens_rate == "40%" ~ "4_40",
+                               cens_rate == "50%" ~ "4_50",
+                               cens_rate == "60%" ~ "4_60",
+                               cens_rate == "70%" ~ "4_70")
+  train <- generate_data(n = 1000, scenario = scenario, sdy = 1)
 
   sample_split <- TRUE
-  dimension <- 5
-  indxs <- c("1", "4", "1,4")
+  dimension <- 25
+  indxs <- c("1", "6")
 
   time <- train$y
   event <- train$delta
@@ -105,7 +110,7 @@ do_one <- function(n_train,
   runtime <- difftime(end, start, units = "mins")
   pooled_output$runtime <- runtime
   pooled_output$crossfit <- crossfit
-  pooled_output$n_train <- n_train
+  pooled_output$cens_rate <- cens_rate
   pooled_output$nuisance <- nuisance
   return(pooled_output)
 }

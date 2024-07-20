@@ -42,19 +42,13 @@ do_one <- function(n_train,
                                   nodesize = opt_event_nodesize,
                                   importance = FALSE,
                                   perf.type = "none")
-    # rsf <- randomForestSRC::rfsrc(Surv(y, delta)~., data = train)
     rsf_exp <- survex::explain(rsf,
                                verbose = FALSE)
 
-    # model_parts_rsf <- model_parts(rsf_exp)
-    model_parts_rsf_auc  <- survex::model_parts(rsf_exp,
-                                                # variables = list(c("x4")),
-                                                # loss_function=loss_one_minus_cd_auc,
+    model_parts_rsf  <- survex::model_parts(rsf_exp,
                                                 loss_function = survex::loss_brier_score)
 
-    # plot(model_parts_rsf_auc)
-
-    res <- model_parts_rsf_auc$result %>% filter(`_permutation_` == 0)
+    res <- model_parts_rsf$result %>% filter(`_permutation_` == 0)
     time_indices <- sapply(landmark_times,
                            FUN = function(x) which.min(abs(x - res$`_times_`)))
     # names(res)[names(res) == "loss_variables"] <- "x4"
@@ -168,17 +162,6 @@ do_one <- function(n_train,
                                                            full_preds_train = CV_full_preds_train)
       CV_reduced_preds <- V0_preds
 
-      # output <- survML::vim_AUC(time = train$y,
-      #                           event = train$delta,
-      #                           approx_times = approx_times,
-      #                           landmark_times = landmark_times,
-      #                           f_hat = lapply(CV_full_preds, function(x) 1-x),
-      #                           fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
-      #                           S_hat = CV_S_preds,
-      #                           G_hat = CV_G_preds,
-      #                           folds = folds,
-      #                           ss_folds = ss_folds,
-      #                           sample_split = sample_split)
       output <- survML::vim_brier(time = train$y,
                                 event = train$delta,
                                 approx_times = approx_times,
@@ -207,24 +190,10 @@ do_one <- function(n_train,
   out1$rank <- rank(-out1$est)
   out1 <- out1 %>% filter(indx == "4") %>%
     mutate(correct = ifelse(rank == 4, 1, 0))
-  # if (correlation){
-    # out1$true_rank <- c(2,1,3,4)
-  # } else{
-    # out1$true_rank <- c(1,2,3,4)
-  # }
-
-  # out1$all_right <- all(out1$rank == out1$true_rank)
-
   out2 <- pooled_output %>% filter(landmark_time == 0.9)
   out2$rank <- rank(-out2$est)
   out2 <- out2 %>% filter(indx == "4") %>%
     mutate(correct = ifelse(rank == 4, 1, 0))
-  # if (correlation){
-  # #   # out2$true_rank <- c(2,1,3,4)
-  # # } else{
-  #   out2$true_rank <- c(1,2,3,4)
-  # }
-  # out2$all_right <- all(out2$rank == out2$true_rank)
 
   pooled_output <- rbind(out1, out2)
 

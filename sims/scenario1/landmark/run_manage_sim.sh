@@ -6,6 +6,6 @@ ml R/4.4.0-gfbf-2023b
 # 1 is sim name
 num_combos=30
 
-njobs=`expr 250 \* $num_combos`
+njobs=`expr 500 \* $num_combos`
 
-sbatch --array=1-$njobs -p short -t 4:00:00 -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/sims/scenario1/landmark/call_manage_sim.sh
+sbatch --array=1-$njobs -p short -t 6:00:00 -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/sims/scenario1/landmark/call_manage_sim.sh

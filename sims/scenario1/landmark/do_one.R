@@ -4,15 +4,15 @@ do_one <- function(n_train,
 
   start <- Sys.time()
 
-  vims <- c("AUC", "brier", "rsquared")
+  vims <- c("AUC", "brier")
   landmark_times <- c(0.5, 0.9)
 
   # training data
   train <- generate_data(n = n_train, scenario = "1", sdy = 1)
 
-  sample_split <- FALSE
-  dimension <- 2
-  indxs <- c("1", "2")
+  sample_split <- TRUE
+  dimension <- 25
+  indxs <- c("1", "6", "1,6")
 
   time <- train$y
   event <- train$delta
@@ -69,40 +69,28 @@ do_one <- function(n_train,
       vim <- vims[k]
       if (vim == "brier"){
         output <- survML::vim_brier(time = train$y,
-                                    event = train$delta,
-                                    approx_times = approx_times,
-                                    landmark_times = landmark_times,
-                                    f_hat = CV_full_preds,
-                                    fs_hat = CV_reduced_preds,
-                                    S_hat = CV_S_preds,
-                                    G_hat = CV_G_preds,
-                                    folds = folds,
-                                    ss_folds = ss_folds,
-                                    sample_split = sample_split)
+                                     event = train$delta,
+                                     approx_times = approx_times,
+                                     landmark_times = landmark_times,
+                                     f_hat = CV_full_preds,
+                                     fs_hat = CV_reduced_preds,
+                                     S_hat = CV_S_preds,
+                                     G_hat = CV_G_preds,
+                                     folds = folds,
+                                     ss_folds = ss_folds,
+                                     sample_split = sample_split)
       } else if (vim == "AUC"){
         output <- survML::vim_AUC(time = train$y,
-                                  event = train$delta,
-                                  approx_times = approx_times,
-                                  landmark_times = landmark_times,
-                                  f_hat = lapply(CV_full_preds, function(x) 1-x),
-                                  fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
-                                  S_hat = CV_S_preds,
-                                  G_hat = CV_G_preds,
-                                  folds = folds,
-                                  ss_folds = ss_folds,
-                                  sample_split = sample_split)
-      } else if (vim == "rsquared"){
-        output <- survML::vim_rsquared(time = train$y,
-                                       event = train$delta,
-                                       approx_times = approx_times,
-                                       landmark_times = landmark_times,
-                                       f_hat = CV_full_preds,
-                                       fs_hat = CV_reduced_preds,
-                                       S_hat = CV_S_preds,
-                                       G_hat = CV_G_preds,
-                                       folds = folds,
-                                       ss_folds = ss_folds,
-                                       sample_split = sample_split)
+                                   event = train$delta,
+                                   approx_times = approx_times,
+                                   landmark_times = landmark_times,
+                                   f_hat = lapply(CV_full_preds, function(x) 1-x),
+                                   fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
+                                   S_hat = CV_S_preds,
+                                   G_hat = CV_G_preds,
+                                   folds = folds,
+                                   ss_folds = ss_folds,
+                                   sample_split = sample_split)
       }
       output$vim <- vim
       output$indx <- char_indx

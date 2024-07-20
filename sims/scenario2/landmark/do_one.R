@@ -12,7 +12,7 @@ do_one <- function(n_train,
 
   sample_split <- TRUE
   dimension <- 25
-  indxs <- c("1", "4")
+  indxs <- c("1", "6")
 
   time <- train$y
   event <- train$delta
