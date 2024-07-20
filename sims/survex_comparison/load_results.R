@@ -1,6 +1,6 @@
 #!/usr/local/bin/Rscript
 
-sim_name <- "survex_comparison"
+sim_name <- "survex_comparison_brier"
 nreps_total <- 500
 nreps_per_job <- 1
 

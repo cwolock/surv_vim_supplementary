@@ -5,16 +5,16 @@ do_one <- function(cens_rate,
   start <- Sys.time()
 
   # training data
-  scenario <- dplyr::case_when(cens_rate == "30%" ~ "3A_30",
-                               cens_rate == "40%" ~ "3A_40",
-                               cens_rate == "50%" ~ "3A_50",
-                               cens_rate == "60%" ~ "3A_60",
-                               cens_rate == "70%" ~ "3A_70")
+  scenario <- dplyr::case_when(cens_rate == "30%" ~ "3B_30",
+                               cens_rate == "40%" ~ "3B_40",
+                               cens_rate == "50%" ~ "3B_50",
+                               cens_rate == "60%" ~ "3B_60",
+                               cens_rate == "70%" ~ "3B_70")
   train <- generate_data(n = 1000, scenario = scenario, sdy = 1)
 
   sample_split <- TRUE
   dimension <- 25
-  indxs <- c("1", "5")
+  indxs <- c("1", "6")
 
   time <- train$y
   event <- train$delta
@@ -22,7 +22,7 @@ do_one <- function(cens_rate,
 
   tau <- 0.9
   approx_times <- sort(c(unique(c(0, time[time <= tau & event == 1])), tau))
-  approx_times <- approx_times[approx_times <= max(landmark_times)]
+  #approx_times <- approx_times[approx_times <= max(landmark_times)]
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num

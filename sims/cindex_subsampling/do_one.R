@@ -6,18 +6,18 @@ do_one <- function(n_train,
   start <- Sys.time()
 
   # training data
-  train <- generate_data(n = n_train, scenario = "4A", sdy = 1)
+  train <- generate_data(n = n_train, scenario = "4B", sdy = 1)
 
   sample_split <- TRUE
   dimension <- 25
-  indxs <- c("1", "5", "1,5")
+  indxs <- c("1")
 
   time <- train$y
   event <- train$delta
   X <- train[,1:dimension]
 
   tau <- 0.9
-  approx_times <- sort(unique(c(0, time[time <= tau & event == 1])))
+  approx_times <- sort(unique(c(0, tau, time[time <= tau & event == 1])))
 
   cf_fold_num <- switch((crossfit) + 1, 1, 5)
   ss_fold_num <- 2*cf_fold_num
@@ -59,7 +59,7 @@ do_one <- function(n_train,
                                              params =  list(
                                                mstop = c(100, 250, 500),
                                                nu = c(0.1),
-                                               sigma = c(0.01, 0.05),
+                                               sigma = c(0.005, 0.01),
                                                learner = c("glm")))
 
   CV_full_preds <- V0_preds

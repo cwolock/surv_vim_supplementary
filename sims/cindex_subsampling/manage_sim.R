@@ -18,10 +18,10 @@ source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 sim_name <- "cindex_subsampling"
-nreps_total <- 200
+nreps_total <- 500
 nreps_per_job <- 1
 
-n_trains <- c(1500)
+n_trains <- c(500, 750, 1000, 1250, 1500)
 subsamples <- c(0.25, 0.33, 0.5, 1)
 nuisances <- c("survSL")
 crossfits <- c(TRUE)

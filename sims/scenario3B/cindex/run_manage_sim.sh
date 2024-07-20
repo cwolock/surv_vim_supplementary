@@ -8,4 +8,4 @@ num_combos=30
 
 njobs=`expr 500 \* $num_combos`
 
-sbatch --array=1-$njobs -p short -t 1:45:00 -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/sims/scenario3A/cindex/call_manage_sim.sh
+sbatch --array=1-$njobs -p short -t 4:00:00 -e ./iotrash/s-%A_%a.out -o ./iotrash/s-%A_%a.out /home/cwolock/surv_vim_supplementary/sims/scenario3B/cindex/call_manage_sim.sh

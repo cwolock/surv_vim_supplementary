@@ -8,16 +8,12 @@ output_dir <- "output/"
 
 n_trains <- c(1,2,3,4,5)
 misspec_types <- c("none", "censoring", "event")
-robust_Vs <- c(FALSE, TRUE)
-robust_fs <- c(FALSE, TRUE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 
 param_grid <- expand.grid(mc_id = 1:njobs_per_combo,
                           n_train = n_trains,
-                          misspec_type = misspec_types,
-                          robust_V = robust_Vs,
-		          robust_f = robust_fs)
+                          misspec_type = misspec_types)
 
 output_nms <- paste0(sim_name, "_", 1:dim(param_grid)[1], ".rds")
 avail_nms <- list.files(output_dir, pattern = paste0(sim_name, "_*"))
