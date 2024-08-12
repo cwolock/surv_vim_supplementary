@@ -4,7 +4,7 @@
 output_dir <- "output/"
 
 ## set up parameter grid
-name <- "male_analysis_interactions_oldlib_smallersigma_subsample1500_oldseed"
+name <- "male_analysis_interactions_oldlib_smallersigma_subsample1750_oldseed"
 nreps_total <- 10
 nreps_per_job <- 1
 approach <- c("conditional", "marginal")

@@ -3,12 +3,13 @@ library(dplyr)
 library(survival)
 library(survML)
 library(SuperLearner)
-
+library(gtools)
+library(mboost)
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/data_analysis/female/702_data_analysis.R")
 
-name <- "female_analysis_interactions_oldlib_smallersigma_subsample1500"
+name <- "female_analysis_interactions_oldlib_smallersigma_subsample1750"
 nreps_total <- 10
 nreps_per_job <- 1
 
