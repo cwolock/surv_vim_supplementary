@@ -215,7 +215,7 @@ boost_c_index <- function(time, # follow up times
       wweights[lower.tri(wweights)] <- 1-t(wweights)[lower.tri(wweights)]
       Wmat <- w %o% w
       wweights <- wweights * Wmat
-      diag(wweights) <- 0.5 # diagonal should be 1/2, I think?
+      diag(wweights) <- 0.5
       wweights <- wweights / sum(wweights)
 
       feature_names <- names(X_train)

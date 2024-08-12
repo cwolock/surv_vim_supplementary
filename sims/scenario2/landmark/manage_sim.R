@@ -1,26 +1,22 @@
 #!/usr/local/bin/Rscript
-.libPaths(c(
-  "/home/cwolock/R_lib",
-  .libPaths()
-))
-suppressMessages(library(dplyr))
-suppressMessages(library(survML))
-suppressMessages(library(SuperLearner))
-suppressMessages(library(survival))
-suppressMessages(library(randomForestSRC))
-suppressMessages(library(survSuperLearner))
+library(dplyr)
+library(survML)
+library(SuperLearner)
+library(survival)
+library(randomForestSRC)
+library(survSuperLearner)
 
 source("/home/cwolock/surv_vim_supplementary/sims/scenario2/landmark/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
-
+source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 sim_name <- "scenario2_landmark"
 nreps_total <- 500
 nreps_per_job <- 1
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
 nuisances <- c("survSL", "stackG", "rfsrc")
-crossfits <- c(FALSE, TRUE)
+crossfits <- c(TRUE, FALSE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
 

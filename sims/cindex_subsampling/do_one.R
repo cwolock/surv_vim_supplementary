@@ -6,7 +6,7 @@ do_one <- function(n_train,
   start <- Sys.time()
 
   # training data
-  train <- generate_data(n = n_train, scenario = "4B", sdy = 1)
+  train <- generate_data(n = n_train, scenario = "1", sdy = 1)
 
   sample_split <- TRUE
   dimension <- 25

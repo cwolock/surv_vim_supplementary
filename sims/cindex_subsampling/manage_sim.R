@@ -1,8 +1,4 @@
 #!/usr/local/bin/Rscript
-R.Version()
-.libPaths()
-#library(Rsolnp)
-#library(mgcv)
 library(dplyr)
 library(survML)
 library(SuperLearner)

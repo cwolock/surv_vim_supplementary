@@ -1,4 +1,4 @@
-do_one <- function(cens_rate,
+do_one <- function(n_train,
                    nuisance,
                    crossfit){
 
@@ -8,15 +8,10 @@ do_one <- function(cens_rate,
   landmark_times <- c(0.5, 0.9)
 
   # training data
-  scenario <- dplyr::case_when(cens_rate == "30%" ~ "3_30",
-                               cens_rate == "40%" ~ "3_40",
-                               cens_rate == "50%" ~ "3_50",
-                               cens_rate == "60%" ~ "3_60",
-                               cens_rate == "70%" ~ "3_70")
-  train <- generate_data(n = 1000, scenario = scenario, sdy = 1)
+  train <- generate_data(n = n_train, scenario = "3", sdy = 1)
 
   sample_split <- FALSE
-  dimension <- 2
+  dimension <- 5
   indxs <- c("1", "2")
 
   time <- train$y
@@ -74,28 +69,28 @@ do_one <- function(cens_rate,
       vim <- vims[k]
       if (vim == "brier"){
         output <- survML::vim_brier(time = train$y,
-                                     event = train$delta,
-                                     approx_times = approx_times,
-                                     landmark_times = landmark_times,
-                                     f_hat = CV_full_preds,
-                                     fs_hat = CV_reduced_preds,
-                                     S_hat = CV_S_preds,
-                                     G_hat = CV_G_preds,
-                                     folds = folds,
-                                     ss_folds = ss_folds,
-                                     sample_split = sample_split)
+                                    event = train$delta,
+                                    approx_times = approx_times,
+                                    landmark_times = landmark_times,
+                                    f_hat = CV_full_preds,
+                                    fs_hat = CV_reduced_preds,
+                                    S_hat = CV_S_preds,
+                                    G_hat = CV_G_preds,
+                                    folds = folds,
+                                    ss_folds = ss_folds,
+                                    sample_split = sample_split)
       } else if (vim == "AUC"){
         output <- survML::vim_AUC(time = train$y,
-                                   event = train$delta,
-                                   approx_times = approx_times,
-                                   landmark_times = landmark_times,
-                                   f_hat = lapply(CV_full_preds, function(x) 1-x),
-                                   fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
-                                   S_hat = CV_S_preds,
-                                   G_hat = CV_G_preds,
-                                   folds = folds,
-                                   ss_folds = ss_folds,
-                                   sample_split = sample_split)
+                                  event = train$delta,
+                                  approx_times = approx_times,
+                                  landmark_times = landmark_times,
+                                  f_hat = lapply(CV_full_preds, function(x) 1-x),
+                                  fs_hat = lapply(CV_reduced_preds, function(x) 1-x),
+                                  S_hat = CV_S_preds,
+                                  G_hat = CV_G_preds,
+                                  folds = folds,
+                                  ss_folds = ss_folds,
+                                  sample_split = sample_split)
       }
       output$vim <- vim
       output$indx <- char_indx
@@ -110,7 +105,7 @@ do_one <- function(cens_rate,
   runtime <- difftime(end, start, units = "mins")
   pooled_output$runtime <- runtime
   pooled_output$crossfit <- crossfit
-  pooled_output$cens_rate <- cens_rate
+  pooled_output$n_train <- n_train
   pooled_output$nuisance <- nuisance
   return(pooled_output)
 }
