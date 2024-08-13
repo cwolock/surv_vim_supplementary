@@ -76,7 +76,7 @@ boost_c_index <- function(time, # follow up times
         etak <- matrix(f, nrow = n, ncol = n)
         etaMat <- etak - etaj
         rm(etaj); rm(etak);
-        weights_out <- wweights#compute_weights(y, w)
+        weights_out <- wweights
         M1 <- approxGrad(etaMat) * weights_out
         ng <- colSums(M1) - rowSums(M1)
         return(ng)
@@ -92,7 +92,7 @@ boost_c_index <- function(time, # follow up times
         etak <- matrix(f, nrow = n, ncol = n)
         etaMat <- (etak - etaj)
         rm(etaj); rm(etak);
-        weights_out <- wweights#compute_weights(y, w)
+        weights_out <- wweights
         M1 <- approxLoss(etaMat) * weights_out
         return(- sum(M1))
       }

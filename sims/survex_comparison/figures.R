@@ -12,7 +12,8 @@ summ <- dat %>% group_by(n_train, method,scenario) %>%
   summarize(nreps = n(),
             rank_right = mean(correct),
             rank_right_mc_se = sqrt(rank_right * (1 - rank_right) / nreps),
-            runtime = mean(runtime))
+            runtime = mean(runtime),
+            bias = mean(est))
 
 p <- summ %>% ggplot(aes(x = n_train, y = rank_right, group = interaction(scenario, method))) +
   geom_line(aes(linetype = scenario)) +
@@ -23,10 +24,10 @@ p <- summ %>% ggplot(aes(x = n_train, y = rank_right, group = interaction(scenar
   facet_wrap(~ method) +
   theme_bw() +
   scale_color_manual(values = c("black", "blue")) +
-  ylim(c(0, 1)) + 
-  ylab("Proportion of replicates ranked correctly") + 
-  xlab("Sample size") + 
-  ggtitle("Variable importance type") + 
+  ylim(c(0, 1)) +
+  ylab("Proportion of replicates ranked correctly") +
+  xlab("Sample size") +
+  ggtitle("Variable importance type") +
   theme(strip.background = element_blank(),
         strip.placement = "outside",
         plot.title = element_text(hjust = 0.5, size = 16,family = "Times New Roman"),
@@ -37,7 +38,7 @@ p <- summ %>% ggplot(aes(x = n_train, y = rank_right, group = interaction(scenar
         strip.text = element_text(size = 14, family = "Times New Roman"),
         axis.title = element_text(size = 14, family = "Times New Roman"),
         panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank()) + 
+        panel.grid.minor = element_blank()) +
   guides(linetype=guide_legend(title="Correlation:", nrow = 1, ncol = 4))
 
 ggsave(filename = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/survex-comparison-071724.pdf",

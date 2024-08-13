@@ -73,7 +73,7 @@ summarize_results <- function(dat, scenario, truth, var_truth){
     dat <- dat %>% mutate(scenario = "4", n_train = 1000)
   }
 
-  dat <- dat %>% 
+  dat <- dat %>%
     mutate(tau = ifelse(vim == "cindex", tau, landmark_time),
            nuisance = factor(dat$nuisance,
                              levels = c("rfsrc",
@@ -112,8 +112,7 @@ summarize_results <- function(dat, scenario, truth, var_truth){
               cov_mc_se = sqrt(coverage * (1 - coverage)/nreps),
               power_mc_se = sqrt(power * (1 - power)/nreps),
               ci_width = mean(width),
-              width_mc_se = sqrt( mean((width - ci_width) ^ 2) / (nreps-1)), # note that this is not really a "MC standard error" just the standard deviation
-              # since the CI width isn't really estimating a parameter.
+              width_mc_se = sqrt( mean((width - ci_width) ^ 2) / (nreps-1)),
               var_mc_se = sqrt(2/(nreps-1)),
               .groups = "drop")
   if (scenario == "4"){
@@ -139,11 +138,9 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
     mutate(vim = factor(vim,
                         levels = c("AUC_0.5", "AUC_0.9",
                                    "brier_0.5", "brier_0.9",
-                                   "rsquared_0.5", "rsquared_0.9",
                                    "cindex_0.9"),
                         labels = c("AUC at 0.5", "AUC at 0.9",
                                    "Brier score at 0.5", "Brier score at 0.9",
-                                   "R-squared at 0.5", "R-squared at 0.9",
                                    "C-index")))
 
   if (!big){
@@ -528,7 +525,6 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
 
       cover_plot_1 + theme(legend.position = "none",
                            title = element_text(size = title_text_size, family = "Times New Roman"),
-                           # axis.title = element_text(size = axis_text_size, family = "Times New Roman"),
                            axis.title.y = element_text(size = axis_text_size,
                                                        margin = margin(t = 0, r = 5, b = 0, l = 0),
                                                        family = "Times New Roman"),
@@ -718,11 +714,10 @@ make_sim_plot <- function(summ, scenario, big = TRUE, wd, fname){
         ylab("Empirical type I error") +
         xlab(xlab) +
         labs(linetype = "Method:", color = "Nuisance:") +
-        # ggtitle("D. TYPE I ERROR") +
         ggtitle("(d)") +
         facet_wrap(~vim, nrow = num_rows, ncol = 1, strip.position = "right") +
         theme_bw() +
-        theme(#axis.ticks.length.x = unit(0, "cm"),
+        theme(
           panel.spacing.x = unit(0, "cm"),
           panel.spacing.y = unit(0.2, "cm"),
           strip.background = element_blank(),
