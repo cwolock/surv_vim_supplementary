@@ -25,7 +25,7 @@ do_one <- function(n_train,
                minobspernode = 10,
                shrinkage = 0.01)
   xgb_grid <- create.SL.xgboost(tune = tune)
-  SL.library <- c("SL.mean", "SL.glm.interaction", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
+  SL.library <- c("SL.mean", "SL.glm.interaction")#, "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
 
   # cf_fold_num <- switch((crossfit) + 1, 1, 5)
   # ss_fold_num <- 2*cf_fold_num
@@ -112,6 +112,7 @@ do_one <- function(n_train,
                       ss_folds = saved_folds$ss_folds,
                       sample_split = FALSE,
                       scale_est = FALSE)
+        saved_small_oracle_preds <- output$small_oracle_preds
         output$result$indx <- char_indx
         pooled_output <- rbind(pooled_output, output$result)
       } else{
@@ -137,6 +138,7 @@ do_one <- function(n_train,
   }
   end <- Sys.time()
   runtime <- difftime(end, start, units = "mins")
+  pooled_output$nuisance <- nuisance
   pooled_output$runtime <- runtime
   pooled_output$crossfit <- crossfit
   pooled_output$n_train <- n_train
