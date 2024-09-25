@@ -68,7 +68,8 @@ p_bias <- summ %>% ggplot(aes(x = factor(n_train), y = mean_err)) +
          axis.text = element_text(size = 14,family = "Times New Roman"),
          strip.text = element_text(size = 14, family = "Times New Roman"),
          axis.title = element_text(size = 14, family = "Times New Roman"),
-         panel.grid.major.x = element_blank(),
+         # panel.grid.major.x = element_blank(),
+         panel.grid.major = element_blank(),
          panel.grid.minor = element_blank()) +
   guides(linetype=guide_legend(title="Oracle estimator:", nrow = 1, ncol = 2),
          shape = guide_legend(title = "Debiasing:", nrow = 1, ncol = 2))
@@ -97,7 +98,8 @@ p_variance <- summ %>% ggplot(aes(x = factor(n_train), y = variance)) +
          axis.text = element_text(size = 14,family = "Times New Roman"),
          strip.text = element_text(size = 14, family = "Times New Roman"),
          axis.title = element_text(size = 14, family = "Times New Roman"),
-         panel.grid.major.x = element_blank(),
+         # panel.grid.major.x = element_blank(),
+         panel.grid.major = element_blank(),
          panel.grid.minor = element_blank()) +
   guides(linetype=guide_legend(title="Oracle estimator:", nrow = 1, ncol = 2),
          shape = guide_legend(title = "Debiasing:", nrow = 1, ncol = 2))
