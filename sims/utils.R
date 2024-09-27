@@ -348,6 +348,7 @@ CV_generate_full_predictions_landmark <- function(time,
   CV_S_preds <- list()
   CV_S_preds_train <- list()
   CV_G_preds <- list()
+  CV_G_preds_train <- list()
 
   if (.V == 2 & sample_split){
     time_train <- time
@@ -367,6 +368,7 @@ CV_generate_full_predictions_landmark <- function(time,
       CV_S_preds[[j]] <- full_preds$S_hat[folds == j,]
       CV_G_preds[[j]] <- full_preds$G_hat[folds == j,]
       CV_S_preds_train[[j]] <- full_preds$S_hat
+      CV_G_preds_train[[j]] <- full_preds$G_hat
     }
 
   } else{
@@ -394,6 +396,7 @@ CV_generate_full_predictions_landmark <- function(time,
       CV_S_preds[[j]] <- full_preds$S_hat
       CV_S_preds_train[[j]] <- full_preds$S_hat_train
       CV_G_preds[[j]] <- full_preds$G_hat
+      CV_G_preds_train[[j]] <- full_preds$G_hat_train
     }
   }
 
@@ -401,7 +404,8 @@ CV_generate_full_predictions_landmark <- function(time,
               CV_full_preds = CV_full_preds,
               CV_S_preds = CV_S_preds,
               CV_S_preds_train = CV_S_preds_train,
-              CV_G_preds = CV_G_preds))
+              CV_G_preds = CV_G_preds,
+              CV_G_preds_train = CV_G_preds_train))
 }
 
 CV_generate_reduced_predictions_landmark <- function(time,
@@ -562,6 +566,126 @@ CV_generate_predictions_cindex <- function(time,
                                                    nu = c(nu_opt),
                                                    sigma = c(sigma_opt),
                                                    learner = c(learner_opt)))
+      dtest <- data.frame(X_reduced_holdout)
+      CV_preds[[j]] <- -predict(boost_results$opt_model, newdata = dtest)[,1]
+    }
+  }
+  return(CV_preds)
+}
+
+CV_generate_predictions_cindex_DR <- function(time,
+                                              event,
+                                              X,
+                                              approx_times,
+                                              folds,
+                                              sample_split,
+                                              indx,
+                                              CV_S_preds_train,
+                                              CV_S_preds,
+                                              CV_G_preds_train,
+                                              CV_G_preds,
+                                              subsample_n,
+                                              params){
+  .V <- length(unique(folds))
+  CV_preds <- list()
+
+  all_time_split <- time
+  all_time_split <- all_time_split[order(folds)]
+  all_event_split <- event
+  all_event_split <- all_event_split[order(folds)]
+  if (!is.null(indx)){
+    all_X_split <- X[,-indx,drop=FALSE]
+  } else{
+    all_X_split <- X
+  }
+
+  all_X_split <- all_X_split[order(folds),,drop=FALSE]
+  all_folds_split <- folds[order(folds)]
+
+  all_CV_S_preds <- do.call(rbind, CV_S_preds)
+  all_CV_G_preds <- do.call(rbind, CV_G_preds)
+  print(paste0("Tuning reduced model for index ", paste(indx, collapse = ",")))
+  boost_results <- boost_c_index_DR(time = all_time_split,
+                                    event = all_event_split,
+                                    X = all_X_split,
+                                    S_hat = all_CV_S_preds,
+                                    G_hat = all_CV_G_preds,
+                                    approx_times = approx_times,
+                                    indx = indx,
+                                    tuning = "CV",
+                                    produce_fit = FALSE,
+                                    subsample_n = subsample_n,
+                                    params = params)
+  print(boost_results)
+  mstop_opt <- boost_results$param_grid[boost_results$opt_index,1]
+  nu_opt <- boost_results$param_grid[boost_results$opt_index,2]
+  sigma_opt <- boost_results$param_grid[boost_results$opt_index,3]
+  learner_opt <- boost_results$param_grid[boost_results$opt_index,4]
+
+  if (.V == 2 & sample_split){
+    time_train <- all_time_split
+    event_train <- all_event_split
+    X_reduced_train <- all_X_split
+    X_reduced_holdout <- all_X_split
+    boost_results <- boost_c_index_DR(time = time_train,
+                                      event = event_train,
+                                      X = X_reduced_train,
+                                      S_hat = all_CV_S_preds,
+                                      G_hat = all_CV_G_preds,
+                                      approx_times = approx_times,
+                                      indx = indx,
+                                      tuning = "none",
+                                      produce_fit = TRUE,
+                                      subsample_n = subsample_n,
+                                      params = list(mstop = c(mstop_opt),
+                                                    nu = c(nu_opt),
+                                                    sigma = c(sigma_opt),
+                                                    learner = c(learner_opt)))
+    for (j in 1:.V){
+      dtest <- data.frame(X_reduced_holdout[all_folds_split == j,])
+      CV_preds[[j]] <- -predict(boost_results$opt_model, newdata = dtest)[,1]
+    }
+  } else{
+    for (j in 1:.V){
+      if (.V == 1){ # if not actually cross fitting
+        time_train <- time[folds == j]
+        event_train <- event[folds == j]
+        if (!is.null(indx)){
+          X_reduced_train <- X[folds == j,-indx,drop=FALSE]
+        } else{
+          X_reduced_train <- X[folds == j,,drop=FALSE]
+        }
+      } else{ # if actually cross fitting
+        time_train <- time[folds != j]
+        event_train <- event[folds != j]
+        if (!is.null(indx)){
+          X_reduced_train <- X[folds != j,-indx,drop=FALSE]
+        } else{
+          X_reduced_train <- X[folds != j,,drop=FALSE]
+        }
+      }
+
+      if (!is.null(indx)){
+        X_reduced_holdout <- X[folds == j,-indx,drop=FALSE]
+      } else{
+        X_reduced_holdout <- X[folds == j,,drop=FALSE]
+      }
+
+      print(paste0("Fitting optimal reduced model for index ", paste(indx, collapse = ",")))
+      boost_results <- boost_c_index_DR(time = time_train,
+                                        event = event_train,
+                                        X = X_reduced_train,
+                                        S_hat = CV_S_preds_train[[j]],
+                                        G_hat = CV_G_preds_train[[j]],
+                                        approx_times = approx_times,
+                                        indx = indx,
+                                        tuning = "none",
+                                        produce_fit = TRUE,
+                                        subsample_n = subsample_n,
+                                        params = list(mstop = c(mstop_opt),
+                                                      nu = c(nu_opt),
+                                                      sigma = c(sigma_opt),
+                                                      learner = c(learner_opt)))
       dtest <- data.frame(X_reduced_holdout)
       CV_preds[[j]] <- -predict(boost_results$opt_model, newdata = dtest)[,1]
     }
