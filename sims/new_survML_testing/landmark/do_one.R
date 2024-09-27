@@ -25,7 +25,7 @@ do_one <- function(n_train,
                minobspernode = 10,
                shrinkage = 0.01)
   xgb_grid <- create.SL.xgboost(tune = tune)
-  SL.library <- c("SL.mean", "SL.glm.interaction")#, "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
+  SL.library <- c("SL.mean", "SL.glm.interaction", "SL.earth", "SL.gam", "SL.ranger", xgb_grid$names)
 
   # cf_fold_num <- switch((crossfit) + 1, 1, 5)
   # ss_fold_num <- 2*cf_fold_num

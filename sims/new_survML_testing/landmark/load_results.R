@@ -7,7 +7,7 @@ nreps_per_job <- 1
 output_dir <- "output/"
 
 n_trains <- c(500, 750, 1000, 1250, 1500)
-nuisances <- c("survSL", "stackG", "rfsrc")
+nuisances <- c("stackG")
 crossfits <- c(TRUE, FALSE)
 
 njobs_per_combo <- nreps_total/nreps_per_job
