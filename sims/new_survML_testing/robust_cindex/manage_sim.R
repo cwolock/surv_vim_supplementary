@@ -11,10 +11,11 @@ library(mboost)
 source("/home/cwolock/surv_vim_supplementary/sims/new_survML_testing/robust_cindex/do_one.R")
 source("/home/cwolock/surv_vim_supplementary/sims/utils.R")
 source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index_DR.R")
+source("/home/cwolock/surv_vim_supplementary/sims/boost_c_index.R")
 source("/home/cwolock/surv_vim_supplementary/sims/generate_data.R")
 source("/home/cwolock/surv_vim_supplementary/sims/survSL_wrappers.R")
 
-sim_name <- "new_survML_testing_cindex"
+sim_name <- "new_survML_testing_robust_cindex"
 nreps_total <- 500
 nreps_per_job <- 1
 

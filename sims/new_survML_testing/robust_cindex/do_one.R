@@ -1,6 +1,7 @@
 options(expressions= 20000) # this is necessary for the `combinations` function to work with large n
 do_one <- function(n_train,
-                   misspec_type){
+                   misspec_type,
+                   robust){
   start <- Sys.time()
 
   # training data
@@ -57,23 +58,43 @@ do_one <- function(n_train,
   CV_G_preds <- nuisance_preds$CV_G_preds
   CV_G_preds_train <- nuisance_preds$CV_G_preds_train
 
-  V0_preds <- CV_generate_predictions_cindex_DR(time = time,
-                                                event = event,
-                                                X = X,
-                                                approx_times = approx_times,
-                                                folds = folds,
-                                                sample_split = sample_split,
-                                                CV_S_preds_train =  CV_S_preds_train,
-                                                CV_S_preds = CV_S_preds,
-                                                CV_G_preds_train = CV_G_preds_train,
-                                                CV_G_preds = CV_G_preds,
-                                                indx = NULL,
-                                                subsample_n = ceiling(n_train/3),
-                                                params =  list(
-                                                  mstop = c(100, 250, 500),
-                                                  nu = c(0.1),
-                                                  sigma = c(0.005, 0.01),
-                                                  learner = c("glm")))
+  if (robust){
+    V0_preds <- CV_generate_predictions_cindex_DR(time = time,
+                                                  event = event,
+                                                  X = X,
+                                                  approx_times = approx_times,
+                                                  folds = folds,
+                                                  sample_split = sample_split,
+                                                  CV_S_preds_train =  CV_S_preds_train,
+                                                  CV_S_preds = CV_S_preds,
+                                                  CV_G_preds_train = CV_G_preds_train,
+                                                  CV_G_preds = CV_G_preds,
+                                                  indx = NULL,
+                                                  subsample_n = ceiling(n_train/3),
+                                                  params =  list(
+                                                    mstop = c(100, 250, 500),
+                                                    nu = c(0.1),
+                                                    sigma = c(0.005, 0.01),
+                                                    learner = c("glm")))
+  } else{
+    V0_preds <- CV_generate_predictions_cindex(time = time,
+                                                  event = event,
+                                                  X = X,
+                                                  approx_times = approx_times,
+                                                  folds = folds,
+                                                  sample_split = sample_split,
+                                                  CV_S_preds_train =  CV_S_preds_train,
+                                                  CV_S_preds = CV_S_preds,
+                                                  indx = NULL,
+                                                  subsample_n = ceiling(n_train/3),
+                                                  params =  list(
+                                                    mstop = c(100, 250, 500),
+                                                    nu = c(0.1),
+                                                    sigma = c(0.005, 0.01),
+                                                    learner = c("glm")))
+  }
+
+
   # V0_preds <- CV_generate_predictions_cindex(time = time,
   #                                               event = event,
   #                                               X = X,
@@ -97,23 +118,43 @@ do_one <- function(n_train,
     char_indx <- as.character(indxs[i])
     indx <- as.numeric(strsplit(char_indx, split = ",")[[1]])
 
-    V0_preds <- CV_generate_predictions_cindex_DR(time = time,
-                                                  event = event,
-                                                  X = X,
-                                                  approx_times = approx_times,
-                                                  folds = folds,
-                                                  sample_split = sample_split,
-                                                  indx = indx,
-                                                  CV_S_preds_train =  CV_S_preds_train,
-                                                  CV_S_preds = CV_S_preds,
-                                                  CV_G_preds_train = CV_G_preds_train,
-                                                  CV_G_preds = CV_G_preds,
-                                                  subsample_n = ceiling(n_train/3),
-                                                  params =  list(
-                                                    mstop = c(100, 250, 500),
-                                                    nu = c(0.1),
-                                                    sigma = c(0.005, 0.01),
-                                                    learner = c("glm")))
+    if (robust){
+      V0_preds <- CV_generate_predictions_cindex_DR(time = time,
+                                                    event = event,
+                                                    X = X,
+                                                    approx_times = approx_times,
+                                                    folds = folds,
+                                                    sample_split = sample_split,
+                                                    indx = indx,
+                                                    CV_S_preds_train =  CV_S_preds_train,
+                                                    CV_S_preds = CV_S_preds,
+                                                    CV_G_preds_train = CV_G_preds_train,
+                                                    CV_G_preds = CV_G_preds,
+                                                    subsample_n = ceiling(n_train/3),
+                                                    params =  list(
+                                                      mstop = c(100, 250, 500),
+                                                      nu = c(0.1),
+                                                      sigma = c(0.005, 0.01),
+                                                      learner = c("glm")))
+    } else{
+      V0_preds <- CV_generate_predictions_cindex(time = time,
+                                                    event = event,
+                                                    X = X,
+                                                    approx_times = approx_times,
+                                                    folds = folds,
+                                                    sample_split = sample_split,
+                                                    indx = indx,
+                                                    CV_S_preds_train =  CV_S_preds_train,
+                                                    CV_S_preds = CV_S_preds,
+                                                    subsample_n = ceiling(n_train/3),
+                                                    params =  list(
+                                                      mstop = c(100, 250, 500),
+                                                      nu = c(0.1),
+                                                      sigma = c(0.005, 0.01),
+                                                      learner = c("glm")))
+    }
+
+
 
     # V0_preds <- CV_generate_predictions_cindex(time = time,
     #                                               event = event,
@@ -155,6 +196,8 @@ do_one <- function(n_train,
 
   end <- Sys.time()
   runtime <- difftime(end, start, units = "mins")
+  pooled_output$robust <- robust
+  pooled_output$misspec_type <- misspec_type
   pooled_output$runtime <- runtime
   pooled_output$vim <- "cindex"
   pooled_output$crossfit <- crossfit
