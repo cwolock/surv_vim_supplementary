@@ -711,6 +711,7 @@ CV_generate_full_predictions_landmark_misspec <- function(time,
   CV_S_preds <- list()
   CV_S_preds_train <- list()
   CV_G_preds <- list()
+  CV_G_preds_train <- list()
 
   if (.V == 2 & sample_split){
     time_train <- time
@@ -799,6 +800,8 @@ CV_generate_full_predictions_landmark_misspec <- function(time,
 
       CV_S_preds[[j]] <- full_preds$S_hat
       CV_G_preds[[j]] <- full_preds$G_hat
+      CV_S_preds_train[[j]] <- full_preds$S_preds_train
+      CV_G_preds_train[[j]] <- full_preds$G_preds_train
     }
   }
 
@@ -807,5 +810,7 @@ CV_generate_full_predictions_landmark_misspec <- function(time,
               CV_full_preds_train_nonrobust = CV_full_preds_train_nonrobust,
               CV_full_preds_nonrobust = CV_full_preds_nonrobust,
               CV_S_preds = CV_S_preds,
-              CV_G_preds = CV_G_preds))
+              CV_G_preds = CV_G_preds,
+              CV_S_preds_train = CV_S_preds_train,
+              CV_G_preds_train = CV_G_preds_train))
 }
