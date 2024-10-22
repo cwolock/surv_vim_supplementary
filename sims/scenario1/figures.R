@@ -32,4 +32,4 @@ make_sim_plot(summ,
               scenario = "1",
               big = FALSE,
               wd = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/",
-              fname = "scenario-small")
+              fname = "scenario1-small")

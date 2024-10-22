@@ -77,10 +77,10 @@ multisplit <- function(f, f1, method, this_vim = NULL){
       }
     }
   }
-  
+
   p_array_twosided_corrected <- array(NA, dim = c(n1, n2))
   p_array_onesided_corrected <- array(NA, dim = c(n1, n2))
-  
+
   for (j in 1:n2){
     for (k in 1:n1){
       # this is just a bonferroni
@@ -94,12 +94,12 @@ multisplit <- function(f, f1, method, this_vim = NULL){
       p_array_onesided_corrected[k,j] <- p_one
     }
   }
-  
+
   cil <- rep(NA, n1)
   ciu <- rep(NA, n1)
   ci_1sided <- rep(NA, n1)
   pvals <- rep(NA, n1)
-  
+
   for (k in 1:n1){
     print(k)
     curr_ps_twosided <- p_array_twosided_corrected[k,]
@@ -115,22 +115,22 @@ multisplit <- function(f, f1, method, this_vim = NULL){
       cil[k] <- 0
       ciu[k]<- ci_grid[min(which(curr_ps_twosided < 0.05))]
     }
-    
+
     if (curr_ps_onesided[1] < 0.05){
       ci_1sided[k] <- ci_grid[min(which(curr_ps_onesided > 0.05))]
     } else{
       ci_1sided[k] <- 0
     }
-    
+
   }
-  
+
   f_avg <- f %>% group_by(landmark_time, indx_name, vim, SAB) %>% summarize(est = mean(est))
-  
+
   combined_ss <- f1 %>% select(landmark_time, vim, indx, indx_name, SAB) %>%
     mutate(cil = cil, ciu = ciu, ci_1sided = ci_1sided, pval = pvals)
-  
+
   combined_ss <- left_join(combined_ss, f_avg, by = c("landmark_time", "indx_name", "vim", "SAB"))
-  
+
   combined_ss <- combined_ss %>%
     filter(indx_name != "sex_bmi" & indx_name != "all_but_geo" & indx_name != "BRS") %>%
     mutate(cil = ifelse(cil >= 0, cil, 0),
@@ -143,7 +143,7 @@ multisplit <- function(f, f1, method, this_vim = NULL){
              indx_name == "BRS_social" ~ "housing",
              indx_name == "geo" ~ "geography"
            ))
-  
+
   return(combined_ss)
 }
 
@@ -268,17 +268,17 @@ male_ss_both_conditional  <- male_ss_both_conditional
 make_plot_combined <- function(combined, type){
   xlab <- "Estimated variable importance"
   ylab <- "Variable group"
-  
+
   xmax_auc <- 0.5
   xmin <- 0
-  
+
   for (i in 1:nrow(combined)){
     if (combined$pval[i] <= 0.05){
       combined$indx_number[i] <- paste0("*", combined$indx_number[i])
     }
   }
-  
-  
+
+
   vimp_plot_combined <- combined %>%
     filter(SAB == "Combined cohort") %>%
     mutate(vim = case_when(vim == "AUC" & landmark_time == 545 ~ "AUC at 18 mo.",
@@ -312,7 +312,7 @@ make_plot_combined <- function(combined, type){
               panel.grid.minor.x = element_blank(),
               panel.grid.major.y = element_blank())
     }
-  
+
   vimp_plot_female <- combined %>%
     filter(SAB == "Female cohort") %>%
     mutate(vim = case_when(vim == "AUC" & landmark_time == 545 ~ "AUC at 18 mo.",
@@ -346,7 +346,7 @@ make_plot_combined <- function(combined, type){
               panel.grid.minor.x = element_blank(),
               panel.grid.major.y = element_blank())
     }
-  
+
   vimp_plot_male <- combined %>%
     filter(SAB == "Male cohort") %>%
     mutate(vim = case_when(vim == "AUC" & landmark_time == 545 ~ "AUC at 18 mo.",
@@ -380,7 +380,7 @@ make_plot_combined <- function(combined, type){
               panel.grid.minor.x = element_blank(),
               panel.grid.major.y = element_blank())
     }
-  
+
   multipanel <- ggarrange(vimp_plot_combined,
                           vimp_plot_female,
                           vimp_plot_male,
@@ -404,7 +404,7 @@ p_marg <- make_plot_combined(combined_ss_marginal, type = "marginal")
 
 
 wd <- "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/"
-fname <- "702-marginal-vax-072124-10split-tnr-sub1750"
+fname <- "702-marginal"
 ggsave(filename = paste0(wd, fname, ".pdf"),
        plot = p_marg, device = "pdf",
        width = big_fig_width, height = big_fig_height, dpi = 300, units = "in")
@@ -417,7 +417,7 @@ combined_ss_conditional <- bind_rows(combined_ss_both_conditional,
 
 p_cond <- make_plot_combined(combined_ss_conditional, type = "conditional")
 
-fname <- "702-conditional-vax-072124-10split-tnr-sub1750"
+fname <- "702-conditional"
 ggsave(filename = paste0(wd, fname, ".pdf"),
        plot = p_cond, device = "pdf",
        width = big_fig_width, height = big_fig_height, dpi = 300, units = "in")

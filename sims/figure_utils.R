@@ -7,6 +7,8 @@ library("gridExtra")
 library("ggpubr")
 library("tidyverse")
 library("extrafont")
+library("dichromat")
+library("RColorBrewer")
 
 # font_import(prompt = FALSE)
 loadfonts(device = "all")
@@ -22,7 +24,13 @@ big_fig_width <- 12
 big_fig_height <- 8
 small_fig_width <- 11
 small_fig_height <- 10
-nuisance_cols <- c("red", "blue", "green")
+nuisance_cols <- c(colorschemes$Categorical.12[1],
+                   colorschemes$Categorical.12[8],
+                   colorschemes$Categorical.12[12])
+# nuisance_cols <- c(brewer.pal(name = "Dark2", n = 8)[2],
+                   # brewer.pal(name = "Dark2", n = 8)[3],
+                   # brewer.pal(name = "Dark2", n = 8)[4])
+# nuisance_cols <- c("red", "blue", "green")
 xfit_linetypes <- c("solid", "longdash")
 strip_text_size <- 10
 strip_text_size_small_plot <- 14
@@ -82,7 +90,7 @@ summarize_results <- function(dat, scenario, truth, var_truth){
                              labels = c("random surv. forest",
                                         "global surv. stacking",
                                         "surv. Super Learner")),
-           n_eff = ifelse(scenario == "1",
+           n_eff = ifelse(scenario == "3",
                           dat$n_train, dat$n_train/2)) # for sample splitting)
 
   dat <- dat %>% mutate(correlation = ifelse(scenario == "1", TRUE, FALSE))

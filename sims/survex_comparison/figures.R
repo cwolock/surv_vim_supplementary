@@ -4,7 +4,7 @@ dat <- readRDS("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_su
 dat <- dat %>% filter(landmark_time == 0.5) %>%
   mutate(method = factor(method, levels = c("permutation", "exclusion"),
                          labels = c("Permutation", "Exclusion")),
-         scenario = factor(scenario, levels = c("permA", "permB", "permC", "permD"),
+         scenario = factor(scenario, levels = c("5D", "5C", "5B", "5A"),
                            labels = c("0", "0.3", "0.6", "0.9")),
          n_train = factor(n_train))
 
@@ -41,6 +41,6 @@ p <- summ %>% ggplot(aes(x = n_train, y = rank_right, group = interaction(scenar
         panel.grid.minor = element_blank()) +
   guides(linetype=guide_legend(title="Correlation:", nrow = 1, ncol = 4))
 
-ggsave(filename = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/survex-comparison-071724.pdf",
+ggsave(filename = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/survex-comparison.pdf",
        plot = p, device = "pdf",
        width = 10, height = 5, dpi = 300, units = "in")

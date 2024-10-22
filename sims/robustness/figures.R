@@ -68,8 +68,8 @@ p_bias <- summ %>% ggplot(aes(x = factor(n_train), y = mean_err)) +
          axis.text = element_text(size = 14,family = "Times New Roman"),
          strip.text = element_text(size = 14, family = "Times New Roman"),
          axis.title = element_text(size = 14, family = "Times New Roman"),
-         # panel.grid.major.x = element_blank(),
-         panel.grid.major = element_blank(),
+         panel.grid.major.x = element_blank(),
+         # panel.grid.major = element_blank(),
          panel.grid.minor = element_blank()) +
   guides(linetype=guide_legend(title="Oracle estimator:", nrow = 1, ncol = 2),
          shape = guide_legend(title = "Debiasing:", nrow = 1, ncol = 2))
@@ -98,8 +98,8 @@ p_variance <- summ %>% ggplot(aes(x = factor(n_train), y = variance)) +
          axis.text = element_text(size = 14,family = "Times New Roman"),
          strip.text = element_text(size = 14, family = "Times New Roman"),
          axis.title = element_text(size = 14, family = "Times New Roman"),
-         # panel.grid.major.x = element_blank(),
-         panel.grid.major = element_blank(),
+         panel.grid.major.x = element_blank(),
+         # panel.grid.major = element_blank(),
          panel.grid.minor = element_blank()) +
   guides(linetype=guide_legend(title="Oracle estimator:", nrow = 1, ncol = 2),
          shape = guide_legend(title = "Debiasing:", nrow = 1, ncol = 2))
@@ -130,6 +130,6 @@ legend <- get_legend(
 full_plot <- plot_grid(two_panel_plot, legend, ncol = 1, nrow = 2,
                          rel_heights = c(1, .1))
 
-ggsave(filename = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/robust-bias-and-variance-071724.pdf",
+ggsave(filename = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/robust-bias-and-variance.pdf",
        plot = full_plot, device = "pdf",
        width = 11, height = 6, dpi = 300, units = "in")

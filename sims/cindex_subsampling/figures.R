@@ -8,7 +8,7 @@ truth_list <- compile_truth(true_param_file = truth_file,
 
 dat <- readRDS("/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/cindex_subsampling.rds")
 
-dat <- dat %>% 
+dat <- dat %>%
   mutate(tau = restriction_time)
 
 dat <- dat %>% mutate(correlation = TRUE)
@@ -61,14 +61,14 @@ fig_height <- 8
 strip_text_size <- 10
 
 
-bias_plot <- summ %>% 
+bias_plot <- summ %>%
   ggplot(aes(x = n_train, y = bias)) +
   geom_hline(yintercept = 0, linetype = "solid", color = "black") +
   geom_point(size = point_size) +
   geom_line(aes(group = subsample, linetype = subsample)) +
   # geom_errorbar(aes(ymin=bias-1.96*bias_mc_se, ymax=bias + 1.96*bias_mc_se), width=.1) +
   scale_linetype_manual(values = subsample_linetypes) +
-  ylim(c(-0.015, 0.015)) + 
+  ylim(c(-0.015, 0.015)) +
   ylab("Empirical bias") +
   xlab("Sample size") +
   labs(linetype = "Method:", color = "Nuisance:") +
@@ -82,7 +82,7 @@ bias_plot <- summ %>%
     panel.grid.major.y = element_line(color = "grey85"),
     panel.grid.minor.y = element_blank())
 
-var_plot <- summ %>% 
+var_plot <- summ %>%
   ggplot(aes(x = n_train, y = variance)) +
   geom_point(size = point_size) +
   geom_line(aes(group = subsample, linetype = subsample)) +
@@ -101,13 +101,13 @@ var_plot <- summ %>%
     panel.grid.major.y = element_line(color = "grey85"),
     panel.grid.minor.y = element_blank())
 
-cover_plot <- summ %>% 
+cover_plot <- summ %>%
   ggplot(aes(x = n_train, y = coverage)) +
   geom_hline(yintercept = 0.95, linetype = "solid", color = "black") +
   geom_point(size = point_size) +
   geom_line(aes(group = subsample, linetype = subsample)) +
   scale_linetype_manual(values = subsample_linetypes) +
-  ylim(c(0.5, 1)) + 
+  ylim(c(0.5, 1)) +
   ylab("Empirical coverage") +
   xlab("Sample size") +
   labs(linetype = "Method:", color = "Nuisance:") +
@@ -121,7 +121,7 @@ cover_plot <- summ %>%
     panel.grid.major.y = element_line(color = "grey85"),
     panel.grid.minor.y = element_blank())
 
-width_plot <- summ %>% 
+width_plot <- summ %>%
   ggplot(aes(x = n_train, y = ci_width)) +
   geom_point(size = point_size) +
   geom_line(aes(group = subsample, linetype = subsample)) +
@@ -177,7 +177,7 @@ legend <- get_legend(
 )
 full_plot <- plot_grid(four_panel_plot, legend, ncol = 1, nrow = 2,
                          rel_heights = c(1, .1))
-ggsave(filename = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/cindex-subsampling-072024.pdf",
+ggsave(filename = "/Users/cwolock/Dropbox/UW/RESEARCH/paper_supplements/surv_vim_supplementary/scratch/biometrika/cindex-subsampling.pdf",
        plot = full_plot, device = "pdf",
        width = 12, height = 4, dpi = 300, units = "in")
 
