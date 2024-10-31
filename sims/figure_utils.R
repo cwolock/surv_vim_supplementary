@@ -8,7 +8,6 @@ library("ggpubr")
 library("tidyverse")
 library("extrafont")
 library("dichromat")
-library("RColorBrewer")
 
 # font_import(prompt = FALSE)
 loadfonts(device = "all")
