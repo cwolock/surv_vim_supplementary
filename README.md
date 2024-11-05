@@ -1,6 +1,6 @@
 # Supplementary materials for survival variable importance paper
 
-This repository contains code to reproduce the analyses in ["Assessing variable importance in survival analysis using machine learning"](https://arxiv.org/abs/2311.12726) by Wolock, Gilbert, Simon, and Carone (In press, *Biometrika*, 2024+). 
+This repository contains code to reproduce the analyses in ["Assessing variable importance in survival analysis using machine learning"](https://doi.org/10.1093/biomet/asae061) by Wolock, Gilbert, Simon, and Carone (*Biometrika*, 2024). 
 
 The methods described in the above paper are implemented in the `survML` package (version 1.2.0 or higher), available on CRAN. 
 
