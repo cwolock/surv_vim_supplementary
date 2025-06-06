@@ -8,7 +8,7 @@ sdy <- 1
 ### no correlation
 ##################
 p <- 5
-dat <- generate_data(n = n_train, scenario = "1B", sdy = sdy)
+dat <- generate_data(n = n_train, scenario = "2", sdy = sdy)
 x <- as.matrix(dat[,1:p])
 beta_t <- matrix(c(0.5, -0.3, rep(0, p-2)))
 beta_int <- c(0.1, -0.1, 0.1)
@@ -65,7 +65,7 @@ output1_landmark <- output1_landmark %>% mutate(V_016 = V_01, correlation = FALS
 
 taus <- c(0.9)
 # c index stuff
-dat_test <- generate_data(n = n_train, scenario = "1B")
+dat_test <- generate_data(n = n_train, scenario = "2")
 outcome <- dat_test$t
 preds <- -beta_t[1]*dat_test[,1] - beta_t[2]*dat_test[,2] - beta_int[1]*dat_test[,1]*dat_test[,2] - beta_int[2]*dat_test[,3]*dat_test[,4] - beta_int[3]*dat_test[,1]*dat_test[,5]
 preds_01 <- -beta_t[2]*dat_test[,2] - beta_int[2]*dat_test[,3]*dat_test[,4]
@@ -103,7 +103,7 @@ output1 <- bind_rows(output1_landmark, output1_global)
 ###############
 ### correlation
 ###############
-dat <- generate_data(n = n_train, scenario = "4B")
+dat <- generate_data(n = n_train, scenario = "1")
 p <- 6
 x <- as.matrix(dat[,1:p])
 beta_t <- matrix(c(0.5, -0.3, rep(0, p- 2)))
@@ -174,7 +174,7 @@ output2_landmark <- data.frame(vim = rep(c("brier", "AUC", "rsquared"), each = l
                                n_mc = rep(n_train, 3*length(landmark_times)))
 output2_landmark <- output2_landmark %>% mutate(correlation = TRUE)
 
-dat_test <- generate_data(n = n_train, scenario = "4B")
+dat_test <- generate_data(n = n_train, scenario = "1")
 outcome <- dat_test$t
 preds <- -beta_t[1]*dat_test[,1] -beta_t[2]*dat_test[,2]- beta_int[1]*dat_test[,1]*dat_test[,2] - beta_int[2]*dat_test[,3]*dat_test[,4] - beta_int[3]*dat_test[,1]*dat_test[,5]
 preds_01 <- -beta_t[2]*dat_test[,2] - (beta_t[1] + beta_int[1]*dat_test[,2] + beta_int[3]*dat_test[,5])*rho16*dat_test[,6] - beta_int[2]*dat_test[,3]*dat_test[,4]
